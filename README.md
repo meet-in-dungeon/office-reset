@@ -66,3 +66,15 @@ docs/           협업 규칙 문서
 7. 문제가 없으면 `main`에 병합한다.
 
 자세한 방법은 [CONTRIBUTING.md](CONTRIBUTING.md), 팀 약속은 [docs/TEAM_RULES.md](docs/TEAM_RULES.md)를 본다.
+
+## 6. AI로 개발할 때 (Claude Code)
+
+이 저장소 폴더에서 Claude Code를 실행하면 `CLAUDE.md`가 `AGENTS.md`를 불러와 공통 규칙이 자동으로 적용된다. 규칙 파일은 따로 내려받지 않는다.
+
+## 7. 개발 문서
+
+- [PRD.md](PRD.md): 서비스 기획과 요구사항
+- [TECH_SPEC.md](TECH_SPEC.md): 기술 스택과 구현 방식
+- [WORK_UNITS.md](WORK_UNITS.md): 업무 분담과 작업 단위
+
+아직 확정되지 않은 항목은 `미확정`으로 표시되어 있다. 팀 합의 후 채운다.
