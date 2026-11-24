@@ -6,6 +6,7 @@ import Button from '../components/Button'
 import Screen from '../components/Screen'
 import StretchVideo from '../components/StretchVideo'
 import data from '../data/stretches.json'
+import { useStretchBgm } from '../lib/bgm'
 import { MOVE_SECONDS } from '../lib/config'
 import { useSettings } from '../lib/settings'
 import {
@@ -128,9 +129,11 @@ export default function VideoTest() {
   const [index, setIndex] = useState(0)
   const [remaining, setRemaining] = useState(0)
   const [running, setRunning] = useState(false)
+  const [bgmOn, setBgmOn] = useState(false)
   const move = TEST_MOVES[index]
 
   useStretchVoice({ id: move.id, narration: move.narration, active: running })
+  useStretchBgm(bgmOn)
 
   useEffect(() => {
     if (!running) return undefined
@@ -165,6 +168,16 @@ export default function VideoTest() {
           소리 켜기 (settings.soundOn: {String(settings.soundOn)})
         </label>
         {!isSpeechSupported() ? <p>이 브라우저는 음성 안내(TTS)를 지원하지 않습니다.</p> : null}
+
+        <label style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
+          <input
+            type="checkbox"
+            checked={bgmOn}
+            onChange={(event) => setBgmOn(event.target.checked)}
+          />
+          BGM 틀기 (루틴의 동작·호흡 단계라고 가정. 소리 켜기도 체크해야 들립니다. 파일:
+          public/audio/bgm.mp3)
+        </label>
 
         <VoicePicker soundOn={settings.soundOn} />
 
