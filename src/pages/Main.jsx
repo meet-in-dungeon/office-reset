@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Button from '../components/Button'
 import Screen from '../components/Screen'
+import NotificationPermission from '../components/NotificationPermission'
 import WorkTimeSettings from '../components/WorkTimeSettings'
 import { navigate, ROUTES } from '../lib/router'
 import { getNextAlert } from '../lib/schedule'
@@ -61,9 +62,6 @@ export default function Main() {
           />
           알림 받기
         </label>
-        <p className="dev-note" style={{ marginTop: 'var(--space-3)' }}>
-          남은 시간 표시까지 연결했어요. 실제 알림 발송은 다음 작업에서 연결합니다.
-        </p>
       </section>
 
       <Button size="large" block onClick={() => navigate(ROUTES.stretch)}>
@@ -77,6 +75,7 @@ export default function Main() {
         <strong>설정</strong>
         <div className="stack" style={{ marginTop: 'var(--space-3)' }}>
           <WorkTimeSettings />
+          <NotificationPermission />
           <label className="check">
             <input
               type="checkbox"
