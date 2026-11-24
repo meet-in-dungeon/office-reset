@@ -1,10 +1,11 @@
 // 영상·음성 개발용 테스트 화면 (담당: 서진수). 실제 서비스 화면이 아니다.
 // 확인할 것: 영상 재생, 영상이 없는 동작의 대체 안내, 소리 ON/OFF에 따른 음성 안내와 5초 카운트.
-// 동작 목록은 테스트용으로만 적었다. 실제 동작 데이터는 원규 님의 src/data/stretches.json을 쓴다.
+// 동작 목록은 실제 루틴 화면과 같은 src/data/stretches.json(원규 님 파일)에서 읽는다.
 import { useEffect, useState } from 'react'
 import Button from '../components/Button'
 import Screen from '../components/Screen'
 import StretchVideo from '../components/StretchVideo'
+import data from '../data/stretches.json'
 import { MOVE_SECONDS } from '../lib/config'
 import { useSettings } from '../lib/settings'
 import {
@@ -115,26 +116,12 @@ function VoicePicker({ soundOn }) {
   )
 }
 
+// 동작 목록은 원규 님의 stretches.json을 읽기만 한다. (고치지 않는다)
+// 실제 루틴과 같은 순서로 보이도록 쓰는 동작(active)을 먼저, 예비(reserve)를 뒤에 둔다.
 const TEST_MOVES = [
-  ['neck-01', '목 옆 늘이기'],
-  ['neck-02', '대각선 목 늘이기'],
-  ['neck-03', '턱 당기기'],
-  ['shoulder-01', '가슴 펴기'],
-  ['shoulder-02', '팔 가슴 앞으로 당기기'],
-  ['shoulder-03', '깍지 끼고 등 밀기'],
-  ['wrist-01', '손목 앞쪽 늘이기'],
-  ['wrist-02', '손목 뒤쪽 늘이기'],
-  ['wrist-03', '주먹 쥐었다 펴기'],
-  ['waist-01', '앉아서 허리 비틀기'],
-  ['waist-02', '옆구리 늘이기'],
-  ['waist-03', '등 둥글게 말기와 펴기'],
-  ['neck-04', '고개 숙여 뒤목 늘이기 (예비)'],
-].map(([id, name]) => ({
-  id,
-  name,
-  videoFile: `${id}.mp4`,
-  narration: `${name}. 화면을 보고 천천히 따라 해 주세요.`,
-}))
+  ...data.stretches.filter((move) => move.status === 'active'),
+  ...data.stretches.filter((move) => move.status !== 'active'),
+]
 
 export default function VideoTest() {
   const [settings, updateSettings] = useSettings()
@@ -187,6 +174,7 @@ export default function VideoTest() {
             {TEST_MOVES.map((item, i) => (
               <option key={item.id} value={i}>
                 {item.id} · {item.name}
+                {item.status === 'active' ? '' : ' (예비)'}
               </option>
             ))}
           </select>
