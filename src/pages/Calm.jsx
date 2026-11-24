@@ -11,10 +11,11 @@ import { navigate, ROUTES } from '../lib/router'
 import { nowLocalISO } from '../lib/time'
 import './Calm.css'
 
-// 호흡 횟수와 한 번의 길이(초). 들이쉬기 4초, 내쉬기 6초 (이주연 결정, 11/24). 바꾸려면 여기만 고친다.
+// 호흡 횟수와 한 번의 길이(초). 호흡 속도는 팀 기준(들이쉬기 4초, 내쉬기 4초)을 따른다. (이주연 결정, 11/24)
+// TODO: 민지 님 PR #8이 병합되면 config.js의 BREATH_INHALE_SECONDS, BREATH_EXHALE_SECONDS를 불러와 쓴다.
 const CALM_BREATH_COUNT = 3
 const INHALE_SECONDS = 4
-const EXHALE_SECONDS = 6
+const EXHALE_SECONDS = 4
 
 const DONE_MESSAGE = '마음 공기 정화 완료!'
 
