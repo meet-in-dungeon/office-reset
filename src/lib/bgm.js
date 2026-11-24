@@ -18,20 +18,32 @@ import { useEffect } from 'react'
 import { useSettings } from './settings'
 
 const BGM_FILE = `${import.meta.env.BASE_URL}audio/bgm.mp3`
-const BGM_VOLUME = 0.25 // 0(무음) ~ 1(최대)
+// 테스트 페이지(/video-test.html)에서 들어 보고 고른 값을 여기에 적는다.
+export const BGM_VOLUME = 0.25 // 0(무음) ~ 1(최대)
 
 // 화면이 바뀌어도 같은 음악을 이어서 틀 수 있게 하나만 만든다.
 let audio = null
+let volume = BGM_VOLUME
 
 function getAudio() {
   if (typeof Audio === 'undefined') return null
   if (!audio) {
     audio = new Audio(BGM_FILE)
     audio.loop = true
-    audio.volume = BGM_VOLUME
+    audio.volume = volume
     audio.preload = 'auto'
   }
   return audio
+}
+
+export function getBgmVolume() {
+  return volume
+}
+
+// 테스트 페이지에서 크기를 바꿔 들어 볼 때 쓴다. (저장되지 않고, 새로고침하면 BGM_VOLUME으로 돌아간다)
+export function setBgmVolume(next) {
+  volume = Math.min(1, Math.max(0, next))
+  if (audio) audio.volume = volume
 }
 
 export function playBgm() {
