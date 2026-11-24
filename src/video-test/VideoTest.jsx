@@ -6,7 +6,7 @@ import Button from '../components/Button'
 import Screen from '../components/Screen'
 import StretchVideo from '../components/StretchVideo'
 import data from '../data/stretches.json'
-import { BGM_VOLUME, getBgmVolume, setBgmVolume, useStretchBgm } from '../lib/bgm'
+import { useStretchBgm } from '../lib/bgm'
 import { MOVE_SECONDS } from '../lib/config'
 import { useSettings } from '../lib/settings'
 import {
@@ -130,13 +130,7 @@ export default function VideoTest() {
   const [remaining, setRemaining] = useState(0)
   const [running, setRunning] = useState(false)
   const [bgmOn, setBgmOn] = useState(false)
-  const [bgmVolume, setBgmVolumeState] = useState(() => getBgmVolume())
   const move = TEST_MOVES[index]
-
-  const changeBgmVolume = (next) => {
-    setBgmVolume(next)
-    setBgmVolumeState(getBgmVolume())
-  }
 
   useStretchVoice({ id: move.id, narration: move.narration, active: running })
   useStretchBgm(bgmOn)
@@ -183,19 +177,6 @@ export default function VideoTest() {
           />
           BGM 틀기 (루틴의 동작·호흡 단계라고 가정. 소리 켜기도 체크해야 들립니다. 파일:
           public/audio/bgm.mp3)
-        </label>
-
-        <label>
-          BGM 크기 {Math.round(bgmVolume * 100)}% (지금 기본값 {Math.round(BGM_VOLUME * 100)}%,
-          새로고침하면 기본값으로 돌아갑니다){' '}
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={bgmVolume}
-            onChange={(event) => changeBgmVolume(Number(event.target.value))}
-          />
         </label>
 
         <VoicePicker soundOn={settings.soundOn} />
