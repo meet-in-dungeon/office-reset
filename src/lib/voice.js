@@ -5,14 +5,14 @@
 // 사무실을 생각해 기본값은 꺼짐이다.
 //
 // 사용 예 (원규 님 Stretch.jsx, 동작 화면에서 한 줄):
-//   useStretchVoice({ id: move.id, narration: move.narration, remaining, active: stage === 'move' })
-//   → 동작이 바뀌면 narration을 읽고, 카운트가 줄 때마다 숫자를 읽는다.
+//   useStretchVoice({ id: move.id, narration: move.narration, active: stage === 'move' })
+//   → 동작이 바뀌면 narration을 한 번 읽는다. 카운트다운 숫자는 읽지 않는다.
 //
 // 주의
 // - 브라우저는 사용자가 화면을 한 번도 누르지 않았으면 소리를 막는다.
 //   메인의 "스트레칭 시작"이나 알림 뒤 "시작" 버튼을 누른 다음에는 정상으로 나온다.
 // - 한국어 목소리는 운영체제·브라우저마다 다르다. 한국어 목소리가 없으면 기본 목소리로 읽는다.
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { getSettings, useSettings } from './settings'
 
 const LANG = 'ko-KR'
@@ -93,42 +93,22 @@ export function speak(text, { onEnd } = {}) {
 
 // 스트레칭 동작 화면용 음성 안내.
 // - id가 바뀌면(새 동작) narration을 읽는다.
-// - remaining(남은 초)이 줄면 그 숫자를 읽는다. 단, narration을 읽는 중에는 숫자를 건너뛴다.
-//   (숫자가 밀려서 화면 카운트와 어긋나지 않게 하기 위해서다)
+// - 카운트다운 숫자는 읽지 않는다. (2026-11-24 팀 결정으로 제거)
+//   예전처럼 remaining을 넘겨도 쓰지 않고 무시한다.
 // - active가 false가 되거나, 소리를 끄거나, 화면을 떠나면 바로 멈춘다.
-export function useStretchVoice({ id, narration, remaining, active = true }) {
+export function useStretchVoice({ id, narration, active = true }) {
   const [settings] = useSettings()
   const soundOn = settings.soundOn
-  const narratingRef = useRef(false)
-  const narrationTokenRef = useRef(null)
 
   // 새 동작이 나오면 안내 문장 읽기
   useEffect(() => {
     if (!active || !soundOn) return
-    // 이전 문장을 끊을 때 이전 문장의 "끝남" 신호가 늦게 올 수 있다.
-    // 가장 최근 문장의 신호일 때만 "읽기 끝"으로 처리한다.
-    const token = {}
-    narrationTokenRef.current = token
-    narratingRef.current = speak(narration, {
-      onEnd: () => {
-        if (narrationTokenRef.current === token) narratingRef.current = false
-      },
-    })
+    speak(narration)
   }, [id, narration, active, soundOn])
-
-  // 카운트 숫자 읽기 (0은 읽지 않는다)
-  useEffect(() => {
-    if (!active || !soundOn || narratingRef.current) return
-    if (remaining > 0) speak(String(remaining))
-  }, [remaining, active, soundOn])
 
   // 소리를 끄거나 동작 화면이 끝나면 멈추기
   useEffect(() => {
-    if (!active || !soundOn) {
-      narratingRef.current = false
-      narrationTokenRef.current = null
-      stopSpeaking()
-    }
+    if (!active || !soundOn) stopSpeaking()
   }, [active, soundOn])
 
   // 화면을 떠나면 멈추기
