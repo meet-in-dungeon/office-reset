@@ -1,122 +1,42 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+// 화면 연결. 주소(#/...)에 맞는 화면을 보여준다. (공통 파일: 고치기 전에 팀에 알린다)
+// 새 화면이 필요하면 아래 PAGES에 한 줄 추가한다. 각 화면의 내용은 src/pages/ 파일에서 담당자가 만든다.
+import { useEffect } from 'react'
 import './App.css'
+import { navigate, ROUTES, useRoute } from './lib/router'
+import { useSettings } from './lib/settings'
+import Calm from './pages/Calm'
+import Complete from './pages/Complete'
+import Main from './pages/Main'
+import Onboarding from './pages/Onboarding'
+import Stats from './pages/Stats'
+import Stretch from './pages/Stretch'
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+const PAGES = {
+  [ROUTES.home]: Main,
+  [ROUTES.onboarding]: Onboarding,
+  [ROUTES.stretch]: Stretch,
+  [ROUTES.complete]: Complete,
+  [ROUTES.calm]: Calm,
+  [ROUTES.stats]: Stats,
 }
 
-export default App
+export default function App() {
+  const { path } = useRoute()
+  const [settings] = useSettings()
+
+  // 처음 접속(온보딩 전)이면 메인 대신 온보딩으로 보낸다.
+  // 다른 화면 주소로 직접 들어온 경우는 그대로 보여준다. (개발 중에 각자 화면을 바로 열 수 있게)
+  useEffect(() => {
+    if (path === ROUTES.home && !settings.onboarded) {
+      navigate(ROUTES.onboarding, undefined, { replace: true })
+    }
+  }, [path, settings.onboarded])
+
+  const Page = PAGES[path] ?? Main
+
+  return (
+    <div className="app">
+      <Page />
+    </div>
+  )
+}
