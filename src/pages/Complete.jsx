@@ -1,12 +1,32 @@
 // 루틴 완료 화면 (담당: 이주연)
 // 루틴 종료 후 새로 받은 배지와 완료 안내를 보여주고, "업무 복귀"로 메인에 돌아간다.
 // 결과는 원규 님 화면이 recordRoutine()을 부를 때 sessionStorage에 남긴 값을 읽는다. (src/lib/records.js)
+// 배지가 여러 개면 카드는 2장까지만 보여주고 나머지는 "+N개 더"로 묶는다.
 import { useState } from 'react'
 import Button from '../components/Button'
 import Screen from '../components/Screen'
 import { clearLastResult, getStats, readLastResult } from '../lib/records'
 import { navigate, ROUTES } from '../lib/router'
 import './Complete.css'
+
+// 한 번에 보여주는 배지 카드 수. 나머지는 "+N개 더"로 묶는다. (설계안 6장)
+const MAX_CARDS = 2
+
+// 카드 순서: 히든 → 등급업(골드 > 실버) → 새 배지 (설계안 6장)
+function orderCards(newBadges, tierUps) {
+  const cards = [
+    ...tierUps.map((badge) => ({ ...badge, kind: 'tierUp' })),
+    ...newBadges.map((badge) => ({ ...badge, kind: 'new' })),
+  ]
+  const rank = (card) => (card.hidden ? 0 : card.kind === 'tierUp' ? 3 - (card.tier ?? 0) : 10)
+  return cards.sort((a, b) => rank(a) - rank(b))
+}
+
+function cardLabel(card) {
+  if (card.hidden) return '히든 배지 발견!'
+  if (card.kind === 'tierUp') return `${card.tierName}로 올랐어요!`
+  return `새 배지${card.repeat === 'daily' && card.count > 1 ? ` · ${card.count}일째` : ''}`
+}
 
 function BadgeCard({ badge, index }) {
   return (
@@ -15,10 +35,11 @@ function BadgeCard({ badge, index }) {
         {badge.icon}
       </span>
       <div className="complete-badge__text">
-        <p className="complete-badge__label">
-          새 배지{badge.repeat === 'daily' && badge.count > 1 ? ` · ${badge.count}일째` : ''}
+        <p className="complete-badge__label">{cardLabel(badge)}</p>
+        <p className="complete-badge__name">
+          {badge.name}
+          {badge.tierName ? <span className="complete-badge__tier">{badge.tierName}</span> : null}
         </p>
-        <p className="complete-badge__name">{badge.name}</p>
         <p className="complete-badge__message">{badge.message}</p>
       </div>
     </li>
@@ -32,7 +53,9 @@ export default function Complete() {
 
   const todayCount = result?.todayCount ?? stats.todayCount
   const totalCount = result?.totalCount ?? stats.totalCount
-  const newBadges = result?.newBadges ?? []
+  const cards = orderCards(result?.newBadges ?? [], result?.tierUps ?? [])
+  const shown = cards.slice(0, MAX_CARDS)
+  const more = cards.length - shown.length
 
   function leave(route) {
     clearLastResult() // 같은 배지 카드가 다시 뜨지 않게 지운다
@@ -52,13 +75,18 @@ export default function Complete() {
         </p>
       </section>
 
-      {newBadges.length > 0 ? (
+      {cards.length > 0 ? (
         <section aria-label="새로 받은 배지">
           <ul className="complete-badges">
-            {newBadges.map((badge, index) => (
-              <BadgeCard key={badge.id} badge={badge} index={index} />
+            {shown.map((badge, index) => (
+              <BadgeCard key={`${badge.id}-${badge.kind}`} badge={badge} index={index} />
             ))}
           </ul>
+          {more > 0 ? (
+            <button type="button" className="complete-more" onClick={() => leave(ROUTES.stats)}>
+              +{more}개 더 받았어요 — 배지함에서 확인
+            </button>
+          ) : null}
         </section>
       ) : (
         <p className="card complete-empty">오늘도 몸을 챙겼어요. 이 작은 습관이 쌓이고 있어요 🌱</p>
