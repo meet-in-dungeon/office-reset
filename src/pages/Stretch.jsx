@@ -10,6 +10,8 @@ import { BREATH_COUNT, MOVE_SECONDS, ROUTINE_MOVE_COUNT, START_GATE_ENABLED } fr
 import { planRoutine, saveShownIds } from '../lib/pickMoves'
 import { navigate, ROUTES, useRoute } from '../lib/router'
 import { isLastRoutine } from '../lib/schedule'
+import StretchVideo from '../components/StretchVideo'
+import { useStretchVoice } from '../lib/voice'
 import { nowLocalISO } from '../lib/time'
 import './Stretch.css'
 
