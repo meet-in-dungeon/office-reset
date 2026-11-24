@@ -8,7 +8,9 @@
 //       기록의 breathCount가 0보다 크면 하루 마지막 루틴으로 본다. 받은 날 수로 등급이 오른다
 //   - 첫 빡침 해소(first_calm): 빡침 명상에서 호흡 3회 안내를 끝까지 마쳤을 때 (이주연 결정, 11/24)
 // 2차 배지: 출근 도장, 리셋 장인, 평일 개근상, 스트레칭 도감, 모닝 리셋, 식곤증 격파, 불금(히든)
-//   "스킵은 사치", "광속 리셋"은 넘기기 정의와 알림 시각 기록이 정해지지 않아 아직 만들지 않는다.
+// 벤치마킹 후 추가 (이주연 결정, 11/24): 이번 주 개근상(듀오링고 '완벽한 일주일'), 스킵은 사치(듀오링고 '무결점 학습자'),
+//   해커톤 기념(포스퀘어 '할로윈 2010' 같은 기간 한정 배지)
+//   "광속 리셋"은 알림 시각 기록이 정해지지 않아 아직 만들지 않는다.
 //   히든 "몸관리 끝판왕"은 기준 횟수를 팀과 정한 뒤 추가한다.
 //
 // 등급 규칙 (설계안 3장): 처음 받는 순간이 브론즈, 반복하면 실버·골드로 오르고 내려가지 않는다.
@@ -19,10 +21,15 @@
 //   firstRoutine 루틴 수 / activeDays 루틴을 한 날 수 / totalRoutines 루틴 수 / fullDays 하루 완성한 날 수
 //   bestWeekdayStreak 평일 연속 최고 기록 / uniqueMoves 만난 서로 다른 동작 수
 //   morningRoutines 7~10시 루틴 수 / lunchRoutines 13~15시 루틴 수 / fridayEvening 금요일 17시 이후 루틴 수
+//   perfectWeeks 월~금 5일 모두 한 주 수 / noSkipRoutines 넘긴 동작 없이 끝낸 루틴 수
+//   hackathonRoutines 해커톤 기간(HACKATHON_DAYS)에 한 루틴 수
 //   calmCount 빡침 명상 수 (빡침 명상 기록으로 따로 계산)
 // tierMessage의 {N}은 지금 값으로 바뀐다.
 
 export const TIER_NAMES = ['브론즈', '실버', '골드']
+
+// 해커톤 기념 배지를 받을 수 있는 기간 (이 날짜에 한 루틴만 센다)
+export const HACKATHON_DAYS = { from: '2026-11-24', to: '2026-11-26' }
 
 export const BADGE_IDS = {
   firstRoutine: 'first_routine',
@@ -33,7 +40,10 @@ export const BADGE_IDS = {
   moveDex: 'move_dex',
   morning: 'morning',
   lunchSlayer: 'lunch_slayer',
+  perfectWeek: 'perfect_week',
+  noSkip: 'no_skip',
   firstCalm: 'first_calm',
+  hackathon: 'hackathon_2026',
   fridayFire: 'friday_fire',
 }
 
@@ -93,6 +103,17 @@ export const BADGES = [
     tierUnit: '일',
   },
   {
+    id: BADGE_IDS.perfectWeek,
+    name: '이번 주 개근상',
+    icon: '🏫',
+    message: '월요일부터 금요일까지 개근! 개근상은 초등학교 이후 처음이죠?',
+    tierMessage: '개근한 주 {N}번째! 이 정도면 사내 표창감이에요',
+    condition: '한 주 월~금 5일 모두 스트레칭',
+    metric: 'perfectWeeks',
+    tiers: [4, 7, 10], // 개근한 주 수 (이주연 결정, 11/24)
+    tierUnit: '주',
+  },
+  {
     id: BADGE_IDS.moveDex,
     name: '스트레칭 도감',
     icon: '🎲',
@@ -103,6 +124,17 @@ export const BADGES = [
     metric: 'uniqueMoves',
     tiers: [4, 8, 12],
     tierUnit: '개',
+  },
+  {
+    id: BADGE_IDS.noSkip,
+    name: '스킵은 사치',
+    icon: '⏩',
+    message: '넘기기 없이 끝까지! 스킵은 사치였네요 ⏩',
+    tierMessage: '논스톱 완주 {N}번. 끝까지 하는 사람이 멋있어요',
+    condition: '넘긴 동작 없이 루틴 완료',
+    metric: 'noSkipRoutines',
+    tiers: [3, 10, 30],
+    tierUnit: '회',
   },
   {
     id: BADGE_IDS.morning,
@@ -135,6 +167,15 @@ export const BADGES = [
     metric: 'calmCount',
     tiers: [1, 10, 30], // 명상 누적 횟수 (이주연 결정, 11/24)
     tierUnit: '회',
+  },
+  {
+    id: BADGE_IDS.hackathon,
+    name: '던만 해커톤 기념',
+    icon: '🎪',
+    message: '던만 해커톤 기간에 함께 몸을 챙겼어요! 이 배지는 지금만 받을 수 있어요',
+    condition: '11/24~11/26 기간 한정, 루틴 1회',
+    metric: 'hackathonRoutines',
+    limited: true, // 기간 한정 배지. 기간이 지나면 받을 수 없다
   },
   {
     id: BADGE_IDS.fridayFire,

@@ -19,6 +19,17 @@
   font-weight: 700;
 }
 
+/* 마지막 루틴에서 호흡을 중단했을 때 나오는 안내 한 줄 */
+.complete-hero__note {
+  margin-top: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-calm-soft);
+  border-radius: var(--radius-round);
+}
+
 .complete-badges {
   display: flex;
   flex-direction: column;

@@ -21,7 +21,7 @@
 // 배지는 저장된 기록 전체로 매번 다시 계산한다. 기록만 맞으면 배지가 저절로 맞춰진다.
 // 한 번 받은 배지와 등급은 기록이 줄어도 사라지지 않는다.
 
-import { BADGE_IDS, BADGES, badgeMessage, getBadge, TIER_NAMES, tierIndex } from './badges'
+import { BADGE_IDS, BADGES, badgeMessage, getBadge, HACKATHON_DAYS, TIER_NAMES, tierIndex } from './badges'
 import { STORAGE_KEYS } from './config'
 import { readJSON, writeJSON } from './storage'
 import { nowLocalISO, todayLocal } from './time'
@@ -106,6 +106,16 @@ function currentWeekdayStreak(days, today) {
   return streak
 }
 
+// 월~금 5일을 모두 채운 주의 수. 주는 월요일 날짜로 묶는다.
+function perfectWeeks(days) {
+  const weeks = new Map()
+  days.filter(isWeekday).forEach((day) => {
+    const monday = addDays(day, -((weekdayOf(day) + 6) % 7))
+    weeks.set(monday, (weeks.get(monday) ?? new Set()).add(day))
+  })
+  return [...weeks.values()].filter((set) => set.size === 5).length
+}
+
 // 기록에서 배지 판정 값을 계산한다.
 function computeMetrics(routineLogs, calmLogs) {
   const days = [...new Set(routineLogs.map((log) => dateOf(log.completedAt)))]
@@ -122,6 +132,13 @@ function computeMetrics(routineLogs, calmLogs) {
     morningRoutines: routineLogs.filter((log) => hourOf(log.completedAt) >= 7 && hourOf(log.completedAt) < 10).length,
     lunchRoutines: routineLogs.filter((log) => hourOf(log.completedAt) >= 13 && hourOf(log.completedAt) < 15).length,
     fridayEvening: routineLogs.filter((log) => weekdayOf(dateOf(log.completedAt)) === 5 && hourOf(log.completedAt) >= 17).length,
+    perfectWeeks: perfectWeeks(days),
+    // 넘긴 동작 수(skippedMoves)가 0인 루틴. 값이 없는 예전 기록은 넘기기가 없던 때라 0으로 본다.
+    noSkipRoutines: routineLogs.filter((log) => !(Number(log.skippedMoves) > 0)).length,
+    hackathonRoutines: routineLogs.filter((log) => {
+      const day = dateOf(log.completedAt)
+      return day >= HACKATHON_DAYS.from && day <= HACKATHON_DAYS.to
+    }).length,
     calmCount: calmLogs.length,
   }
 }
@@ -240,6 +257,7 @@ export function recordRoutine(log) {
     duplicate: false,
     newBadges,
     tierUps,
+    breathCount: entry.breathCount, // 완료 화면이 "호흡을 마치지 못한 마지막 루틴"인지 알 때 쓴다
     ...countLogs(nextLogs, dateOf(entry.completedAt)),
   }
   saveLastResult(result)

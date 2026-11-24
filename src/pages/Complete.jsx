@@ -7,6 +7,7 @@ import Button from '../components/Button'
 import Screen from '../components/Screen'
 import { clearLastResult, getStats, readLastResult } from '../lib/records'
 import { navigate, ROUTES } from '../lib/router'
+import { isLastRoutine } from '../lib/schedule'
 import './Complete.css'
 
 // 한 번에 보여주는 배지 카드 수. 나머지는 "+N개 더"로 묶는다. (설계안 6장)
@@ -50,6 +51,9 @@ export default function Complete() {
   // 화면에 처음 들어올 때 한 번만 읽는다. 결과가 없으면(주소로 바로 들어옴 등) 저장된 기록으로 안내만 한다.
   const [result] = useState(() => readLastResult())
   const [stats] = useState(() => getStats())
+  // 하루 마지막 루틴에서 호흡을 중단한 경우: 호흡 없이 저장됐고(0), 아직 오늘 마지막 루틴이 남아 있다.
+  // (원규 님 화면에서 "중단"을 누르면 이 화면으로 온다. 이주연 결정 11/24)
+  const [breathStopped] = useState(() => result?.saved === true && result.breathCount === 0 && isLastRoutine())
 
   const todayCount = result?.todayCount ?? stats.todayCount
   const totalCount = result?.totalCount ?? stats.totalCount
@@ -73,6 +77,7 @@ export default function Complete() {
           {todayCount > 0 ? `오늘 ${todayCount}번째 스트레칭을 마쳤어요.` : '스트레칭을 마쳤어요.'}
           {totalCount > 0 ? ` 지금까지 모두 ${totalCount}번 했어요.` : ''}
         </p>
+        {breathStopped ? <p className="complete-hero__note">호흡은 다음 루틴에서 다시 할 수 있어요 🌿</p> : null}
       </section>
 
       {cards.length > 0 ? (
