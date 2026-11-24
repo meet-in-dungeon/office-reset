@@ -1,0 +1,219 @@
+// 영상·음성 개발용 테스트 화면 (담당: 서진수). 실제 서비스 화면이 아니다.
+// 확인할 것: 영상 재생, 영상이 없는 동작의 대체 안내, 소리 ON/OFF에 따른 음성 안내와 5초 카운트.
+// 동작 목록은 테스트용으로만 적었다. 실제 동작 데이터는 원규 님의 src/data/stretches.json을 쓴다.
+import { useEffect, useState } from 'react'
+import Button from '../components/Button'
+import Screen from '../components/Screen'
+import StretchVideo from '../components/StretchVideo'
+import { MOVE_SECONDS } from '../lib/config'
+import { useSettings } from '../lib/settings'
+import {
+  getVoiceOptions,
+  isSpeechSupported,
+  listVoices,
+  setVoiceOptions,
+  speak,
+  useStretchVoice,
+} from '../lib/voice'
+
+const SAMPLE_TEXT = '귀를 어깨 쪽으로 천천히 기울여 주세요. 오, 사, 삼, 이, 일.'
+
+// 목소리 고르기 (테스트용). 고른 값은 이 페이지에서만 쓰이고, 새로고침하면 기본값으로 돌아간다.
+// 마음에 드는 값을 찾으면 src/lib/voice.js의 DEFAULT_VOICE_OPTIONS에 적는다.
+function VoicePicker({ soundOn }) {
+  const [voices, setVoices] = useState(() => listVoices())
+  const [options, setOptions] = useState(() => getVoiceOptions())
+
+  useEffect(() => {
+    if (!isSpeechSupported()) return undefined
+    const refresh = () => setVoices(listVoices())
+    window.speechSynthesis.addEventListener('voiceschanged', refresh)
+    // 목록이 이미 채워졌는데 이벤트를 놓친 경우를 위해 잠시 뒤 몇 번 더 확인한다.
+    const retries = [0, 300, 1000, 2000].map((ms) => setTimeout(refresh, ms))
+    return () => {
+      window.speechSynthesis.removeEventListener('voiceschanged', refresh)
+      retries.forEach(clearTimeout)
+    }
+  }, [])
+
+  const change = (patch) => {
+    setVoiceOptions(patch)
+    setOptions(getVoiceOptions())
+  }
+
+  const koreanCount = voices.filter((voice) => voice.lang.toLowerCase().startsWith('ko')).length
+
+  return (
+    <fieldset
+      style={{
+        display: 'grid',
+        gap: 'var(--space-3)',
+        border: '1px solid var(--color-border)',
+        borderRadius: 'var(--radius-md)',
+        padding: 'var(--space-4)',
+      }}
+    >
+      <legend>목소리 고르기</legend>
+      <p style={{ fontSize: 'var(--text-small)', color: 'var(--color-text-muted)' }}>
+        이 브라우저의 목소리 {voices.length}개 (한국어 {koreanCount}개). 한국어가 아닌 목소리는
+        한국어 문장을 제대로 읽지 못합니다.
+      </p>
+
+      <label>
+        목소리{' '}
+        <select
+          value={options.voiceName}
+          onChange={(event) => change({ voiceName: event.target.value })}
+        >
+          <option value="">기본 (첫 번째 한국어 목소리)</option>
+          {options.voiceName && !voices.some((voice) => voice.name === options.voiceName) ? (
+            <option value={options.voiceName}>
+              {options.voiceName} · 이 브라우저에 없음 (한국어 목소리로 대신 읽음)
+            </option>
+          ) : null}
+          {voices.map((voice) => (
+            <option key={voice.name} value={voice.name}>
+              {voice.name} · {voice.lang}
+              {voice.localService ? '' : ' · 인터넷 필요'}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label>
+        속도 {options.rate.toFixed(1)}{' '}
+        <input
+          type="range"
+          min="0.5"
+          max="2"
+          step="0.1"
+          value={options.rate}
+          onChange={(event) => change({ rate: Number(event.target.value) })}
+        />
+      </label>
+
+      <label>
+        높낮이 {options.pitch.toFixed(1)}{' '}
+        <input
+          type="range"
+          min="0"
+          max="2"
+          step="0.1"
+          value={options.pitch}
+          onChange={(event) => change({ pitch: Number(event.target.value) })}
+        />
+      </label>
+
+      <Button variant="soft" onClick={() => speak(SAMPLE_TEXT)} disabled={!soundOn}>
+        {soundOn ? '미리 듣기' : '미리 듣기 (위에서 소리 켜기를 체크하세요)'}
+      </Button>
+
+      <p style={{ fontSize: 'var(--text-small)' }}>
+        고른 값: <code>{JSON.stringify(options)}</code>
+      </p>
+    </fieldset>
+  )
+}
+
+const TEST_MOVES = [
+  ['neck-01', '목 옆 늘이기'],
+  ['neck-02', '대각선 목 늘이기'],
+  ['neck-03', '턱 당기기'],
+  ['shoulder-01', '가슴 펴기'],
+  ['shoulder-02', '팔 가슴 앞으로 당기기'],
+  ['shoulder-03', '깍지 끼고 등 밀기'],
+  ['wrist-01', '손목 앞쪽 늘이기'],
+  ['wrist-02', '손목 뒤쪽 늘이기'],
+  ['wrist-03', '주먹 쥐었다 펴기'],
+  ['waist-01', '앉아서 허리 비틀기'],
+  ['waist-02', '옆구리 늘이기'],
+  ['waist-03', '등 둥글게 말기와 펴기'],
+  ['neck-04', '고개 숙여 뒤목 늘이기 (예비)'],
+].map(([id, name]) => ({
+  id,
+  name,
+  videoFile: `${id}.mp4`,
+  narration: `${name}. 화면을 보고 천천히 따라 해 주세요.`,
+}))
+
+export default function VideoTest() {
+  const [settings, updateSettings] = useSettings()
+  const [index, setIndex] = useState(0)
+  const [remaining, setRemaining] = useState(0)
+  const [running, setRunning] = useState(false)
+  const move = TEST_MOVES[index]
+
+  useStretchVoice({ id: move.id, narration: move.narration, remaining, active: running })
+
+  useEffect(() => {
+    if (!running) return undefined
+    const timer = setInterval(() => {
+      setRemaining((prev) => (prev <= 1 ? 0 : prev - 1))
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [running, index])
+
+  const select = (nextIndex) => {
+    setIndex(nextIndex)
+    setRunning(false)
+    setRemaining(0)
+  }
+
+  const startCount = () => {
+    setRemaining(MOVE_SECONDS)
+    setRunning(true)
+  }
+
+  return (
+    <Screen title="영상·음성 테스트">
+      <div style={{ display: 'grid', gap: 'var(--space-4)' }}>
+        <p className="dev-note">개발용 테스트 페이지입니다. 실제 서비스 화면이 아닙니다.</p>
+
+        <label style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
+          <input
+            type="checkbox"
+            checked={settings.soundOn}
+            onChange={(event) => updateSettings({ soundOn: event.target.checked })}
+          />
+          소리 켜기 (settings.soundOn: {String(settings.soundOn)})
+        </label>
+        {!isSpeechSupported() ? <p>이 브라우저는 음성 안내(TTS)를 지원하지 않습니다.</p> : null}
+
+        <VoicePicker soundOn={settings.soundOn} />
+
+        <label>
+          동작 고르기{' '}
+          <select value={index} onChange={(event) => select(Number(event.target.value))}>
+            {TEST_MOVES.map((item, i) => (
+              <option key={item.id} value={i}>
+                {item.id} · {item.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <h2 style={{ fontSize: 'var(--text-large)' }}>
+          {move.id} · {move.name}
+        </h2>
+        <StretchVideo key={move.id} file={move.videoFile} name={move.name} />
+
+        <p style={{ fontSize: 'var(--text-title)', textAlign: 'center' }} aria-live="polite">
+          {running ? (remaining === 0 ? '완료' : remaining) : '-'}
+        </p>
+
+        <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+          <Button block onClick={startCount}>
+            5초 카운트 시작
+          </Button>
+          <Button
+            variant="soft"
+            block
+            onClick={() => select((index + 1) % TEST_MOVES.length)}
+          >
+            다음 동작
+          </Button>
+        </div>
+      </div>
+    </Screen>
+  )
+}
