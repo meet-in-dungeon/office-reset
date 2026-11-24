@@ -1,6 +1,6 @@
 // 스트레칭 루틴 화면 (담당: 김원규. 영상 재생·음성은 서진수)
 // 흐름: (알림으로 들어오면 큰 시작 버튼) → 동작 ROUTINE_MOVE_COUNT개(5초 카운트, "다음" 버튼)
-//       → (하루 마지막 루틴이면) 5초 호흡 → 완료 화면
+//       → (하루 마지막 루틴이면) 호흡 BREATH_COUNT회 → 완료 화면
 // 알림으로 들어오면 주소가 #/stretch?from=notification 이 된다. (useRoute().query.from)
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Button from '../components/Button'
@@ -20,9 +20,12 @@ import { readJSON } from '../lib/storage'
 import { nowLocalISO, todayLocal } from '../lib/time'
 import './Stretch.css'
 
-// 하루 마지막 루틴에서만 나오는 호흡. 실제 호흡 시간보다 "5초 호흡"이라는 간단한 인식이 목적이다.
-const BREATH_SECONDS = 5
-const BREATH_IN_SECONDS = 4 // 앞 4초는 들이쉬세요, 마지막 1초는 내쉬세요 문구
+// 하루 마지막 루틴에서만 나오는 호흡. 횟수는 공통 설정 BREATH_COUNT(5회)를 따른다.
+// 호흡 1회의 길이는 팀 미확정이라 아래 두 값은 시작값이다. (들이쉬기 4초 + 내쉬기 4초)
+const BREATH_IN_SECONDS = 4
+const BREATH_OUT_SECONDS = 4
+const BREATH_CYCLE_SECONDS = BREATH_IN_SECONDS + BREATH_OUT_SECONDS
+const BREATH_TOTAL_SECONDS = BREATH_COUNT * BREATH_CYCLE_SECONDS
 const BREATH_IN_TEXT = '4초간 들이쉬세요'
 const BREATH_OUT_TEXT = '편안하게 내쉬세요'
 
@@ -74,9 +77,8 @@ export default function Stretch() {
       doneRef.current = true
       submitRoutineRecord({
         id: `r_${Date.now()}`,
-        parts: [...new Set(moves.map((m) => m.part))],
-        moves: moves.map((m) => m.id),
-        // 호흡 칸: 일반 루틴 0, 마지막 루틴(5초 호흡을 마친 경우) 5 (주연 님 기록 형식)
+        moves: moves.map((m) => m.id), // 부위는 ID 앞부분(neck-01의 neck)으로 알 수 있어 parts는 넣지 않는다.
+        // 호흡 칸: 일반 루틴 0, 마지막 루틴(호흡 5회를 마친 경우) 5 (주연 님 기록 형식)
         breathCount: breathed ? BREATH_COUNT : 0,
         startedAt: startedAtRef.current ?? nowLocalISO(),
         completedAt: nowLocalISO(),
@@ -112,7 +114,7 @@ export default function Stretch() {
     return () => clearInterval(timer)
   }, [stage, index])
 
-  // 호흡은 5초가 끝나면 저절로 마친다. (동작은 버튼을 눌러야 넘어간다.)
+  // 호흡은 정해진 횟수가 끝나면 저절로 마친다. (동작은 버튼을 눌러야 넘어간다.)
   useEffect(() => {
     if (stage === 'breath' && remaining === 0) finish(true)
   }, [stage, remaining, finish])
@@ -131,13 +133,22 @@ export default function Stretch() {
   }
 
   if (stage === 'breath') {
-    const breathingIn = BREATH_SECONDS - remaining < BREATH_IN_SECONDS
+    const elapsed = BREATH_TOTAL_SECONDS - remaining
+    const cycle = Math.min(Math.floor(elapsed / BREATH_CYCLE_SECONDS), BREATH_COUNT - 1)
+    const withinCycle = elapsed - cycle * BREATH_CYCLE_SECONDS
+    const breathingIn = withinCycle < BREATH_IN_SECONDS
+    const phaseLeft = breathingIn
+      ? BREATH_IN_SECONDS - withinCycle
+      : BREATH_CYCLE_SECONDS - withinCycle
     return (
       <Screen title="호흡">
         <div className="stretch-breath">
+          <p className="stretch-progress">
+            {cycle + 1} / {BREATH_COUNT}회
+          </p>
           <p className="stretch-breath__text">{breathingIn ? BREATH_IN_TEXT : BREATH_OUT_TEXT}</p>
           <p className="stretch-count" aria-live="polite">
-            {remaining}
+            {phaseLeft}
           </p>
         </div>
       </Screen>
@@ -155,7 +166,7 @@ export default function Stretch() {
       setRemaining(MOVE_SECONDS)
     } else if (isLastRoutine) {
       setStage('breath')
-      setRemaining(BREATH_SECONDS)
+      setRemaining(BREATH_TOTAL_SECONDS)
     } else {
       finish(false)
     }
