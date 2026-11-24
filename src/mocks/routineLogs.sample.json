@@ -1,0 +1,35 @@
+[
+  {
+    "id": "r_mock_1",
+    "moves": ["neck-01", "shoulder-01", "wrist-01"],
+    "breathCount": 0,
+    "startedAt": "2026-11-24T10:00:10",
+    "completedAt": "2026-11-24T10:00:50",
+    "completed": true,
+    "skippedMoves": 0,
+    "fromNotification": true,
+    "notifiedAt": "2026-11-24T10:00:00"
+  },
+  {
+    "id": "r_mock_2",
+    "moves": ["waist-01", "neck-02", "wrist-02"],
+    "breathCount": 0,
+    "startedAt": "2026-11-24T13:05:10",
+    "completedAt": "2026-11-24T13:05:50",
+    "completed": true,
+    "skippedMoves": 1,
+    "fromNotification": false,
+    "notifiedAt": null
+  },
+  {
+    "id": "r_mock_3",
+    "moves": ["shoulder-02", "waist-02", "neck-03"],
+    "breathCount": 5,
+    "startedAt": "2026-11-24T17:00:15",
+    "completedAt": "2026-11-24T17:01:30",
+    "completed": true,
+    "skippedMoves": 0,
+    "fromNotification": true,
+    "notifiedAt": "2026-11-24T17:00:02"
+  }
+]
