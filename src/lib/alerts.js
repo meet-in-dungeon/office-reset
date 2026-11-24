@@ -109,7 +109,7 @@ export function checkAlerts(now = new Date()) {
 
   const today = todayLocal(now)
   const nowMinutes = now.getHours() * 60 + now.getMinutes()
-  const due = getAlertTimes(settings)
+  const due = getAlertTimes(settings, now)
     .map((hhmm) => ({ hhmm, minutes: Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3)) }))
     .filter((item) => item.minutes <= nowMinutes)
     .pop()

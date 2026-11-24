@@ -5,6 +5,7 @@ import Button from '../components/Button'
 import Screen from '../components/Screen'
 import NotificationPermission from '../components/NotificationPermission'
 import WorkTimeSettings from '../components/WorkTimeSettings'
+import { isAlertDay } from '../lib/alertTimes'
 import { navigate, ROUTES } from '../lib/router'
 import { getNextAlert } from '../lib/schedule'
 import { useSettings } from '../lib/settings'
@@ -39,6 +40,8 @@ export default function Main() {
   if (settings.alertsEnabled && next) {
     timerLabel = `다음 알림 ${formatClock(next)}까지`
     timerValue = formatRemaining(next.getTime() - now.getTime())
+  } else if (settings.alertsEnabled && !isAlertDay(now)) {
+    timerLabel = '주말에는 알림이 없어요'
   } else if (settings.alertsEnabled) {
     timerLabel = '오늘 알림은 모두 끝났어요'
   }

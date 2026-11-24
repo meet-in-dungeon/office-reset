@@ -23,7 +23,7 @@ export function getTodayAlertTimes(settings = getSettings()) {
 
 // 지금 이후의 가장 가까운 오늘 알림 시각(Date). 없으면 null. 알림이 꺼져 있어도 일정은 계산해 준다.
 export function getNextAlert(now = new Date(), settings = getSettings()) {
-  for (const hhmm of getAlertTimes(settings)) {
+  for (const hhmm of getAlertTimes(settings, now)) {
     const [h, m] = hhmm.split(':').map(Number)
     const at = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0)
     if (at.getTime() > now.getTime()) return at
@@ -33,7 +33,7 @@ export function getNextAlert(now = new Date(), settings = getSettings()) {
 
 export function isLastRoutine(now = new Date(), settings = getSettings()) {
   if (!settings.alertsEnabled) return false
-  const times = getAlertTimes(settings)
+  const times = getAlertTimes(settings, now)
   if (times.length === 0) return false
 
   const nowMinutes = now.getHours() * 60 + now.getMinutes()
