@@ -151,6 +151,43 @@ function countLogs(logs, day = todayLocal()) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// 빡침 명상 기록 (calmLogs). 빡침 화면(Calm.jsx)이 호흡 3회를 끝까지 마치면 부른다.
+//   recordCalm({ id, startedAt, completedAt, breathCount })
+//   돌려주는 값: { saved, duplicate, newBadges }
+// ---------------------------------------------------------------------------
+
+export function getCalmLogs() {
+  const logs = readJSON(STORAGE_KEYS.calmLogs, [])
+  return Array.isArray(logs) ? logs : []
+}
+
+export function recordCalm(log = {}) {
+  const logs = getCalmLogs()
+  const entry = {
+    ...log,
+    id: log.id || `c_${Date.now()}`,
+    completedAt: log.completedAt || nowLocalISO(),
+    breathCount: Number(log.breathCount) || 0,
+  }
+
+  // 같은 명상이 두 번 들어오면 저장도 배지도 다시 하지 않는다.
+  if (logs.some((saved) => saved.id === entry.id)) {
+    return { saved: false, duplicate: true, newBadges: [] }
+  }
+
+  writeJSON(STORAGE_KEYS.calmLogs, [...logs, entry])
+
+  const state = getBadgeState()
+  const newBadges = []
+  if (!state[BADGE_IDS.firstCalm]) {
+    writeJSON(STORAGE_KEYS.badges, { ...state, [BADGE_IDS.firstCalm]: { unlockedAt: entry.completedAt } })
+    newBadges.push(toResultBadge(BADGE_IDS.firstCalm))
+  }
+
+  return { saved: true, duplicate: false, newBadges: newBadges.filter(Boolean) }
+}
+
 // 통계 화면용: 오늘 완료 여부, 오늘·전체 횟수, 받은 배지
 export function getStats() {
   const logs = getRoutineLogs()

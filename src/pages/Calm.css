@@ -1,0 +1,133 @@
+/* 빡침 명상 화면 전용 스타일 (담당: 이주연). 색·여백은 index.css의 공통 값을 쓴다. */
+
+/* 자연 배경: 하늘에서 숲으로 내려가는 색. 사진·영상이 정해지면 바꾼다. */
+.calm {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-5) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, var(--color-calm-soft) 0%, var(--color-bg) 55%, var(--color-primary-soft) 100%);
+}
+
+.calm-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  text-align: center;
+}
+
+.calm-circle {
+  display: grid;
+  place-items: center;
+  width: 200px;
+  height: 200px;
+  border-radius: var(--radius-round);
+  background: radial-gradient(circle, var(--color-surface) 0%, var(--color-calm-soft) 70%);
+  border: 3px solid var(--color-calm);
+  box-shadow: 0 0 0 12px rgba(111, 155, 179, 0.15);
+  transform: scale(0.7);
+  transition-property: transform;
+  transition-timing-function: ease-in-out;
+}
+
+/* 들이쉴 때 커지고, 내쉴 때 작아진다. 걸리는 시간은 Calm.jsx가 style로 넣는다. */
+.calm-circle--in {
+  transform: scale(1);
+}
+
+.calm-circle--out {
+  transform: scale(0.7);
+}
+
+.calm-circle__text {
+  font-size: var(--text-title);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.calm-guide {
+  font-size: var(--text-large);
+  font-weight: 600;
+}
+
+.calm-progress {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.calm-progress__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-round);
+  background: var(--color-border);
+}
+
+.calm-progress__dot--done {
+  background: var(--color-calm);
+}
+
+.calm-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.calm-done__icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.calm-done__title {
+  font-size: var(--text-title);
+  font-weight: 700;
+}
+
+.calm-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  text-align: left;
+  border: 2px solid var(--color-calm-soft);
+}
+
+.calm-badge__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  font-size: 1.75rem;
+  background: var(--color-calm-soft);
+  border-radius: var(--radius-round);
+}
+
+.calm-badge__label {
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--color-calm);
+}
+
+.calm-badge__name {
+  font-weight: 700;
+}
+
+.calm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* 움직임 줄이기 설정을 켠 사용자에게는 원 크기 변화를 끈다 (글자 안내는 그대로) */
+@media (prefers-reduced-motion: reduce) {
+  .calm-circle {
+    transition: none;
+  }
+}
