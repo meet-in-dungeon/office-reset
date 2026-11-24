@@ -21,6 +21,7 @@ import { navigate, ROUTES, useRoute } from '../lib/router'
 import { isLastRoutine } from '../lib/schedule'
 import StretchVideo from '../components/StretchVideo'
 import { useStretchVoice } from '../lib/voice'
+import { useStretchBgm } from '../lib/bgm'
 import { nowLocalISO } from '../lib/time'
 import './Stretch.css'
 
@@ -69,7 +70,7 @@ export default function Stretch() {
     remaining,
     active: stage === 'move',
   })                  
-
+useStretchBgm(stage === 'move' || stage === 'breath')
   const finish = useCallback(
     (breathed) => {
       if (doneRef.current) return
