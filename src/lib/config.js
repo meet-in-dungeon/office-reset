@@ -22,7 +22,7 @@ export const PARTS = ['neck', 'shoulder', 'wrist', 'waist']
 export const STORAGE_KEYS = {
   settings: 'settings', // 사용자 설정 (민지)
   timer: 'timer', // 업무 타이머 상태 (민지)
-  lastPart: 'lastPart', // 직전에 한 부위 (민지가 저장, 원규가 읽음)
+  lastPart: 'lastPart', // 직전에 한 부위 (원규의 스트레칭 화면이 읽고 씀. 키 이름만 공통으로 정함)
   routineLogs: 'routineLogs', // 루틴 기록 (주연)
   badges: 'badges', // 배지 상태 (주연)
 }

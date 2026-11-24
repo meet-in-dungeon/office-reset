@@ -61,7 +61,7 @@ const { path, query } = useRoute()                  // 지금 화면과 전달�
 |---|---|---|---|
 | `settings` | 사용자 설정 | 김민지 | 전원 |
 | `timer` | 업무 타이머 상태 (형식은 타이머 구현 때 정함) | 김민지 | 김민지 |
-| `lastPart` | 직전에 한 부위 (`neck` / `shoulder` / `wrist` / `waist`) | 김민지 | 김원규 |
+| `lastPart` | 직전에 한 부위 (`neck` / `shoulder` / `wrist` / `waist`). 키 이름만 공통으로 정했고 저장 시점은 원규 님이 정한다 | 김원규 | 김원규 |
 | `routineLogs` | 루틴 기록 배열 | 이주연 | 이주연, 김원규 |
 | `badges` | 배지 상태 | 이주연 | 이주연 |
 
