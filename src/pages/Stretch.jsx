@@ -151,6 +151,11 @@ export default function Stretch() {
           <p className="stretch-count" aria-live="polite">
             {phaseLeft}
           </p>
+          {/* 호흡은 넘기기가 아니라 중단이다. 호흡을 마치지 못했으니 breathCount는 0으로 기록하고 완료 화면으로 간다.
+              (동작 3개는 마쳤으므로 루틴 기록은 저장되고, 하루 완성 배지는 호흡을 마친 루틴에서만 나간다.) */}
+          <Button variant="ghost" onClick={() => finish(false)}>
+            중단
+          </Button>
         </div>
       </Screen>
     )
