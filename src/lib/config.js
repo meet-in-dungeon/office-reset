@@ -6,7 +6,7 @@ export const ROUTINE_MOVE_COUNT = 3
 // 동작 하나의 카운트 시간(초)
 export const MOVE_SECONDS = 5
 
-// 루틴 마지막 호흡 횟수 (호흡 1회의 길이는 미확정)
+// 호흡 횟수. 매 루틴이 아니라 "하루의 마지막 루틴"에서만 한다. (호흡 1회의 길이와 마지막 루틴 판정 방식은 미확정)
 export const BREATH_COUNT = 5
 
 // 알림 클릭 후 스트레칭 화면의 첫 단계로 큰 "시작" 버튼을 보여줄지. (제안 단계, 팀 의견 수렴 중)
