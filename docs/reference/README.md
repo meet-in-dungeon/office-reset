@@ -7,6 +7,7 @@ AI(Claude Code, Codex)와 팀원 모두 이 폴더를 기준 자료로 읽는다
 | 파일 | 내용 | 우선순위 |
 |---|---|---|
 | [DECISIONS.md](DECISIONS.md) | 지금 기준의 최종 확정 사항, 미확정 항목, 자료 간 충돌 정리 | 1 |
+| [../ARCHITECTURE.md](../ARCHITECTURE.md) | **개발 전 필독.** 화면 6개와 주소, 화면 이동·저장소 키·루틴 기록 형식, 디자인 기준 | 1 (구조·규칙) |
 | [WORK_ASSIGNMENT.md](WORK_ASSIGNMENT.md) | 11/23 업무 분배 (담당별 1차·2차 업무, 연결 내용, 완료 기준) | 2 |
 | [MEETING_NOTES.md](MEETING_NOTES.md) | 11/19, 11/23 회의록 정리 (결정 과정과 근거) | 3 |
 

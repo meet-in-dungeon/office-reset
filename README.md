@@ -53,6 +53,8 @@ src/
   App.jsx       화면 연결
   main.jsx      시작점
 docs/           협업 규칙 문서
+  ARCHITECTURE.md  화면 구조와 공통 개발 규칙 (개발 전에 읽는다)
+  reference/       회의록·업무 분배·확정 사항 정리
 ```
 
 ## 5. 협업 흐름 (요약)
