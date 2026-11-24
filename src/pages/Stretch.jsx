@@ -8,6 +8,7 @@ import Screen from '../components/Screen'
 import data from '../data/stretches.json'
 import { BREATH_COUNT, MOVE_SECONDS, ROUTINE_MOVE_COUNT, START_GATE_ENABLED } from '../lib/config'
 import { planRoutine, saveShownIds } from '../lib/pickMoves'
+import { recordRoutine } from '../lib/records'
 import { navigate, ROUTES, useRoute } from '../lib/router'
 import { isLastRoutine } from '../lib/schedule'
 import StretchVideo from '../components/StretchVideo'
@@ -33,12 +34,6 @@ const ALLOW_EARLY_NEXT = false
 // 시험·시연용으로 주소에 ?last=1 을 붙이면 항상 마지막 루틴으로 본다.
 function checkLastRoutineOfDay(lastQuery) {
   return lastQuery === '1' || isLastRoutine()
-}
-
-// 루틴 기록을 이주연 님의 기록 저장·배지 지급 함수에 넘기는 자리. (함수 이름과 전달 방식은 두 분이 정한다)
-// TODO: 주연 님 함수가 정해지면 아래에서 그 함수를 부른다.
-function submitRoutineRecord(record) {
-  console.info('루틴 기록 (주연 님 함수 연결 전)', record)
 }
 
 export default function Stretch() {
@@ -69,7 +64,8 @@ export default function Stretch() {
     (breathed) => {
       if (doneRef.current) return
       doneRef.current = true
-      submitRoutineRecord({
+      // 루틴 기록 저장과 배지 지급은 이주연 님의 recordRoutine이 한다. 루틴당 한 번만 부른다.
+      recordRoutine({
         id: `r_${Date.now()}`,
         moves: moves.map((m) => m.id), // 부위는 ID 앞부분(neck-01의 neck)으로 알 수 있어 parts는 넣지 않는다.
         // 호흡 칸: 일반 루틴 0, 마지막 루틴(호흡 5회를 마친 경우) 5 (주연 님 기록 형식)
