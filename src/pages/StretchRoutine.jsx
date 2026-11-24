@@ -9,7 +9,11 @@ const ENTRY_MODE = 'startButton'
 
 const COUNT_SECONDS = data.countSeconds // 동작마다 카운트 (5초)
 const BREATH_SECONDS = 5 // 하루 마지막 루틴의 호흡 길이 (5초)
-const BREATH_IN_SECONDS = 2 // 5초 중 앞 2초는 들이쉬기, 나머지는 내쉬기 (시작값)
+// 호흡 5초 중 앞 4초는 "들이쉬세요", 마지막 1초는 "내쉬세요" 문구를 보여 준다.
+// 실제 호흡 시간보다 "5초 호흡"이라는 간단한 인식이 목적이다.
+const BREATH_IN_SECONDS = 4
+const BREATH_IN_TEXT = '4초간 들이쉬세요'
+const BREATH_OUT_TEXT = '편안하게 내쉬세요'
 
 function toLocalIsoString(date) {
   const pad = (n) => String(n).padStart(2, '0')
@@ -96,7 +100,7 @@ export default function StretchRoutine({ moves, isLastRoutineOfDay = false, onCo
     return (
       <section className="routine routine-breath">
         <p className="routine-progress">호흡</p>
-        <h2 className="routine-title">{breathingIn ? '들이쉬세요' : '내쉬세요'}</h2>
+        <h2 className="routine-title">{breathingIn ? BREATH_IN_TEXT : BREATH_OUT_TEXT}</h2>
         <p className="routine-count" aria-live="polite">
           {remaining}
         </p>
