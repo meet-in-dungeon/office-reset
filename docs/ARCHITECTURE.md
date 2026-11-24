@@ -66,9 +66,10 @@ const { path, query } = useRoute()                  // 지금 화면과 전달�
 | `timer` | 업무 타이머 상태 (형식은 타이머 구현 때 정함) | 김민지 | 김민지 |
 | `routineLogs` | 루틴 기록 배열 | 이주연 | 이주연, 김원규 |
 | `badges` | 배지 상태 | 이주연 | 이주연 |
+| `calmLogs` | 빡침 명상 기록 (형식은 이주연 님이 정한다) | 이주연 | 이주연 |
 | `shownMoveIds` | 동작 순환용: 이번 한 바퀴(12개)에 이미 나온 동작 ID. 김원규 님 파일 안에서만 쓰고 `STORAGE_KEYS`에는 넣지 않았다 | 김원규 | 김원규 |
 
-시연 모드의 "기록 초기화"는 `routineLogs`, `badges`와 함께 `shownMoveIds`도 지워야 한다. (이주연)
+시연 모드의 "기록 초기화"는 `routineLogs`, `badges`, `calmLogs`와 함께 `shownMoveIds`도 지워야 한다. (이주연)
 
 ### 설정 (`settings`)
 

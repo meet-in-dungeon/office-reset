@@ -24,6 +24,7 @@ export const STORAGE_KEYS = {
   timer: 'timer', // 업무 타이머 상태 (민지)
   routineLogs: 'routineLogs', // 루틴 기록 (주연)
   badges: 'badges', // 배지 상태 (주연)
+  calmLogs: 'calmLogs', // 빡침 명상 기록 (주연이 쓰고 읽음)
 }
 
 // 사용자 설정 기본값
