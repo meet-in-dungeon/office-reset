@@ -47,9 +47,15 @@ git push -u origin feature/stretch-timer   # 처음 push 할 때만 -u 사용, �
 3. 오른쪽 **Reviewers**에서 팀원 1명을 지정한다.
 4. **Create pull request**를 누른다.
 
-PR은 작게 만든다. 한 PR에 기능 하나만 담는다.
+**PR은 작업이 끝났을 때 한 번만 올린다.** 작업 중에는 `git commit`과 `git push`만 하고 PR은 만들지 않는다. PR 하나 = 끝난 작업 단위 하나다. ([docs/TEAM_RULES.md](docs/TEAM_RULES.md) 2번)
+
+- 하루에 올리는 PR은 1~2건이 기준이다.
+- 코드와 같이 바뀐 문서는 같은 PR에 넣는다.
+- PR을 올린 뒤에는 기다리지 말고, 그 브랜치에서 다음 브랜치를 따서 다음 작업을 계속한다.
 
 ## 4. 다른 사람 코드 확인하기 (리뷰)
+
+그날의 **리뷰 당번**이 정해진 리뷰 시간(14:30, 17:00)에 쌓인 PR을 한꺼번에 본다. 당번표는 [WORK_UNITS.md](WORK_UNITS.md) 4-1번에 있다. 확인할 것은 빌드 성공, 담당 파일 밖 변경, 비밀 키·새 라이브러리, 화면이 열리는지 4가지다. ([docs/TEAM_RULES.md](docs/TEAM_RULES.md) 3번)
 
 1. PR의 **Files changed** 탭에서 바뀐 코드를 본다.
 2. 이상한 부분은 줄 옆 `+` 버튼으로 댓글을 단다.

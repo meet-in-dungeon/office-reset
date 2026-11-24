@@ -1,0 +1,32 @@
+/* 스트레칭 동작 영상 (담당: 서진수). 색과 여백은 src/index.css의 공통 값을 쓴다. */
+
+.stretch-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-primary-soft);
+  box-shadow: var(--shadow-card);
+}
+
+.stretch-video__player {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stretch-video--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  border: 1px dashed var(--color-border);
+  box-shadow: none;
+}
+
+.stretch-video__fallback-text {
+  text-align: center;
+  font-size: var(--text-small);
+  color: var(--color-text-muted);
+}
