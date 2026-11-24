@@ -172,3 +172,31 @@
   font-size: var(--text-small);
   color: var(--color-alert);
 }
+
+/* 알림 시각이 되면 화면 위에 뜨는 안내 */
+.alert-banner {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary-soft);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.alert-banner__text {
+  display: flex;
+  flex-direction: column;
+}
+
+.alert-banner__actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.alert-banner__actions .btn {
+  padding: 0 var(--space-3);
+}

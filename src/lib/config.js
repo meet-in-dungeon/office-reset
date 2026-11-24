@@ -9,8 +9,17 @@ export const MOVE_SECONDS = 5
 // 호흡 횟수(5회). 매 루틴이 아니라 "하루의 마지막 루틴"에서만 한다. 마지막 루틴인지는 lib/schedule.js의 isLastRoutine()으로 안다. (호흡 1회의 길이는 미확정)
 export const BREATH_COUNT = 5
 
+// 호흡 1회의 길이(초): 들이쉬기 + 내쉬기. 김원규 님이 정한 시작값이며 아직 미확정이다. (5회면 약 40초)
+// 빡침 명상 화면의 호흡 안내도 같은 값을 쓰면 두 화면의 호흡 속도가 맞는다.
+export const BREATH_INHALE_SECONDS = 4
+export const BREATH_EXHALE_SECONDS = 4
+
 // 알림 클릭 후 스트레칭 화면의 첫 단계로 큰 "시작" 버튼을 보여줄지. (제안 단계, 팀 의견 수렴 중)
 export const START_GATE_ENABLED = true
+
+// 알림 시각이 지났어도 이 시간(분) 안에 앱이 깨어나면 늦게라도 알려 준다. (숨은 탭은 타이머가 늦어질 수 있다)
+// 이보다 오래 지난 알림은 건너뛴다. (노트북을 덮어 둔 뒤 몇 시간 늦게 알림이 쏟아지는 것을 막는다)
+export const ALERT_GRACE_MIN = 5
 
 // 업무 타이머 기본 주기(분)
 export const DEFAULT_INTERVAL_MIN = 60
