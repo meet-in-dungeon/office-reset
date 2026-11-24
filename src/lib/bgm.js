@@ -8,6 +8,12 @@
 // - 음성 안내(voice.js)가 잘 들리도록 BGM은 작은 소리(BGM_VOLUME)로 튼다.
 // - 음악 파일은 public/audio/bgm.mp3에 둔다. 사용 권한을 확인한 파일만 올린다.
 //   파일이 없거나 재생이 막혀도 에러 없이 조용히 넘어가고, 루틴은 그대로 진행된다.
+//
+// 음악 출처 (2026-11-24 서진수 확인)
+// - public/audio/bgm.mp3: Pixabay Music (https://pixabay.com/music/)에서 받음. 2분 19초, 약 4.2MB
+// - 라이선스: Pixabay Content License. 무료 상업적 사용 가능, 출처 표기 의무 없음
+//   (음악 파일만 따로 떼어 팔거나 재배포하는 것은 금지. 앱 배경음악으로 쓰는 것은 괜찮다)
+// - 음악을 바꾸면 이 기록도 함께 고친다.
 import { useEffect } from 'react'
 import { useSettings } from './settings'
 
