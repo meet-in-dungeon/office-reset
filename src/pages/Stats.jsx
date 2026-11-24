@@ -4,7 +4,7 @@
 import { useState } from 'react'
 import Button from '../components/Button'
 import Screen from '../components/Screen'
-import { BADGES } from '../lib/badges'
+import { BADGES, TIER_NAMES } from '../lib/badges'
 import { getStats } from '../lib/records'
 import { navigate, ROUTES } from '../lib/router'
 import './Stats.css'
@@ -15,14 +15,28 @@ function formatDate(iso) {
   return month && day ? `${month}월 ${day}일` : ''
 }
 
+// 등급이 있는 배지: "브론즈 · 실버까지 7회" / 골드면 "골드 · 30회 달성"
+function tierText(badge, earned) {
+  const next = badge.tiers[earned.tier + 1]
+  const unit = badge.tierUnit ?? '회'
+  if (next === undefined) return `${earned.count ?? ''}${unit} 달성`
+  return `${TIER_NAMES[earned.tier + 1]}까지 ${next - (earned.count ?? 0)}${unit}`
+}
+
 function BadgeItem({ badge, earned }) {
+  const tiered = earned && Array.isArray(badge.tiers) && typeof earned.tier === 'number'
   return (
     <li className={`stats-badge${earned ? '' : ' stats-badge--locked'}`}>
       <span className="stats-badge__icon" aria-hidden="true">
         {badge.icon}
       </span>
       <p className="stats-badge__name">{badge.name}</p>
-      {earned ? (
+      {tiered ? (
+        <>
+          <p className="stats-badge__tier">{earned.tierName}</p>
+          <p className="stats-badge__sub">{tierText(badge, earned)}</p>
+        </>
+      ) : earned ? (
         <p className="stats-badge__sub">
           {badge.repeat === 'daily' && earned.count ? `${earned.count}일 달성` : formatDate(earned.unlockedAt)}
         </p>

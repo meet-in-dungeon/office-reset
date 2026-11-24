@@ -5,9 +5,24 @@
 //   - 첫 루틴(first_routine): 처음으로 루틴을 완료했을 때 평생 1번
 //   - 하루 완성(daily_full): 그날 "하루의 마지막 루틴"(호흡까지)을 끝냈을 때. 날짜마다 1번
 //       기록의 breathCount가 0보다 크면 하루 마지막 루틴으로 본다. (일반 루틴은 0, 마지막 루틴은 5)
-//   - 첫 빡침 해소(first_calm): 빡침 명상에서 호흡 3회 안내를 끝까지 마쳤을 때 평생 1번 (이주연 결정, 11/24)
+//   - 첫 빡침 해소(first_calm): 빡침 명상에서 호흡 3회 안내를 끝까지 마쳤을 때 받는다 (이주연 결정, 11/24)
+//       누적 1회 브론즈 → 10회 실버 → 30회 골드로 등급이 오른다 (이주연 결정, 11/24)
 //
-// 등급(브론즈·실버·골드)과 나머지 배지는 2차다.
+// 등급 규칙 (배지 설계안 3장): 처음 받는 순간이 브론즈, 반복하면 실버·골드로 오르고 내려가지 않는다.
+//   등급은 색만으로 구분하지 않고 "브론즈/실버/골드" 글자를 같이 보여준다.
+// 나머지 배지와 다른 배지의 등급은 아직 정하지 않았다.
+
+export const TIER_NAMES = ['브론즈', '실버', '골드']
+
+// 누적 값(count)이 등급표(tiers)의 몇 번째 칸까지 왔는지. 아직 브론즈 전이면 -1
+export function tierIndex(tiers, count) {
+  if (!Array.isArray(tiers)) return -1
+  let index = -1
+  tiers.forEach((need, i) => {
+    if (count >= need) index = i
+  })
+  return index
+}
 
 export const BADGE_IDS = {
   firstRoutine: 'first_routine',
@@ -39,6 +54,8 @@ export const BADGES = [
     message: '나쁜 기분은 내쉬고, 좋은 공기는 들이쉬고! 마음 공기 정화 완료',
     condition: '빡침 명상에서 호흡 3회 완료',
     repeat: 'once',
+    tiers: [1, 10, 30], // 명상 누적 횟수. 브론즈 / 실버 / 골드
+    tierUnit: '회',
   },
 ]
 

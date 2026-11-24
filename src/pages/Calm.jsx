@@ -1,6 +1,7 @@
 // 빡침 명상 화면 (담당: 이주연)
 // 자연 배경 + 호흡 안내(들이쉬기·내쉬기 3회) + 돌아가기.
 // 호흡 3회를 끝까지 마치면 명상 기록(calmLogs)을 남기고, 처음이면 "인간 공기청정기" 배지를 준다.
+// 명상을 10회·30회 채우면 실버·골드로 올랐다는 카드를 보여준다.
 // 화면에 들어오면 바로 호흡 안내가 시작되고, "돌아가기"는 언제든 누를 수 있다. (중간에 나가면 기록하지 않는다)
 import { useEffect, useState } from 'react'
 import Button from '../components/Button'
@@ -55,7 +56,28 @@ function BreathingStage({ step }) {
   )
 }
 
-function DoneStage({ newBadges }) {
+function BadgeCard({ badge, label }) {
+  return (
+    <div className="card calm-badge">
+      <span className="calm-badge__icon" aria-hidden="true">
+        {badge.icon}
+      </span>
+      <div>
+        <p className="calm-badge__label">{label}</p>
+        <p className="calm-badge__name">
+          {badge.name}
+          {badge.tierName ? <span className="calm-badge__tier">{badge.tierName}</span> : null}
+        </p>
+        <p className="muted">
+          {badge.count ? `빡침 명상 ${badge.count}회 · ` : ''}
+          {badge.message}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function DoneStage({ newBadges, tierUps }) {
   return (
     <div className="calm-stage">
       <div className="calm-done" aria-live="polite">
@@ -65,16 +87,10 @@ function DoneStage({ newBadges }) {
         <p className="calm-done__title">{DONE_MESSAGE}</p>
         <p className="muted">숨 {CALM_BREATH_COUNT}번에 마음이 조금 가벼워졌나요?</p>
         {newBadges.map((badge) => (
-          <div key={badge.id} className="card calm-badge">
-            <span className="calm-badge__icon" aria-hidden="true">
-              {badge.icon}
-            </span>
-            <div>
-              <p className="calm-badge__label">새 배지</p>
-              <p className="calm-badge__name">{badge.name}</p>
-              <p className="muted">{badge.message}</p>
-            </div>
-          </div>
+          <BadgeCard key={badge.id} badge={badge} label="새 배지" />
+        ))}
+        {tierUps.map((badge) => (
+          <BadgeCard key={badge.id} badge={badge} label={`${badge.tierName}로 올랐어요!`} />
         ))}
       </div>
     </div>
@@ -113,7 +129,7 @@ export default function Calm() {
   return (
     <Screen title="잠깐 숨 돌리기">
       <div className="calm">
-        {done ? <DoneStage newBadges={result?.newBadges ?? []} /> : <BreathingStage step={step} />}
+        {done ? <DoneStage newBadges={result?.newBadges ?? []} tierUps={result?.tierUps ?? []} /> : <BreathingStage step={step} />}
       </div>
 
       <div className="calm-actions">

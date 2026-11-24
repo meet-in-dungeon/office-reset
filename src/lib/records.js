@@ -16,7 +16,7 @@
 //
 // 배지는 저장된 기록 전체로 매번 다시 계산한다. 기록만 맞으면 배지가 저절로 맞춰진다.
 
-import { BADGE_IDS, getBadge } from './badges'
+import { BADGE_IDS, getBadge, TIER_NAMES, tierIndex } from './badges'
 import { STORAGE_KEYS } from './config'
 import { readJSON, writeJSON } from './storage'
 import { nowLocalISO, todayLocal } from './time'
@@ -154,7 +154,9 @@ function countLogs(logs, day = todayLocal()) {
 // ---------------------------------------------------------------------------
 // 빡침 명상 기록 (calmLogs). 빡침 화면(Calm.jsx)이 호흡 3회를 끝까지 마치면 부른다.
 //   recordCalm({ id, startedAt, completedAt, breathCount })
-//   돌려주는 값: { saved, duplicate, newBadges }
+//   돌려주는 값: { saved, duplicate, newBadges, tierUps }
+//     newBadges  처음 받은 배지 (브론즈)
+//     tierUps    등급이 오른 배지 (실버·골드). tierName에 등급 이름이 들어 있다
 // ---------------------------------------------------------------------------
 
 export function getCalmLogs() {
@@ -173,19 +175,37 @@ export function recordCalm(log = {}) {
 
   // 같은 명상이 두 번 들어오면 저장도 배지도 다시 하지 않는다.
   if (logs.some((saved) => saved.id === entry.id)) {
-    return { saved: false, duplicate: true, newBadges: [] }
+    return { saved: false, duplicate: true, newBadges: [], tierUps: [] }
   }
 
-  writeJSON(STORAGE_KEYS.calmLogs, [...logs, entry])
+  const nextLogs = [...logs, entry]
+  writeJSON(STORAGE_KEYS.calmLogs, nextLogs)
 
+  // 명상 누적 횟수로 등급을 다시 계산한다. 한 번 오른 등급은 내려가지 않는다.
   const state = getBadgeState()
+  const prev = state[BADGE_IDS.firstCalm]
+  const badge = getBadge(BADGE_IDS.firstCalm)
+  const count = nextLogs.length
+  const prevTier = prev ? Math.max(prev.tier ?? 0, 0) : -1
+  const tier = Math.max(tierIndex(badge?.tiers, count), prevTier)
+
   const newBadges = []
-  if (!state[BADGE_IDS.firstCalm]) {
-    writeJSON(STORAGE_KEYS.badges, { ...state, [BADGE_IDS.firstCalm]: { unlockedAt: entry.completedAt } })
-    newBadges.push(toResultBadge(BADGE_IDS.firstCalm))
+  const tierUps = []
+  if (tier >= 0) {
+    const next = {
+      unlockedAt: prev?.unlockedAt ?? entry.completedAt,
+      tier,
+      count,
+      tierUpAt: tier > prevTier ? entry.completedAt : (prev?.tierUpAt ?? entry.completedAt),
+    }
+    writeJSON(STORAGE_KEYS.badges, { ...state, [BADGE_IDS.firstCalm]: next })
+
+    const extra = { ...next, tierName: TIER_NAMES[tier] }
+    if (!prev) newBadges.push(toResultBadge(BADGE_IDS.firstCalm, extra))
+    else if (tier > prevTier) tierUps.push(toResultBadge(BADGE_IDS.firstCalm, extra))
   }
 
-  return { saved: true, duplicate: false, newBadges: newBadges.filter(Boolean) }
+  return { saved: true, duplicate: false, newBadges: newBadges.filter(Boolean), tierUps: tierUps.filter(Boolean) }
 }
 
 // 통계 화면용: 오늘 완료 여부, 오늘·전체 횟수, 받은 배지
@@ -198,7 +218,11 @@ export function getStats() {
     todayCount,
     totalCount,
     badges: Object.keys(state)
-      .map((id) => toResultBadge(id, state[id]))
+      .map((id) => {
+        const saved = state[id]
+        const tierName = typeof saved?.tier === 'number' ? TIER_NAMES[saved.tier] : undefined
+        return toResultBadge(id, tierName ? { ...saved, tierName } : saved)
+      })
       .filter(Boolean),
   }
 }
