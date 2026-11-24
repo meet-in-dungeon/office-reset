@@ -25,7 +25,7 @@ import { nowLocalISO } from '../lib/time'
 import './Stretch.css'
 
 // 하루 마지막 루틴에서만 나오는 호흡. 횟수와 1회 길이는 공통 설정(config.js)을 따른다.
-// 빡침 명상 화면도 같은 값을 쓰므로 두 화면의 호흡 속도가 맞는다. (1회 길이는 팀 미확정, 지금은 4초 + 4초)
+// 빡침 명상 화면도 같은 값을 쓰므로 두 화면의 호흡 속도가 맞는다. (1회 길이는 들이쉬기 4초 + 내쉬기 4초로 확정)
 const BREATH_IN_SECONDS = BREATH_INHALE_SECONDS
 const BREATH_OUT_SECONDS = BREATH_EXHALE_SECONDS
 const BREATH_CYCLE_SECONDS = BREATH_IN_SECONDS + BREATH_OUT_SECONDS
@@ -33,9 +33,9 @@ const BREATH_TOTAL_SECONDS = BREATH_COUNT * BREATH_CYCLE_SECONDS
 const BREATH_IN_TEXT = `${BREATH_IN_SECONDS}초간 들이쉬세요`
 const BREATH_OUT_TEXT = '편안하게 내쉬세요'
 
-// 카운트가 끝나기 전에도 "다음"을 누를 수 있게 할지. (팀 미확정, 지금은 끝나야 누를 수 있다)
-// true로 바꾸면 카운트 중에 누른 동작이 skippedMoves에 센다.
-const ALLOW_EARLY_NEXT = false
+// 카운트가 끝나기 전에도 "다음"을 눌러 동작을 넘길 수 있다. (확정)
+// 카운트 중에 누른 동작은 skippedMoves에 센다.
+const ALLOW_EARLY_NEXT = true
 
 // "하루의 마지막 루틴"인지 알아낸다. 판정은 민지 님의 isLastRoutine()이 한다.
 // (마지막 알림 시각 이후에 시작한 루틴이고, 오늘 아직 호흡을 하지 않았으면 true)
