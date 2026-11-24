@@ -56,6 +56,14 @@ export default function Stretch() {
   const startedAtRef = useRef(null)
   const skippedRef = useRef(0)
   const doneRef = useRef(false)
+  // 영상·음성 (서진수): 동작이 바뀌면 안내 문장, 카운트마다 숫자를 읽는다    
+  const currentMove = moves[index]
+  useStretchVoice({
+    id: currentMove?.id,
+    narration: currentMove?.narration,
+    remaining,
+    active: stage === 'move',
+  })                  
 
   const finish = useCallback(
     (breathed) => {
@@ -166,7 +174,7 @@ export default function Stretch() {
         </p>
         <h2 className="stretch-name">{move.name}</h2>
 
-        <div className="stretch-video-slot">영상 준비 중이에요. 아래 설명을 따라 해 주세요.</div>
+        <StretchVideo key={move.id} file={move.videoFile} name={move.name} />
 
         <ol className="stretch-steps">
           {move.steps.map((step) => (
