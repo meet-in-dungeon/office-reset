@@ -130,3 +130,45 @@
   background: var(--color-primary-soft);
   border-radius: var(--radius-md);
 }
+
+/* 입력 부품 (설정 화면 등에서 함께 쓴다) */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.field-row {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.input {
+  width: 100%;
+  min-height: var(--tap-size);
+  padding: 0 var(--space-3);
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-size);
+}
+
+.error {
+  font-size: var(--text-small);
+  color: var(--color-alert);
+}

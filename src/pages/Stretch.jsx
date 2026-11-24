@@ -6,18 +6,11 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Button from '../components/Button'
 import Screen from '../components/Screen'
 import data from '../data/stretches.json'
-import {
-  BREATH_COUNT,
-  MOVE_SECONDS,
-  ROUTINE_MOVE_COUNT,
-  START_GATE_ENABLED,
-  STORAGE_KEYS,
-} from '../lib/config'
+import { BREATH_COUNT, MOVE_SECONDS, ROUTINE_MOVE_COUNT, START_GATE_ENABLED } from '../lib/config'
 import { planRoutine, saveShownIds } from '../lib/pickMoves'
 import { navigate, ROUTES, useRoute } from '../lib/router'
-import { getSettings } from '../lib/settings'
-import { readJSON } from '../lib/storage'
-import { nowLocalISO, todayLocal } from '../lib/time'
+import { isLastRoutine } from '../lib/schedule'
+import { nowLocalISO } from '../lib/time'
 import './Stretch.css'
 
 // 하루 마지막 루틴에서만 나오는 호흡. 횟수는 공통 설정 BREATH_COUNT(5회)를 따른다.
@@ -33,20 +26,11 @@ const BREATH_OUT_TEXT = '편안하게 내쉬세요'
 // true로 바꾸면 카운트 중에 누른 동작이 skippedMoves에 센다.
 const ALLOW_EARLY_NEXT = false
 
-// "하루의 마지막 루틴"인지 알아낸다. 기준: 하루 알림 횟수 설정의 마지막 회차.
-// 하루 알림 횟수 설정(settings.dailyRoutineCount)은 아직 팀 설정에 없다. (김민지 확인 필요)
-// 값이 없으면 마지막 루틴이 아닌 것으로 본다. 시험·시연용으로 주소에 ?last=1 을 붙이면 마지막 루틴으로 본다.
+// "하루의 마지막 루틴"인지 알아낸다. 판정은 민지 님의 isLastRoutine()이 한다.
+// (마지막 알림 시각 이후에 시작한 루틴이고, 오늘 아직 호흡을 하지 않았으면 true)
+// 시험·시연용으로 주소에 ?last=1 을 붙이면 항상 마지막 루틴으로 본다.
 function checkLastRoutineOfDay(lastQuery) {
-  if (lastQuery === '1') return true
-  const dailyCount = getSettings().dailyRoutineCount
-  if (!Number.isInteger(dailyCount) || dailyCount < 1) return false
-  const logs = readJSON(STORAGE_KEYS.routineLogs, [])
-  const today = todayLocal()
-  const doneToday = Array.isArray(logs)
-    ? logs.filter((log) => log?.completed !== false && String(log?.completedAt ?? '').startsWith(today))
-        .length
-    : 0
-  return doneToday + 1 >= dailyCount
+  return lastQuery === '1' || isLastRoutine()
 }
 
 // 루틴 기록을 이주연 님의 기록 저장·배지 지급 함수에 넘기는 자리. (함수 이름과 전달 방식은 두 분이 정한다)
