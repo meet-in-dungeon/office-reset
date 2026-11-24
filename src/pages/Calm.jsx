@@ -6,16 +6,16 @@
 import { useEffect, useState } from 'react'
 import Button from '../components/Button'
 import Screen from '../components/Screen'
+import { BREATH_EXHALE_SECONDS, BREATH_INHALE_SECONDS } from '../lib/config'
 import { recordCalm } from '../lib/records'
 import { navigate, ROUTES } from '../lib/router'
 import { nowLocalISO } from '../lib/time'
 import './Calm.css'
 
-// 호흡 횟수와 한 번의 길이(초). 호흡 속도는 팀 기준(들이쉬기 4초, 내쉬기 4초)을 따른다. (이주연 결정, 11/24)
-// TODO: 민지 님 PR #8이 병합되면 config.js의 BREATH_INHALE_SECONDS, BREATH_EXHALE_SECONDS를 불러와 쓴다.
+// 호흡 횟수와 한 번의 길이(초). 호흡 속도는 팀 공통 설정(config.js)을 그대로 쓴다. (이주연 결정, 11/24)
 const CALM_BREATH_COUNT = 3
-const INHALE_SECONDS = 4
-const EXHALE_SECONDS = 4
+const INHALE_SECONDS = BREATH_INHALE_SECONDS
+const EXHALE_SECONDS = BREATH_EXHALE_SECONDS
 
 const DONE_MESSAGE = '마음 공기 정화 완료!'
 
