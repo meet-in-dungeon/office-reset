@@ -6,7 +6,13 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Button from '../components/Button'
 import Screen from '../components/Screen'
 import data from '../data/stretches.json'
-import { MOVE_SECONDS, ROUTINE_MOVE_COUNT, START_GATE_ENABLED, STORAGE_KEYS } from '../lib/config'
+import {
+  BREATH_COUNT,
+  MOVE_SECONDS,
+  ROUTINE_MOVE_COUNT,
+  START_GATE_ENABLED,
+  STORAGE_KEYS,
+} from '../lib/config'
 import { planRoutine, saveShownIds } from '../lib/pickMoves'
 import { navigate, ROUTES, useRoute } from '../lib/router'
 import { getSettings } from '../lib/settings'
@@ -63,14 +69,15 @@ export default function Stretch() {
   const doneRef = useRef(false)
 
   const finish = useCallback(
-    (breathSeconds) => {
+    (breathed) => {
       if (doneRef.current) return
       doneRef.current = true
       submitRoutineRecord({
         id: `r_${Date.now()}`,
         parts: [...new Set(moves.map((m) => m.part))],
         moves: moves.map((m) => m.id),
-        breathSeconds,
+        // 호흡 칸: 일반 루틴 0, 마지막 루틴(5초 호흡을 마친 경우) 5 (주연 님 기록 형식)
+        breathCount: breathed ? BREATH_COUNT : 0,
         startedAt: startedAtRef.current ?? nowLocalISO(),
         completedAt: nowLocalISO(),
         completed: true,
@@ -107,7 +114,7 @@ export default function Stretch() {
 
   // 호흡은 5초가 끝나면 저절로 마친다. (동작은 버튼을 눌러야 넘어간다.)
   useEffect(() => {
-    if (stage === 'breath' && remaining === 0) finish(BREATH_SECONDS)
+    if (stage === 'breath' && remaining === 0) finish(true)
   }, [stage, remaining, finish])
 
   if (stage === 'start') {
@@ -150,7 +157,7 @@ export default function Stretch() {
       setStage('breath')
       setRemaining(BREATH_SECONDS)
     } else {
-      finish(0)
+      finish(false)
     }
   }
 
