@@ -10,7 +10,7 @@
 // dailyRoutineCount는 저장하지 않는다. 출근·퇴근·점심·알림 주기를 바꾸면 자동으로 다시 계산된다.
 
 import { useSyncExternalStore } from 'react'
-import { getAlertTimes } from './alertTimes'
+import { getAlertTimes, normalizeInterval } from './alertTimes'
 import { DEFAULT_SETTINGS, STORAGE_KEYS } from './config'
 import { readJSON, writeJSON } from './storage'
 
@@ -25,6 +25,8 @@ function derive(values) {
 function load() {
   stored = { ...DEFAULT_SETTINGS, ...readJSON(STORAGE_KEYS.settings, {}) }
   delete stored.dailyRoutineCount
+  // 예전에 저장된 45분·90분 같은 값은 허용되는 주기(30분/1시간/2시간)로 바꾼다. (다음에 설정을 저장할 때 함께 저장된다)
+  stored.intervalMin = normalizeInterval(stored.intervalMin)
   cache = derive(stored)
 }
 
