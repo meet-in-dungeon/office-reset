@@ -18,6 +18,15 @@ export default function Onboarding() {
       <p>일하는 중간에 짧게 스트레칭하고 호흡하며 몸을 되돌려요.</p>
 
       <div className="card">
+        <strong>이렇게 쓰세요</strong>
+        <ol style={{ margin: 'var(--space-2) 0 0', paddingLeft: 'var(--space-5)', display: 'grid', gap: 'var(--space-2)' }}>
+          <li>정해진 시각(평일)에 알림이 오면 눌러서 스트레칭을 시작해요.</li>
+          <li>동작 3개를 5초씩 따라 해요. 하루의 마지막 루틴에는 호흡 5회가 붙어요.</li>
+          <li>루틴을 마치면 배지를 받고, 통계에서 기록을 볼 수 있어요.</li>
+        </ol>
+      </div>
+
+      <div className="card">
         <strong>언제 알려 드릴까요?</strong>
         <p className="muted" style={{ marginBottom: 'var(--space-3)' }}>
           출근 시각부터 정해진 주기마다 알려 드려요. 나중에 바꿀 수 있어요.
@@ -33,9 +42,12 @@ export default function Onboarding() {
         <NotificationPermission />
       </div>
 
-      <p className="dev-note">
-        임시 화면입니다. 사용 가이드와 주의사항은 이어서 구현합니다.
-      </p>
+      <div className="card">
+        <strong>주의해 주세요</strong>
+        <p className="muted">
+          통증이 느껴지면 바로 멈추고 무리하지 마세요. 몸에 이상이 있다면 전문가와 상담해 주세요.
+        </p>
+      </div>
 
       <Button block onClick={start}>
         시작하기
