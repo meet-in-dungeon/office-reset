@@ -12,9 +12,10 @@
 | `routineLogs.sample.json` | `routineLogs` | 루틴 기록 3건 (일반 2건, 하루 마지막 루틴 1건) | 이주연(완료·통계 화면 테스트) |
 | `badges.sample.json` | `badges` | 위 기록으로 계산된 배지 상태 (`first_routine`, `daily_full`) | 이주연 |
 | `timer.sample.json` | `timer` | 마지막으로 알림이 뜬 시각 | 김원규(알림으로 들어온 기록 테스트) |
+| `calmLogs.sample.json` | `calmLogs` | 빡침 명상 기록 2건 (어제 1건, 오늘 1건). 형식: `id`, `startedAt`, `completedAt`, `breathCount`(3) | 이주연(빡침 배지·통계 테스트) |
 
 - 형식의 기준은 [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md) 5, 6번이다. 형식이 바뀌면 ARCHITECTURE.md를 먼저 고치고 이 파일도 같이 고친다.
-- `calmLogs`(빡침 명상 기록)는 형식이 아직 정해지지 않아 샘플이 없다. 이주연 님이 형식을 정하면 `calmLogs.sample.json`을 추가한다.
+- `calmLogs`(빡침 명상 기록) 형식은 이주연 님이 정했다. `src/lib/records.js`의 `recordCalm()`이 저장하는 값과 같다.
 - 샘플 날짜는 `2026-11-24`로 적혀 있다. 아래 넣기 코드는 이 날짜를 **오늘 날짜로 바꿔서** 저장하므로 "오늘 완료" 화면도 테스트할 수 있다.
 
 ## 넣는 방법
@@ -33,12 +34,13 @@ const load = async (key, file) => {
 await load('routineLogs', 'routineLogs.sample.json')
 await load('badges', 'badges.sample.json')
 await load('timer', 'timer.sample.json')
+await load('calmLogs', 'calmLogs.sample.json')
 ```
 
 ## 지우는 방법
 
 ```js
-['routineLogs', 'badges', 'timer'].forEach((key) => localStorage.removeItem(key))
+['routineLogs', 'badges', 'timer', 'calmLogs'].forEach((key) => localStorage.removeItem(key))
 sessionStorage.removeItem('lastRoutineResult')
 ```
 
