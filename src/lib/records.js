@@ -9,6 +9,9 @@
 //   id           같은 루틴이 두 번 저장되지 않게 막는 고유값 (없으면 여기서 만든다)
 //   completedAt  루틴을 끝낸 시각, nowLocalISO()로 만든다 (없으면 지금 시각)
 //   breathCount  일반 루틴 0, 하루 마지막 루틴 5. 0보다 크면 "하루 완성" 대상이다
+//                마지막 루틴에서 호흡을 마치지 못하면 0으로 저장한다. 동작 3개를 마쳤으니 루틴 기록과
+//                첫 루틴 배지는 남지만 하루 완성은 나가지 않고, 그날 다음 루틴에서 호흡을 다시 할 수 있다.
+//                (김원규 님 제안, 이주연 동의 11/24. 다시 할 수 있는지는 schedule.js의 isLastRoutine이 정한다)
 //   moves        이번 루틴에 나온 동작 ID 목록 (스트레칭 도감, 부위별 통계에 쓴다)
 //
 // 돌려주는 값: { saved, duplicate, newBadges, tierUps, todayCount, totalCount }
