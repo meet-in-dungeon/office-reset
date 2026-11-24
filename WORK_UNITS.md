@@ -50,8 +50,8 @@ GitHub 계정 연결은 팀장이 확인했다. (2026-11-24)
 | 알림 규칙 반영 | 김민지 | 미정 (#8 브랜치에서 새로 만든다) | `src/lib/alertTimes.js`, `settings.js`, `schedule.js`, `alerts.js`, `src/components/WorkTimeSettings.jsx` (공통 `config.js`는 필요한 줄만) | [docs/ALERT_RULES.md](docs/ALERT_RULES.md) 5번 순서대로: ① 주기 30분/1시간/2시간 ② 주말 알림 없음 ③ (시간이 남으면) 오후 2~4시 추가 알림 | 미시작 (#8 병합 후) |
 | 스트레칭 루틴 화면 | 김원규 | `feature/stretch-routine` | `src/pages/Stretch.jsx`, `Stretch.css`, `src/data/stretches.json`, `src/lib/pickMoves.js` | 영상 없이도 동작 3개 → (마지막 루틴이면 호흡 5회) → 완료 | PR #7 리뷰 대기 |
 | 루틴 완료 → 기록 연결 | 김원규 | 미정 | `src/pages/Stretch.jsx` | 루틴이 끝나면 `recordRoutine(log)`를 한 번 부른다 | 시작 가능 (주연 #9가 병합됨. 단 #7이 먼저 병합되어야 같은 파일을 이어서 고칠 수 있다) |
-| 영상 재생·음성 | 서진수 | `feature/stretch-video` | `src/components/StretchVideo.jsx`, `StretchVideo.css`, `src/lib/voice.js`, `public/videos/`, `src/video-test/`, `video-test.html` | 영상이 재생되고 없으면 대체 안내, 소리 설정 반영 | 작업 중 (push됨, PR 전) |
-| 영상 자리 연결 | 서진수 | 미정 | `src/pages/Stretch.jsx`의 영상 자리(`stretch-video-slot`) **한 줄만** | 루틴 화면에서 영상이 나온다 | #7 병합 후 시작 (원규와 합의) |
+| 영상 재생·음성·BGM | 서진수 | `feature/stretch-videos-2` | `src/components/StretchVideo.jsx`, `StretchVideo.css`, `src/lib/voice.js`, `src/lib/bgm.js`, `public/videos/`, `public/audio/`, `src/video-test/`, `video-test.html` | 영상이 재생되고 없으면 대체 안내, 소리 설정 반영. 음성은 동작 안내 문장만 읽는다(카운트다운 음성 제거). BGM은 동작·호흡 단계에서 작게 반복 재생 | PR 리뷰 대기 (1차는 #11로 병합. 남은 영상과 BGM 음악 파일은 이어서 추가) |
+| 영상 자리 연결 | 서진수 | (병합 완료) | `src/pages/Stretch.jsx`의 영상 자리(`stretch-video-slot`) **한 줄만** | 루틴 화면에서 영상이 나온다 | 완료 (#7에 포함. BGM 연결 한 줄은 원규 님 `feature/stretch-notified-at`에 있어, 이 PR이 먼저 병합되어야 한다) |
 | 기록·배지 판정 | 이주연 | `feature/badge-records` | `src/lib/records.js`, `badges.js` | `recordRoutine`으로 기록 저장, 배지 3종 판정, 중복 지급 방지 | 완료 (#9 병합) |
 | 완료·통계·빡침 화면 | 이주연 | `feature/complete-screen` | `src/pages/Complete.jsx`, `Stats.jsx`, `Calm.jsx`와 각 `.css` | 완료 화면에 배지 표시, 통계 유지, 빡침 화면 진입·복귀 | 작업 중 (push됨, PR 전) |
 | 배포 | 서진수 | 미정 | 배포 설정 (공통 파일이라 팀 합의 후) | HTTPS 주소에서 작동 | 미시작 |

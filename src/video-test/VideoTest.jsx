@@ -1,10 +1,12 @@
 // 영상·음성 개발용 테스트 화면 (담당: 서진수). 실제 서비스 화면이 아니다.
-// 확인할 것: 영상 재생, 영상이 없는 동작의 대체 안내, 소리 ON/OFF에 따른 음성 안내와 5초 카운트.
-// 동작 목록은 테스트용으로만 적었다. 실제 동작 데이터는 원규 님의 src/data/stretches.json을 쓴다.
+// 확인할 것: 영상 재생, 영상이 없는 동작의 대체 안내, 소리 ON/OFF에 따른 음성 안내. (카운트다운 숫자는 읽지 않는다)
+// 동작 목록은 실제 루틴 화면과 같은 src/data/stretches.json(원규 님 파일)에서 읽는다.
 import { useEffect, useState } from 'react'
 import Button from '../components/Button'
 import Screen from '../components/Screen'
 import StretchVideo from '../components/StretchVideo'
+import data from '../data/stretches.json'
+import { useStretchBgm } from '../lib/bgm'
 import { MOVE_SECONDS } from '../lib/config'
 import { useSettings } from '../lib/settings'
 import {
@@ -16,7 +18,7 @@ import {
   useStretchVoice,
 } from '../lib/voice'
 
-const SAMPLE_TEXT = '귀를 어깨 쪽으로 천천히 기울여 주세요. 오, 사, 삼, 이, 일.'
+const SAMPLE_TEXT = '귀를 어깨 쪽으로 천천히 기울여 주세요.'
 
 // 목소리 고르기 (테스트용). 고른 값은 이 페이지에서만 쓰이고, 새로고침하면 기본값으로 돌아간다.
 // 마음에 드는 값을 찾으면 src/lib/voice.js의 DEFAULT_VOICE_OPTIONS에 적는다.
@@ -115,35 +117,23 @@ function VoicePicker({ soundOn }) {
   )
 }
 
+// 동작 목록은 원규 님의 stretches.json을 읽기만 한다. (고치지 않는다)
+// 실제 루틴과 같은 순서로 보이도록 쓰는 동작(active)을 먼저, 예비(reserve)를 뒤에 둔다.
 const TEST_MOVES = [
-  ['neck-01', '목 옆 늘이기'],
-  ['neck-02', '대각선 목 늘이기'],
-  ['neck-03', '턱 당기기'],
-  ['shoulder-01', '가슴 펴기'],
-  ['shoulder-02', '팔 가슴 앞으로 당기기'],
-  ['shoulder-03', '깍지 끼고 등 밀기'],
-  ['wrist-01', '손목 앞쪽 늘이기'],
-  ['wrist-02', '손목 뒤쪽 늘이기'],
-  ['wrist-03', '주먹 쥐었다 펴기'],
-  ['waist-01', '앉아서 허리 비틀기'],
-  ['waist-02', '옆구리 늘이기'],
-  ['waist-03', '등 둥글게 말기와 펴기'],
-  ['neck-04', '고개 숙여 뒤목 늘이기 (예비)'],
-].map(([id, name]) => ({
-  id,
-  name,
-  videoFile: `${id}.mp4`,
-  narration: `${name}. 화면을 보고 천천히 따라 해 주세요.`,
-}))
+  ...data.stretches.filter((move) => move.status === 'active'),
+  ...data.stretches.filter((move) => move.status !== 'active'),
+]
 
 export default function VideoTest() {
   const [settings, updateSettings] = useSettings()
   const [index, setIndex] = useState(0)
   const [remaining, setRemaining] = useState(0)
   const [running, setRunning] = useState(false)
+  const [bgmOn, setBgmOn] = useState(false)
   const move = TEST_MOVES[index]
 
-  useStretchVoice({ id: move.id, narration: move.narration, remaining, active: running })
+  useStretchVoice({ id: move.id, narration: move.narration, active: running })
+  useStretchBgm(bgmOn)
 
   useEffect(() => {
     if (!running) return undefined
@@ -179,6 +169,16 @@ export default function VideoTest() {
         </label>
         {!isSpeechSupported() ? <p>이 브라우저는 음성 안내(TTS)를 지원하지 않습니다.</p> : null}
 
+        <label style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
+          <input
+            type="checkbox"
+            checked={bgmOn}
+            onChange={(event) => setBgmOn(event.target.checked)}
+          />
+          BGM 틀기 (루틴의 동작·호흡 단계라고 가정. 소리 켜기도 체크해야 들립니다. 파일:
+          public/audio/bgm.mp3)
+        </label>
+
         <VoicePicker soundOn={settings.soundOn} />
 
         <label>
@@ -187,6 +187,7 @@ export default function VideoTest() {
             {TEST_MOVES.map((item, i) => (
               <option key={item.id} value={i}>
                 {item.id} · {item.name}
+                {item.status === 'active' ? '' : ' (예비)'}
               </option>
             ))}
           </select>
