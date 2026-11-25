@@ -1,11 +1,34 @@
 /* 스트레칭 루틴 화면 전용 스타일. 색·크기는 공통 변수(index.css)를 쓴다. */
+.stretch-screen {
+  background: linear-gradient(180deg, var(--color-primary-soft) 0%, transparent 320px);
+}
+
 .stretch-start {
   min-height: 60vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: stretch;
   gap: var(--space-4);
   text-align: center;
+}
+
+.stretch-start__character {
+  width: 200px;
+  height: 240px;
+  margin: 0 auto;
+}
+
+.stretch-start__character .asset,
+.stretch-start__character .asset-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.stretch-start__copy {
+  font-size: var(--text-large);
+  font-weight: 800;
 }
 
 .stretch-move {
@@ -14,15 +37,38 @@
   gap: var(--space-4);
 }
 
+/* 진행 상황(1 / 3)과 동작 이름 라벨 */
+.stretch-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 .stretch-progress {
   margin: 0;
   font-size: var(--text-small);
+  font-weight: 600;
   color: var(--color-text-muted);
+  text-align: center;
+}
+
+.stretch-progress__now {
+  font-weight: 800;
+  color: var(--color-text);
 }
 
 .stretch-name {
   margin: 0;
   font-size: var(--text-large);
+  font-weight: 700;
+}
+
+.stretch-name__label {
+  display: inline-block;
+  padding: var(--space-1) var(--space-4);
+  background: var(--color-sun);
+  border-radius: var(--radius-round);
 }
 
 .stretch-video-slot {
@@ -35,27 +81,134 @@
   color: var(--color-text-muted);
 }
 
-.stretch-steps {
+/* 원형 카운트다운 */
+.stretch-count {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
   margin: 0;
-  padding-left: 1.2rem;
+}
+
+.stretch-count__sticker {
+  width: 36px;
+  pointer-events: none;
+}
+
+.stretch-count__sticker--right {
+  transform: scaleX(-1);
+}
+
+.count-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  background: var(--color-surface);
+  border-radius: var(--radius-round);
+  box-shadow: var(--shadow-card);
+}
+
+.count-ring__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.count-ring__track,
+.count-ring__bar {
+  fill: none;
+  stroke-width: 7;
+}
+
+.count-ring__track {
+  stroke: var(--color-primary-soft);
+}
+
+.count-ring__bar {
+  stroke: var(--color-lavender);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.count-ring__value {
+  font-size: 2.5rem; /* 40px */
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.count-ring--done .count-ring__value {
+  font-size: 1.5rem;
+}
+
+.count-ring--done .count-ring__bar {
+  stroke: var(--color-calm-soft);
+}
+
+/* 번호가 있는 동작 설명 */
+.stretch-steps {
+  counter-reset: step;
+  margin: 0;
+  padding: 0;
+  list-style: none;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  font-size: var(--text-body);
-  line-height: 1.5;
 }
 
-.stretch-count {
-  margin: 0;
-  font-size: var(--text-title);
-  font-weight: 700;
-  text-align: center;
-  color: var(--color-primary);
+.stretch-steps li {
+  position: relative;
+  min-height: 48px;
+  padding: var(--space-3) var(--space-3) var(--space-3) 52px;
+  font-size: var(--text-body);
+  font-weight: 500;
+  line-height: 1.5;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  counter-increment: step;
+}
+
+.stretch-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  font-size: var(--text-small);
+  font-weight: 800;
+  background: var(--color-lavender);
+  border-radius: var(--radius-round);
+  transform: translateY(-50%);
+}
+
+/* 주의사항: 크림색 상자 */
+.stretch-notice {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-sun-soft);
+  border: 1px solid #f0e2b8;
+  border-radius: var(--radius-md);
+}
+
+.stretch-notice .icon {
+  flex: none;
+  margin-top: 2px;
+  color: #a67c00;
 }
 
 .stretch-cautions {
-  margin: 0;
-  padding-left: 1.2rem;
+  margin: 0 0 var(--space-2);
+  padding-left: 1.1rem;
   font-size: var(--text-small);
   line-height: 1.5;
 }
@@ -65,6 +218,10 @@
   font-size: var(--text-small);
   line-height: 1.5;
   color: var(--color-text-muted);
+}
+
+.stretch-start .stretch-caution {
+  text-align: center;
 }
 
 .stretch-breath {
@@ -81,4 +238,10 @@
   margin: 0;
   font-size: var(--text-large);
   font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .count-ring__bar {
+    transition: none;
+  }
 }

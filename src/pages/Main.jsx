@@ -1,7 +1,9 @@
 // 메인 화면 (담당: 김민지)
 // 다음 알림까지 남은 시간, 스트레칭 시작 버튼, 오른쪽 위 빡침 버튼, 기록·통계 진입, 간단한 설정.
 import { useEffect, useState } from 'react'
+import Asset from '../components/Asset'
 import Button from '../components/Button'
+import { AlarmIcon, ChartIcon, ChevronIcon, GearIcon, PlayIcon } from '../components/Icons'
 import Screen from '../components/Screen'
 import NotificationPermission from '../components/NotificationPermission'
 import WorkTimeSettings from '../components/WorkTimeSettings'
@@ -9,6 +11,7 @@ import { isAlertDay } from '../lib/alertTimes'
 import { navigate, ROUTES } from '../lib/router'
 import { getNextAlert } from '../lib/schedule'
 import { useSettings } from '../lib/settings'
+import './Main.css'
 
 function formatRemaining(ms) {
   const total = Math.max(0, Math.ceil(ms / 1000))
@@ -47,17 +50,46 @@ export default function Main() {
   }
 
   const calmButton = (
-    <Button variant="alert" size="round" aria-label="빡침 버튼" onClick={() => navigate(ROUTES.calm)}>
-      빡침
-    </Button>
+    <div className="home-calm">
+      <Asset file="sticker-impact.svg" kind="decor" className="home-calm__sticker" />
+      <Button variant="alert" size="round" aria-label="빡침 버튼" onClick={() => navigate(ROUTES.calm)}>
+        <Asset
+          file="character-angry.webp"
+          kind="decor"
+          className="home-calm__face"
+          fallback={<span>빡침</span>}
+        />
+      </Button>
+    </div>
   )
 
   return (
-    <Screen title="오늘의 회복" headerRight={calmButton}>
-      <section className="card" aria-label="업무 타이머">
-        <p className="muted">{timerLabel}</p>
-        <p style={{ fontSize: '2.5rem', fontWeight: 700 }}>{timerValue}</p>
-        <label className="check" style={{ marginTop: 'var(--space-3)' }}>
+    <Screen
+      className="home"
+      title={<span className="brand">삭신이 쑤신다</span>}
+      headerRight={calmButton}
+    >
+      <h2 className="home-title">오늘의 회복 루틴</h2>
+
+      <div className="home-hero">
+        <div className="home-hero__character">
+          <Asset file="sticker-accent.svg" kind="decor" className="home-hero__sticker" />
+          <Asset file="character-main.webp" size="권장 560×660 (표시 약 150×220)" alt="안내 캐릭터" />
+        </div>
+        <p className="bubble home-hero__bubble">
+          잠깐만요!
+          <br />
+          지금이 딱 몸 풀기 좋은 타이밍이에요!
+        </p>
+      </div>
+
+      <section className="card home-timer" aria-label="업무 타이머">
+        <p className="home-timer__label">
+          <AlarmIcon width="22" height="22" />
+          {timerLabel}
+        </p>
+        <p className="home-timer__value">{timerValue}</p>
+        <label className="check home-timer__check">
           <input
             type="checkbox"
             checked={settings.alertsEnabled}
@@ -67,16 +99,22 @@ export default function Main() {
         </label>
       </section>
 
-      <Button size="large" block onClick={() => navigate(ROUTES.stretch)}>
-        스트레칭 시작
-      </Button>
-      <Button variant="soft" block onClick={() => navigate(ROUTES.stats)}>
-        기록·통계 보기
-      </Button>
+      <div className="home-actions">
+        <Button size="large" block onClick={() => navigate(ROUTES.stretch)}>
+          <PlayIcon className="icon" width="18" height="18" /> 스트레칭 시작
+        </Button>
+        <Button variant="soft" block onClick={() => navigate(ROUTES.stats)}>
+          <ChartIcon className="icon" width="20" height="20" /> 기록·통계 보기
+        </Button>
+      </div>
 
-      <section className="card" aria-label="설정">
-        <strong>설정</strong>
-        <div className="stack" style={{ marginTop: 'var(--space-3)' }}>
+      <details className="card home-settings">
+        <summary className="home-settings__summary">
+          <GearIcon className="icon" width="22" height="22" />
+          <span>알림·루틴 설정</span>
+          <ChevronIcon className="home-settings__chevron" width="20" height="20" />
+        </summary>
+        <div className="stack home-settings__body">
           <WorkTimeSettings />
           <NotificationPermission />
           <label className="check">
@@ -88,7 +126,7 @@ export default function Main() {
             소리 켜기
           </label>
         </div>
-      </section>
+      </details>
     </Screen>
   )
 }

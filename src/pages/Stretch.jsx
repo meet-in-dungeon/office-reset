@@ -3,7 +3,10 @@
 //       → (하루 마지막 루틴이면) 호흡 BREATH_COUNT회 → 완료 화면
 // 알림으로 들어오면 주소가 #/stretch?from=notification 이 된다. (useRoute().query.from)
 import { useCallback, useEffect, useRef, useState } from 'react'
+import Asset from '../components/Asset'
 import Button from '../components/Button'
+import CountRing from '../components/CountRing'
+import { AlertIcon, ChevronIcon } from '../components/Icons'
 import Screen from '../components/Screen'
 import data from '../data/stretches.json'
 import { BREATH_COUNT, MOVE_SECONDS, ROUTINE_MOVE_COUNT, START_GATE_ENABLED } from '../lib/config'
@@ -111,8 +114,14 @@ export default function Stretch() {
 
   if (stage === 'start') {
     return (
-      <Screen title="스트레칭">
+      <Screen title="스트레칭" align="center" className="stretch-screen">
         <div className="stretch-start">
+          <div className="stretch-start__character">
+            <Asset file="character-main.webp" size="권장 560×660 (표시 약 200×240)" alt="안내 캐릭터" />
+          </div>
+          <p className="stretch-start__copy">
+            잠깐, 몸 풀기 좋은 타이밍이에요!
+          </p>
           <Button size="large" block onClick={() => setStage('move')}>
             시작
           </Button>
@@ -131,15 +140,15 @@ export default function Stretch() {
       ? BREATH_IN_SECONDS - withinCycle
       : BREATH_CYCLE_SECONDS - withinCycle
     return (
-      <Screen title="호흡">
+      <Screen title="호흡" align="center" className="stretch-screen">
         <div className="stretch-breath">
           <p className="stretch-progress">
-            {cycle + 1} / {BREATH_COUNT}회
+            <span className="stretch-progress__now">{cycle + 1}</span> / {BREATH_COUNT}회
           </p>
           <p className="stretch-breath__text">{breathingIn ? BREATH_IN_TEXT : BREATH_OUT_TEXT}</p>
-          <p className="stretch-count" aria-live="polite">
-            {phaseLeft}
-          </p>
+          <div className="stretch-count" aria-live="polite">
+            <CountRing ratio={phaseLeft / BREATH_IN_SECONDS}>{phaseLeft}</CountRing>
+          </div>
         </div>
       </Screen>
     )
@@ -163,14 +172,28 @@ export default function Stretch() {
   }
 
   return (
-    <Screen title="스트레칭">
+    <Screen title="스트레칭" align="center" className="stretch-screen">
       <div className="stretch-move">
-        <p className="stretch-progress">
-          {index + 1} / {moves.length} · {data.parts[move.part]}
-        </p>
-        <h2 className="stretch-name">{move.name}</h2>
+        <div className="stretch-head">
+          <p className="stretch-progress">
+            <span className="stretch-progress__now">{index + 1}</span> / {moves.length}
+          </p>
+          <h2 className="stretch-name">
+            <span className="stretch-name__label">
+              {data.parts[move.part]} · {move.name}
+            </span>
+          </h2>
+        </div>
 
         <StretchVideo key={move.id} file={move.videoFile} name={move.name} />
+
+        <div className="stretch-count" aria-live="polite" aria-label={countDone ? '완료' : `${remaining}초`}>
+          <Asset file="sticker-accent.svg" kind="decor" className="stretch-count__sticker stretch-count__sticker--left" />
+          <CountRing ratio={remaining / MOVE_SECONDS} done={countDone}>
+            {countDone ? '완료' : String(remaining).padStart(2, '0')}
+          </CountRing>
+          <Asset file="sticker-accent.svg" kind="decor" className="stretch-count__sticker stretch-count__sticker--right" />
+        </div>
 
         <ol className="stretch-steps">
           {move.steps.map((step) => (
@@ -178,19 +201,20 @@ export default function Stretch() {
           ))}
         </ol>
 
-        <p className="stretch-count" aria-live="polite">
-          {countDone ? '완료' : remaining}
-        </p>
+        <div className="stretch-notice">
+          <AlertIcon className="icon" width="22" height="22" />
+          <div>
+            <ul className="stretch-cautions">
+              {move.cautions.map((caution) => (
+                <li key={caution}>{caution}</li>
+              ))}
+            </ul>
+            <p className="stretch-caution">{data.commonCaution}</p>
+          </div>
+        </div>
 
-        <ul className="stretch-cautions">
-          {move.cautions.map((caution) => (
-            <li key={caution}>{caution}</li>
-          ))}
-        </ul>
-        <p className="stretch-caution">{data.commonCaution}</p>
-
-        <Button block onClick={handleNext} disabled={!countDone && !ALLOW_EARLY_NEXT}>
-          {isLastMove && !isLastRoutine ? '마치기' : '다음'}
+        <Button size="large" block onClick={handleNext} disabled={!countDone && !ALLOW_EARLY_NEXT}>
+          {isLastMove && !isLastRoutine ? '마치기' : '다음'} <ChevronIcon className="icon" width="18" height="18" />
         </Button>
       </div>
     </Screen>

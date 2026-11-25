@@ -14,6 +14,10 @@ import './StretchVideo.css'
 
 const VIDEO_DIR = `${import.meta.env.BASE_URL}videos/`
 
+// 영상별 화면 맞춤. 16:9 원본을 4:3 상자에 채울 때 어디를 보여줄지(x, y: %)와 확대 비율(scale)을 정한다.
+// 비워 두면 가운데·확대 없음. 동작(팔·손·머리)이 잘리면 scale을 줄이거나 x를 옮긴다. 예: 'neck-01.mp4': { x: 55, y: 40, scale: 1.1 }
+const VIDEO_FRAMING = {}
+
 export default function StretchVideo({ file, name }) {
   const [failed, setFailed] = useState(false)
 
@@ -29,10 +33,16 @@ export default function StretchVideo({ file, name }) {
     )
   }
 
+  const framing = VIDEO_FRAMING[file]
+  const framingStyle = framing
+    ? { '--video-x': `${framing.x ?? 50}%`, '--video-y': `${framing.y ?? 50}%`, '--video-scale': framing.scale ?? 1 }
+    : undefined
+
   return (
     <div className="stretch-video">
       <video
         className="stretch-video__player"
+        style={framingStyle}
         src={`${VIDEO_DIR}${file}`}
         aria-label={name ? `${name} 동작 영상` : '스트레칭 동작 영상'}
         autoPlay

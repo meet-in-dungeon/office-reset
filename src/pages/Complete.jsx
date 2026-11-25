@@ -3,7 +3,10 @@
 // 결과는 원규 님 화면이 recordRoutine()을 부를 때 sessionStorage에 남긴 값을 읽는다. (src/lib/records.js)
 // 배지가 여러 개면 카드는 2장까지만 보여주고 나머지는 "+N개 더"로 묶는다.
 import { useState } from 'react'
+import Asset from '../components/Asset'
+import BadgeImage from '../components/BadgeImage'
 import Button from '../components/Button'
+import { ChevronIcon, MedalIcon } from '../components/Icons'
 import Screen from '../components/Screen'
 import { clearLastResult, getStats, readLastResult } from '../lib/records'
 import { navigate, ROUTES } from '../lib/router'
@@ -32,17 +35,13 @@ function cardLabel(card) {
 function BadgeCard({ badge, index }) {
   return (
     <li className="complete-badge" style={{ animationDelay: `${index * 0.15}s` }}>
-      <span className="complete-badge__icon" aria-hidden="true">
-        {badge.icon}
-      </span>
-      <div className="complete-badge__text">
-        <p className="complete-badge__label">{cardLabel(badge)}</p>
-        <p className="complete-badge__name">
-          {badge.name}
-          {badge.tierName ? <span className="complete-badge__tier">{badge.tierName}</span> : null}
-        </p>
-        <p className="complete-badge__message">{badge.message}</p>
-      </div>
+      <p className="complete-badge__label">{cardLabel(badge)}</p>
+      <BadgeImage badge={badge} tier={badge.tier} className="complete-badge__icon" />
+      <p className="complete-badge__name">
+        {badge.name}
+        {badge.tierName ? <span className="complete-badge__tier">{badge.tierName}</span> : null}
+      </p>
+      <p className="complete-badge__message">{badge.message}</p>
     </li>
   )
 }
@@ -67,18 +66,26 @@ export default function Complete() {
   }
 
   return (
-    <Screen title="루틴 완료">
+    <Screen
+      title="루틴 완료!"
+      className="complete"
+      titleClassName="complete-title"
+    >
+      <Asset file="sticker-confetti.svg" kind="decor" className="complete-confetti" />
       <section className="complete-hero" aria-live="polite">
-        <span className="complete-hero__icon" aria-hidden="true">
-          🎉
-        </span>
-        <p className="complete-hero__title">수고했어요!</p>
-        <p className="muted">
-          {todayCount > 0 ? `오늘 ${todayCount}번째 스트레칭을 마쳤어요.` : '스트레칭을 마쳤어요.'}
-          {totalCount > 0 ? ` 지금까지 모두 ${totalCount}번 했어요.` : ''}
+        <div className="complete-hero__character">
+          <Asset file="character-cheer.webp" size="권장 560×680 (표시 약 170×220)" alt="축하 캐릭터" />
+        </div>
+        <p className="bubble complete-hero__bubble">
+          <strong className="complete-hero__title">수고했어요!</strong>
+          오늘도 한 번 더 리셋 완료!
         </p>
-        {breathStopped ? <p className="complete-hero__note">호흡은 다음 루틴에서 다시 할 수 있어요 🌿</p> : null}
       </section>
+      <p className="muted complete-count">
+        {todayCount > 0 ? `오늘 ${todayCount}번째 스트레칭을 마쳤어요.` : '스트레칭을 마쳤어요.'}
+        {totalCount > 0 ? ` 지금까지 모두 ${totalCount}번 했어요.` : ''}
+      </p>
+      {breathStopped ? <p className="complete-hero__note">호흡은 다음 루틴에서 다시 할 수 있어요 🌿</p> : null}
 
       {cards.length > 0 ? (
         <section aria-label="새로 받은 배지">
@@ -99,10 +106,10 @@ export default function Complete() {
 
       <div className="complete-actions">
         <Button block size="large" onClick={() => leave(ROUTES.home)}>
-          업무 복귀
+          업무 복귀 <ChevronIcon className="icon" width="18" height="18" />
         </Button>
         <Button variant="soft" block onClick={() => leave(ROUTES.stats)}>
-          기록·배지 보기
+          <MedalIcon className="icon" width="20" height="20" /> 기록·배지 보기
         </Button>
       </div>
     </Screen>

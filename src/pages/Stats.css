@@ -6,8 +6,26 @@
   gap: var(--space-4);
 }
 
+/* 오늘 완료 여부: 완료하면 민트 카드 */
 .stats-today--done {
+  background: var(--color-calm-soft);
+  border-color: #b4e2cf;
+}
+
+.stats-today__check {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-text-muted);
   background: var(--color-primary-soft);
+  border-radius: var(--radius-round);
+}
+
+.stats-today--done .stats-today__check {
+  color: #fff;
+  background: #2f9e6e;
 }
 
 .stats-today__icon {
@@ -27,13 +45,28 @@
 }
 
 .stats-number {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
   text-align: center;
 }
 
+.stats-number__label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
 .stats-number__value {
-  font-size: 2rem;
-  font-weight: 700;
-  line-height: 1.3;
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
 
 .stats-number__unit {
@@ -41,6 +74,11 @@
   font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-muted);
+}
+
+.stats-section-title {
+  font-size: var(--text-large);
+  font-weight: 700;
 }
 
 .stats-badges__header {
@@ -69,13 +107,48 @@
 }
 
 .stats-badge__icon {
+  position: relative;
   display: grid;
   place-items: center;
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   font-size: 2rem;
   background: var(--color-primary-soft);
-  border: 2px solid var(--color-primary);
+  border: 2px solid var(--color-lavender);
+  border-radius: var(--radius-round);
+}
+
+.stats-badge__img {
+  width: 100%;
+  height: 100%;
+  font-size: 2rem;
+  background: transparent;
+}
+
+/* 등급형 배지의 테두리: 브론즈·실버·골드 (글자도 같이 보여준다) */
+.stats-badge--tier-0 .stats-badge__icon {
+  border-color: var(--color-tier-bronze);
+}
+
+.stats-badge--tier-1 .stats-badge__icon {
+  border-color: var(--color-tier-silver);
+}
+
+.stats-badge--tier-2 .stats-badge__icon {
+  border-color: var(--color-tier-gold);
+}
+
+.stats-badge__lock {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: #fff;
+  background: var(--color-text-muted);
+  border: 2px solid var(--color-surface);
   border-radius: var(--radius-round);
 }
 
@@ -90,9 +163,21 @@
   padding: 0 var(--space-2);
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
+  color: var(--color-text);
+  border: 1px solid currentColor;
   border-radius: var(--radius-round);
+}
+
+.stats-badge--tier-0 .stats-badge__tier {
+  color: var(--color-tier-bronze-text);
+}
+
+.stats-badge--tier-1 .stats-badge__tier {
+  color: var(--color-tier-silver-text);
+}
+
+.stats-badge--tier-2 .stats-badge__tier {
+  color: var(--color-tier-gold-text);
 }
 
 .stats-badge__sub {
@@ -103,11 +188,18 @@
 
 /* 아직 못 받은 배지: 회색으로 흐리게 */
 .stats-badge--locked .stats-badge__icon {
-  filter: grayscale(1);
-  opacity: 0.45;
   background: var(--color-bg);
   border-color: var(--color-border);
   border-style: dashed;
+}
+
+.stats-badge--locked .stats-badge__img {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+
+.stats-badge--hidden .stats-badge__icon {
+  color: var(--color-text-muted);
 }
 
 .stats-badge--locked .stats-badge__name {
@@ -118,21 +210,22 @@
   text-align: center;
 }
 
-/* 탭: [요약] [이번 주] */
+/* 탭: 활성은 네이비, 비활성은 연한 라벤더/흰색 */
 .stats-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-1);
   padding: var(--space-1);
-  background: var(--color-bg);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-round);
 }
 
 .stats-tab {
+  min-height: var(--tap-size);
   padding: var(--space-2) var(--space-3);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-text-muted);
   background: transparent;
   border: none;
@@ -140,10 +233,14 @@
   cursor: pointer;
 }
 
+.stats-tab:focus-visible {
+  outline: 3px solid var(--color-lavender);
+  outline-offset: 1px;
+}
+
 .stats-tab--active {
-  color: var(--color-text);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-card);
+  color: #fff;
+  background: var(--color-primary);
 }
 
 .stats-panel {
@@ -156,7 +253,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  background: var(--color-primary-soft);
+  background: var(--color-sun-soft);
 }
 
 /* 요일별 세로 막대 */
@@ -193,8 +290,12 @@
 
 .stats-week__fill {
   width: 100%;
-  background: var(--color-primary);
+  background: var(--color-lavender);
   border-radius: var(--radius-md, 8px);
+}
+
+.stats-week__day--today .stats-week__fill {
+  background: var(--color-primary);
 }
 
 .stats-week__label {
@@ -248,7 +349,7 @@
 .stats-bar__fill {
   display: block;
   height: 100%;
-  background: var(--color-calm);
+  background: #8fd3b6; /* 민트 계열 막대 */
   border-radius: var(--radius-round);
 }
 

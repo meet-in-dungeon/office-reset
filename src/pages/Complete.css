@@ -1,27 +1,94 @@
 /* 완료 화면 전용 스타일 (담당: 이주연). 색·여백은 index.css의 공통 값을 쓴다. */
 
-.complete-hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-5) var(--space-4);
-  text-align: center;
+/* B급 감성을 가장 크게 주는 화면. 굵고 기울어진 제목 + 색종이 + 축하 캐릭터 */
+.complete {
+  position: relative;
+  background: linear-gradient(180deg, var(--color-primary-soft) 0%, transparent 340px);
+  overflow-x: clip;
 }
 
-.complete-hero__icon {
-  font-size: 3rem;
-  line-height: 1;
+.complete .screen__header {
+  justify-content: center;
+}
+
+.complete-title {
+  font-size: 2.25rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  transform: rotate(-4deg);
+  text-shadow: 3px 3px 0 var(--color-sun);
+}
+
+.complete-confetti {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  pointer-events: none;
+}
+
+.complete-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  min-height: 220px;
+}
+
+.complete-hero__character {
+  flex: none;
+  width: 170px;
+  height: 220px;
+}
+
+.complete-hero__character .asset,
+.complete-hero__character .asset-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom;
+}
+
+.complete-hero__bubble {
+  position: relative;
+  flex: 1;
+  margin-bottom: 110px;
+  padding: var(--space-3);
+  font-size: var(--text-small);
+  font-weight: 600;
+  line-height: 1.45;
+  word-break: keep-all;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.complete-hero__bubble::before {
+  content: '';
+  position: absolute;
+  left: -7px;
+  bottom: 18px;
+  width: 12px;
+  height: 12px;
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  transform: rotate(45deg);
 }
 
 .complete-hero__title {
-  font-size: var(--text-title);
-  font-weight: 700;
+  display: block;
+  font-size: var(--text-large);
+  font-weight: 800;
+}
+
+.complete-count {
+  text-align: center;
 }
 
 /* 마지막 루틴에서 호흡을 중단했을 때 나오는 안내 한 줄 */
 .complete-hero__note {
-  margin-top: var(--space-2);
+  align-self: center;
   padding: var(--space-2) var(--space-4);
   font-size: var(--text-small);
   font-weight: 600;
@@ -33,51 +100,52 @@
 .complete-badges {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-5);
   margin: 0;
-  padding: 0;
+  padding: var(--space-3) 0 0;
   list-style: none;
 }
 
+/* 새 배지 카드: 가운데 큰 이미지, 위에 노란 "새 배지 획득!" 라벨 */
 .complete-badge {
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-4);
+  gap: var(--space-1);
+  padding: var(--space-5) var(--space-4) var(--space-4);
+  text-align: center;
   background: var(--color-surface);
-  border: 2px solid var(--color-primary-soft);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   animation: complete-badge-pop 0.6s ease-out both;
 }
 
-.complete-badge__icon {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  font-size: 2rem;
-  background: var(--color-primary-soft);
-  border-radius: var(--radius-round);
-}
-
-.complete-badge__text {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  min-width: 0;
-}
-
 .complete-badge__label {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  padding: 2px var(--space-4);
   font-size: var(--text-small);
-  font-weight: 600;
-  color: var(--color-primary-strong);
+  font-weight: 800;
+  white-space: nowrap;
+  background: var(--color-sun);
+  border: 1px solid var(--color-outline);
+  border-radius: var(--radius-sm);
+  transform: translateX(-50%) rotate(-2deg);
+}
+
+.complete-badge__icon {
+  width: 120px;
+  height: 120px;
+  margin-top: var(--space-2);
+  font-size: 3.5rem;
 }
 
 .complete-badge__name {
   font-size: var(--text-large);
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .complete-badge__message {
@@ -90,9 +158,9 @@
   margin-left: var(--space-2);
   padding: 0 var(--space-2);
   font-size: var(--text-small);
-  font-weight: 600;
-  color: var(--color-primary-strong);
-  border: 1px solid var(--color-primary-strong);
+  font-weight: 700;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
   border-radius: var(--radius-round);
   vertical-align: middle;
 }
@@ -106,7 +174,7 @@
   font: inherit;
   font-size: var(--text-small);
   font-weight: 600;
-  color: var(--color-primary-strong);
+  color: var(--color-text);
   background: transparent;
   border: 1px dashed var(--color-primary);
   border-radius: var(--radius-lg);
@@ -116,6 +184,7 @@
 .complete-empty {
   text-align: center;
   color: var(--color-text-muted);
+  background: var(--color-sun-soft);
 }
 
 .complete-actions {

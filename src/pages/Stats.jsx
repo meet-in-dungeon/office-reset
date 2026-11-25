@@ -3,7 +3,9 @@
 // [이번 주] 상세 통계: 평일 연속 기록, 요일별 횟수, 부위별 횟수, 시간대별 횟수, 빡침 명상 횟수 (월~금)
 // 기록은 브라우저(localStorage)에 있어서 새로고침해도 유지된다. (src/lib/records.js)
 import { useState } from 'react'
+import BadgeImage from '../components/BadgeImage'
 import Button from '../components/Button'
+import { CalendarCheckIcon, CheckIcon, ChartIcon, LockIcon } from '../components/Icons'
 import Screen from '../components/Screen'
 import { BADGES, TIER_NAMES } from '../lib/badges'
 import { getStats, getWeeklyStats, PART_NAMES } from '../lib/records'
@@ -33,9 +35,9 @@ function BadgeItem({ badge, earned, value }) {
   // 히든 배지는 받기 전까지 이름 대신 ???와 힌트만 보여준다
   if (badge.hidden && !earned) {
     return (
-      <li className="stats-badge stats-badge--locked">
+      <li className="stats-badge stats-badge--locked stats-badge--hidden">
         <span className="stats-badge__icon" aria-hidden="true">
-          ❔
+          <LockIcon width="28" height="28" />
         </span>
         <p className="stats-badge__name">???</p>
         <p className="stats-badge__sub">
@@ -47,9 +49,14 @@ function BadgeItem({ badge, earned, value }) {
   }
 
   return (
-    <li className={`stats-badge${earned ? '' : ' stats-badge--locked'}`}>
+    <li className={`stats-badge${earned ? '' : ' stats-badge--locked'}${earned?.tierName ? ` stats-badge--tier-${earned.tier}` : ''}`}>
       <span className="stats-badge__icon" aria-hidden="true">
-        {badge.icon}
+        <BadgeImage badge={badge} tier={earned?.tier} className="stats-badge__img" />
+        {earned ? null : (
+          <span className="stats-badge__lock">
+            <LockIcon width="14" height="14" />
+          </span>
+        )}
       </span>
       <p className="stats-badge__name">{badge.name}</p>
       {earned?.tierName ? <p className="stats-badge__tier">{earned.tierName}</p> : null}
@@ -66,8 +73,8 @@ function SummaryTab({ stats }) {
   return (
     <>
       <section className={`card stats-today${stats.todayDone ? ' stats-today--done' : ''}`}>
-        <span className="stats-today__icon" aria-hidden="true">
-          {stats.todayDone ? '✅' : '⏳'}
+        <span className="stats-today__check" aria-hidden="true">
+          {stats.todayDone ? <CheckIcon width="20" height="20" /> : <CalendarCheckIcon width="22" height="22" />}
         </span>
         <div>
           <p className="stats-today__title">{stats.todayDone ? '오늘 스트레칭 완료!' : '오늘은 아직이에요'}</p>
@@ -79,14 +86,20 @@ function SummaryTab({ stats }) {
 
       <section className="stats-numbers" aria-label="완료 횟수">
         <div className="card stats-number">
-          <p className="muted">오늘</p>
+          <p className="stats-number__label">
+            <CalendarCheckIcon width="22" height="22" />
+            오늘 완료
+          </p>
           <p className="stats-number__value">
             {stats.todayCount}
             <span className="stats-number__unit">회</span>
           </p>
         </div>
         <div className="card stats-number">
-          <p className="muted">지금까지</p>
+          <p className="stats-number__label">
+            <ChartIcon width="22" height="22" />
+            지금까지
+          </p>
           <p className="stats-number__value">
             {stats.totalCount}
             <span className="stats-number__unit">회</span>
@@ -96,7 +109,7 @@ function SummaryTab({ stats }) {
 
       <section className="card" aria-label="배지">
         <div className="stats-badges__header">
-          <strong>배지</strong>
+          <strong className="stats-section-title">보유 배지</strong>
           <span className="muted">
             {stats.badges.length} / {BADGES.length}
           </span>
@@ -247,7 +260,7 @@ export default function Stats() {
   const [tab, setTab] = useState('summary')
 
   return (
-    <Screen title="기록·통계">
+    <Screen title="기록·통계" align="center" className="stats">
       <div className="stats-tabs" role="tablist" aria-label="통계 보기">
         {TABS.map((t) => (
           <button
