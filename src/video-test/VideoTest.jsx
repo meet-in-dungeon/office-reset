@@ -6,7 +6,7 @@ import Button from '../components/Button'
 import Screen from '../components/Screen'
 import StretchVideo from '../components/StretchVideo'
 import data from '../data/stretches.json'
-import { useStretchBgm } from '../lib/bgm'
+import { useCalmBgm, useStretchBgm } from '../lib/bgm'
 import { MOVE_SECONDS } from '../lib/config'
 import { useSettings } from '../lib/settings'
 import {
@@ -130,10 +130,12 @@ export default function VideoTest() {
   const [remaining, setRemaining] = useState(0)
   const [running, setRunning] = useState(false)
   const [bgmOn, setBgmOn] = useState(false)
+  const [calmBgmOn, setCalmBgmOn] = useState(false)
   const move = TEST_MOVES[index]
 
   useStretchVoice({ id: move.id, narration: move.narration, active: running })
   useStretchBgm(bgmOn)
+  useCalmBgm(calmBgmOn)
 
   useEffect(() => {
     if (!running) return undefined
@@ -177,6 +179,16 @@ export default function VideoTest() {
           />
           BGM 틀기 (루틴의 동작·호흡 단계라고 가정. 소리 켜기도 체크해야 들립니다. 파일:
           public/audio/bgm.mp3)
+        </label>
+
+        <label style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
+          <input
+            type="checkbox"
+            checked={calmBgmOn}
+            onChange={(event) => setCalmBgmOn(event.target.checked)}
+          />
+          빡침 명상 BGM 틀기 (명상 화면에 있다고 가정. 소리 켜기도 체크해야 들립니다. 파일:
+          public/audio/calm.mp3)
         </label>
 
         <VoicePicker soundOn={settings.soundOn} />
