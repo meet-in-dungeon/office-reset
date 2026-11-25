@@ -186,7 +186,7 @@
       "id": "wrist-01",
       "part": "wrist",
       "name": "손목 앞쪽 늘이기",
-      "status": "active",
+      "status": "reserve",
       "type": "stretch",
       "steps": [
         "한 팔을 가슴 높이로 앞으로 펴고 손바닥을 앞쪽으로 향합니다. 손가락은 위를 향합니다.",
@@ -214,7 +214,7 @@
       "id": "wrist-02",
       "part": "wrist",
       "name": "손목 뒤쪽 늘이기",
-      "status": "reserve",
+      "status": "active",
       "type": "stretch",
       "steps": [
         "한 팔을 가슴 높이로 앞으로 펴고 손등이 위로 오게 합니다.",
