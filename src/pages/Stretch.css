@@ -81,18 +81,35 @@
   color: var(--color-text-muted);
 }
 
-/* 원형 카운트다운 */
+/* 원형 카운트다운: 준비 → 진행 → 완료 세 상태 (2026-11-25 팀 결정). 호흡 화면의 링도 이 기본 모양을 쓴다. */
 .stretch-count {
+  --count-ring: #8b75d6; /* 진행 링 */
+  --count-run-bg: #fff092; /* 진행 상태 안쪽 바탕 */
+  --count-done-bg: #cdefe0; /* 완료 상태 바탕 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.stretch-count__ring {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-5);
-  margin: 0;
+  gap: var(--space-4);
+}
+
+.stretch-count__caption {
+  min-height: 1.6em;
+  font-size: var(--text-large);
+  font-weight: 700;
 }
 
 .stretch-count__sticker {
-  width: 36px;
+  flex: none;
+  width: 40px;
   pointer-events: none;
 }
 
@@ -142,12 +159,96 @@
   font-variant-numeric: tabular-nums;
 }
 
-.count-ring--done .count-ring__value {
-  font-size: 1.5rem;
+/* 동작 화면의 카운트다운은 더 크게. 세 상태가 같은 크기라 바뀔 때 화면이 흔들리지 않는다 */
+.stretch-count .count-ring {
+  width: 132px;
+  height: 132px;
 }
 
-.count-ring--done .count-ring__bar {
-  stroke: var(--color-calm-soft);
+/* ① 준비: 흰 바탕 + 라벤더 테두리, 카운트는 시작하지 않는다 */
+.count-ring--prepare .count-ring__track {
+  stroke: var(--color-lavender);
+}
+
+.count-ring--prepare .count-ring__value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-text-muted);
+}
+
+/* ② 진행: 노란 바탕 + 보라 진행 링 + 큰 숫자 */
+.count-ring--run {
+  background: #fff092;
+  box-shadow: 0 6px 18px rgba(139, 117, 214, 0.28);
+}
+
+.stretch-count .count-ring--run {
+  background: var(--count-run-bg);
+}
+
+.count-ring--run .count-ring__track {
+  stroke: rgba(139, 117, 214, 0.22);
+}
+
+.count-ring--run .count-ring__bar {
+  stroke: var(--count-ring);
+}
+
+.count-ring--run .count-ring__value {
+  font-size: 3.25rem; /* 52px: 진행 중에는 숫자가 가장 눈에 띄게 */
+  font-weight: 900;
+  color: var(--color-text);
+}
+
+/* ③ 완료: 민트 바탕 + 체크 */
+.stretch-count .count-ring--done {
+  background: var(--count-done-bg);
+}
+
+.count-ring--done .count-ring__track {
+  stroke: rgba(42, 107, 88, 0.25);
+}
+
+.count-ring__check {
+  color: var(--color-calm);
+}
+
+/* 진행 상태에서 링 좌우에 붙는 노란 만화풍 강조선 (CSS 임시. 강조선 에셋이 오면 Asset이 그 이미지로 대신한다) */
+.count-accent {
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 56px;
+}
+
+.count-accent i {
+  position: absolute;
+  left: 0;
+  width: 26px;
+  height: 9px;
+  background: #ffe34d;
+  border: 1.5px solid var(--color-outline);
+  border-radius: 6px;
+}
+
+.count-accent i:nth-child(1) {
+  top: 4px;
+  transform: rotate(-28deg);
+}
+
+.count-accent i:nth-child(2) {
+  top: 23px;
+  left: 4px;
+}
+
+.count-accent i:nth-child(3) {
+  top: 42px;
+  transform: rotate(28deg);
+}
+
+/* 오른쪽 강조선은 좌우 반전 */
+.count-accent--right {
+  transform: scaleX(-1);
 }
 
 /* 번호가 있는 동작 설명 */

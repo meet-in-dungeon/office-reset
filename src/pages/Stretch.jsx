@@ -5,7 +5,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Asset from '../components/Asset'
 import Button from '../components/Button'
-import CountRing from '../components/CountRing'
+import CountRing, { CountAccent } from '../components/CountRing'
 import { AlertIcon, ChevronIcon } from '../components/Icons'
 import Screen from '../components/Screen'
 import data from '../data/stretches.json'
@@ -37,6 +37,18 @@ const BREATH_TOTAL_SECONDS = BREATH_COUNT * BREATH_CYCLE_SECONDS
 const BREATH_IN_TEXT = `${BREATH_IN_SECONDS}초간 들이쉬세요`
 const BREATH_OUT_TEXT = '편안하게 내쉬세요'
 
+// 카운트다운 상태별 안내 문구와 화면 낭독용 설명 (준비 → 진행 → 완료)
+const COUNT_CAPTIONS = {
+  prepare: '동작을 먼저 봐주세요',
+  run: '지금 따라 해 보세요!',
+  done: '잘했어요!',
+}
+const COUNT_LABELS = {
+  prepare: () => '준비 중',
+  run: (remaining) => `${remaining}초 남았어요`,
+  done: () => '완료',
+}
+
 // 카운트가 끝나기 전에도 "다음"을 눌러 동작을 넘길 수 있다. (확정)
 // 카운트 중에 누른 동작은 skippedMoves에 센다.
 const ALLOW_EARLY_NEXT = true
@@ -62,6 +74,11 @@ export default function Stretch() {
   const [stage, setStage] = useState(START_GATE_ENABLED && fromNotification ? 'start' : 'move')
   const [index, setIndex] = useState(0)
   const [remaining, setRemaining] = useState(MOVE_SECONDS)
+  // 동작 하나의 진행 순서 (2026-11-25 팀 결정): 음성 안내 → 영상 1회 재생 → 5초 카운트다운. 영상은 카운트 중에도 계속 반복.
+  // 둘 다 끝나야(moveReady) 카운트가 시작되고, 그 전에는 "준비" 상태다. 동작이 바뀔 때마다 처음부터 다시 한다.
+  const [voiceDone, setVoiceDone] = useState(false)
+  const [videoDone, setVideoDone] = useState(false)
+  const moveReady = voiceDone && videoDone
   const startedAtRef = useRef(null)
   const skippedRef = useRef(0)
   const doneRef = useRef(false)
@@ -72,8 +89,9 @@ export default function Stretch() {
     narration: currentMove?.narration,
     remaining,
     active: stage === 'move',
-  })                  
-useStretchBgm(stage === 'move' || stage === 'breath')
+    onDone: () => setVoiceDone(true), // 소리 꺼짐·읽기 실패도 "끝"으로 알려 준다
+  })
+  useStretchBgm(stage === 'move' || stage === 'breath')
   const finish = useCallback(
     (breathed) => {
       if (doneRef.current) return
@@ -104,9 +122,9 @@ useStretchBgm(stage === 'move' || stage === 'breath')
     }
   }, [stage, index, plan])
 
-  // 동작 화면 또는 호흡 화면에서 1초씩 줄어드는 카운트
+  // 동작 화면(준비가 끝난 뒤) 또는 호흡 화면에서 1초씩 줄어드는 카운트
   useEffect(() => {
-    if (stage !== 'move' && stage !== 'breath') return undefined
+    if (stage === 'move' ? !moveReady : stage !== 'breath') return undefined
     const timer = setInterval(() => {
       setRemaining((prev) => {
         if (prev <= 1) {
@@ -117,7 +135,7 @@ useStretchBgm(stage === 'move' || stage === 'breath')
       })
     }, 1000)
     return () => clearInterval(timer)
-  }, [stage, index])
+  }, [stage, index, moveReady])
 
   // 호흡은 정해진 횟수가 끝나면 저절로 마친다. (동작은 버튼을 눌러야 넘어간다.)
   useEffect(() => {
@@ -174,12 +192,16 @@ useStretchBgm(stage === 'move' || stage === 'breath')
   const move = moves[index]
   const isLastMove = index === moves.length - 1
   const countDone = remaining === 0
+  // 카운트다운 세 상태: 준비(음성·영상 1회 진행 중) → 진행(5초) → 완료
+  const countState = countDone ? 'done' : moveReady ? 'run' : 'prepare'
 
   const handleNext = () => {
     if (!countDone) skippedRef.current += 1
     if (!isLastMove) {
       setIndex(index + 1)
       setRemaining(MOVE_SECONDS)
+      setVoiceDone(false)
+      setVideoDone(false)
     } else if (isLastRoutine) {
       setStage('breath')
       setRemaining(BREATH_TOTAL_SECONDS)
@@ -202,14 +224,39 @@ useStretchBgm(stage === 'move' || stage === 'breath')
           </h2>
         </div>
 
-        <StretchVideo key={move.id} file={move.videoFile} name={move.name} />
+        <StretchVideo
+          key={move.id}
+          file={move.videoFile}
+          name={move.name}
+          playing={voiceDone}
+          onFirstPlayEnd={() => setVideoDone(true)}
+        />
 
-        <div className="stretch-count" aria-live="polite" aria-label={countDone ? '완료' : `${remaining}초`}>
-          <Asset file="sticker-accent.svg" kind="decor" className="stretch-count__sticker stretch-count__sticker--left" />
-          <CountRing ratio={remaining / MOVE_SECONDS} done={countDone}>
-            {countDone ? '완료' : String(remaining).padStart(2, '0')}
-          </CountRing>
-          <Asset file="sticker-accent.svg" kind="decor" className="stretch-count__sticker stretch-count__sticker--right" />
+        <div className={`stretch-count stretch-count--${countState}`}>
+          <div className="stretch-count__ring" role="status" aria-label={COUNT_LABELS[countState](remaining)}>
+            {countState === 'run' ? (
+              <Asset
+                file="sticker-accent.svg"
+                kind="decor"
+                className="stretch-count__sticker stretch-count__sticker--left"
+                fallback={<CountAccent side="left" />}
+              />
+            ) : null}
+            <CountRing ratio={countState === 'run' ? remaining / MOVE_SECONDS : 1} state={countState}>
+              {countState === 'prepare' ? '준비' : String(remaining).padStart(2, '0')}
+            </CountRing>
+            {countState === 'run' ? (
+              <Asset
+                file="sticker-accent.svg"
+                kind="decor"
+                className="stretch-count__sticker stretch-count__sticker--right"
+                fallback={<CountAccent side="right" />}
+              />
+            ) : null}
+          </div>
+          <p className="stretch-count__caption" aria-live="polite">
+            {COUNT_CAPTIONS[countState]}
+          </p>
         </div>
 
         <ol className="stretch-steps">
