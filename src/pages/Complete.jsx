@@ -34,7 +34,7 @@ function cardLabel(card) {
 
 function BadgeCard({ badge, index }) {
   return (
-    <li className="complete-badge" style={{ animationDelay: `${index * 0.15}s` }}>
+    <li className="complete-badge" style={{ animationDelay: `${index * 0.15}s`, '--badge-index': index }}>
       <p className="complete-badge__label">{cardLabel(badge)}</p>
       <BadgeImage badge={badge} tier={badge.tier} className="complete-badge__icon" />
       <p className="complete-badge__name">

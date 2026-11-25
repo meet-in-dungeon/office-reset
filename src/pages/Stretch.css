@@ -83,7 +83,9 @@
   display: inline-block;
   padding: 2px var(--space-4);
   background: var(--color-sun);
+  border: 1px solid var(--color-outline);
   border-radius: var(--radius-round);
+  transform: rotate(-2deg);
 }
 
 .stretch-video-slot {
