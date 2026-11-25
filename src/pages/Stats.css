@@ -258,6 +258,18 @@
   text-align: right;
 }
 
+/* 시연 모드 패널 (#/stats?demo=1 일 때만 보인다) */
+.stats-demo {
+  border: 2px dashed var(--color-border);
+}
+
+.stats-demo__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
 .stats-tip {
   margin-top: var(--space-3);
   font-size: var(--text-small);

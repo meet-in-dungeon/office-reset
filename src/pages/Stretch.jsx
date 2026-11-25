@@ -6,28 +6,37 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Button from '../components/Button'
 import Screen from '../components/Screen'
 import data from '../data/stretches.json'
-import { BREATH_COUNT, MOVE_SECONDS, ROUTINE_MOVE_COUNT, START_GATE_ENABLED } from '../lib/config'
+import { getLastNotifiedAt } from '../lib/alerts'
+import {
+  BREATH_COUNT,
+  BREATH_EXHALE_SECONDS,
+  BREATH_INHALE_SECONDS,
+  MOVE_SECONDS,
+  ROUTINE_MOVE_COUNT,
+  START_GATE_ENABLED,
+} from '../lib/config'
 import { planRoutine, saveShownIds } from '../lib/pickMoves'
 import { recordRoutine } from '../lib/records'
 import { navigate, ROUTES, useRoute } from '../lib/router'
 import { isLastRoutine } from '../lib/schedule'
 import StretchVideo from '../components/StretchVideo'
 import { useStretchVoice } from '../lib/voice'
+import { useStretchBgm } from '../lib/bgm'
 import { nowLocalISO } from '../lib/time'
 import './Stretch.css'
 
-// 하루 마지막 루틴에서만 나오는 호흡. 횟수는 공통 설정 BREATH_COUNT(5회)를 따른다.
-// 호흡 1회의 길이는 팀 미확정이라 아래 두 값은 시작값이다. (들이쉬기 4초 + 내쉬기 4초)
-const BREATH_IN_SECONDS = 4
-const BREATH_OUT_SECONDS = 4
+// 하루 마지막 루틴에서만 나오는 호흡. 횟수와 1회 길이는 공통 설정(config.js)을 따른다.
+// 빡침 명상 화면도 같은 값을 쓰므로 두 화면의 호흡 속도가 맞는다. (1회 길이는 들이쉬기 4초 + 내쉬기 4초로 확정)
+const BREATH_IN_SECONDS = BREATH_INHALE_SECONDS
+const BREATH_OUT_SECONDS = BREATH_EXHALE_SECONDS
 const BREATH_CYCLE_SECONDS = BREATH_IN_SECONDS + BREATH_OUT_SECONDS
 const BREATH_TOTAL_SECONDS = BREATH_COUNT * BREATH_CYCLE_SECONDS
-const BREATH_IN_TEXT = '4초간 들이쉬세요'
+const BREATH_IN_TEXT = `${BREATH_IN_SECONDS}초간 들이쉬세요`
 const BREATH_OUT_TEXT = '편안하게 내쉬세요'
 
-// 카운트가 끝나기 전에도 "다음"을 누를 수 있게 할지. (팀 미확정, 지금은 끝나야 누를 수 있다)
-// true로 바꾸면 카운트 중에 누른 동작이 skippedMoves에 센다.
-const ALLOW_EARLY_NEXT = false
+// 카운트가 끝나기 전에도 "다음"을 눌러 동작을 넘길 수 있다. (확정)
+// 카운트 중에 누른 동작은 skippedMoves에 센다.
+const ALLOW_EARLY_NEXT = true
 
 // "하루의 마지막 루틴"인지 알아낸다. 판정은 민지 님의 isLastRoutine()이 한다.
 // (마지막 알림 시각 이후에 시작한 루틴이고, 오늘 아직 호흡을 하지 않았으면 true)
@@ -43,6 +52,8 @@ export default function Stretch() {
   // 이번 루틴의 동작 고르기와 마지막 루틴 여부는 화면이 열릴 때 한 번만 정한다.
   const [plan] = useState(() => planRoutine(data.stretches, ROUTINE_MOVE_COUNT))
   const [isLastRoutine] = useState(() => checkLastRoutineOfDay(query.last))
+  // 알림이 뜬 시각: 알림으로 들어왔을 때만, 화면이 열릴 때 한 번 읽는다. (루틴 도중 새 알림이 떠도 바뀌지 않게)
+  const [notifiedAt] = useState(() => (fromNotification ? getLastNotifiedAt() : null))
   const moves = plan.moves
 
   const [stage, setStage] = useState(START_GATE_ENABLED && fromNotification ? 'start' : 'move')
@@ -59,7 +70,7 @@ export default function Stretch() {
     remaining,
     active: stage === 'move',
   })                  
-
+useStretchBgm(stage === 'move' || stage === 'breath')
   const finish = useCallback(
     (breathed) => {
       if (doneRef.current) return
@@ -75,10 +86,11 @@ export default function Stretch() {
         completed: true,
         skippedMoves: skippedRef.current,
         fromNotification,
+        notifiedAt, // 알림 없이 시작했으면 null
       })
       navigate(ROUTES.complete)
     },
-    [moves, fromNotification],
+    [moves, fromNotification, notifiedAt],
   )
 
   // 첫 동작이 보이기 시작하면 시작 시각을 적고, 이번에 나온 동작을 기억한다.
@@ -140,6 +152,11 @@ export default function Stretch() {
           <p className="stretch-count" aria-live="polite">
             {phaseLeft}
           </p>
+          {/* 호흡은 넘기기가 아니라 중단이다. 호흡을 마치지 못했으니 breathCount는 0으로 기록하고 완료 화면으로 간다.
+              (동작 3개는 마쳤으므로 루틴 기록은 저장되고, 하루 완성 배지는 호흡을 마친 루틴에서만 나간다.) */}
+          <Button variant="ghost" onClick={() => finish(false)}>
+            중단
+          </Button>
         </div>
       </Screen>
     )

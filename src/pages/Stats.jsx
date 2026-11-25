@@ -2,12 +2,13 @@
 // [요약] 오늘 완료 여부, 오늘·전체 완료 횟수, 배지함(받은 배지 + 아직 못 받은 배지 + 히든)
 // [이번 주] 상세 통계: 평일 연속 기록, 요일별 횟수, 부위별 횟수, 시간대별 횟수, 빡침 명상 횟수 (월~금)
 // 기록은 브라우저(localStorage)에 있어서 새로고침해도 유지된다. (src/lib/records.js)
+// 발표용 시연 모드: 주소를 #/stats?demo=1 로 열면 맨 아래에 "샘플 기록 채우기", "기록 초기화" 버튼이 보인다.
 import { useState } from 'react'
 import Button from '../components/Button'
 import Screen from '../components/Screen'
 import { BADGES, TIER_NAMES } from '../lib/badges'
-import { getStats, getWeeklyStats, PART_NAMES } from '../lib/records'
-import { navigate, ROUTES } from '../lib/router'
+import { fillDemoRecords, getStats, getWeeklyStats, PART_NAMES, resetRecords } from '../lib/records'
+import { navigate, ROUTES, useRoute } from '../lib/router'
 import './Stats.css'
 
 // '2026-11-24T13:05:10' → '11월 24일'
@@ -235,6 +236,36 @@ function WeekTab({ week, todayDone }) {
   )
 }
 
+// 시연 모드 패널. 버튼을 누르면 기록을 바꾸고 화면을 새로 읽는다.
+function DemoPanel() {
+  function fill() {
+    fillDemoRecords()
+    window.location.reload()
+  }
+  function reset() {
+    if (!window.confirm('기록, 배지, 빡침 명상 기록을 모두 지울까요? (설정은 남아요)')) return
+    resetRecords()
+    window.location.reload()
+  }
+  return (
+    <section className="card stats-demo" aria-label="시연 모드">
+      <strong>🎬 시연 모드</strong>
+      <p className="muted stats-tip">
+        샘플 기록은 지난 3주 평일 기록과 빡침 명상 9번이에요. 오늘과 해커톤 기간은 비워 둬서, 지금 루틴을 하면 숨겨진 배지가
+        나와요.
+      </p>
+      <div className="stats-demo__actions">
+        <Button variant="soft" block onClick={fill}>
+          샘플 기록 채우기
+        </Button>
+        <Button variant="ghost" block onClick={reset}>
+          기록 초기화
+        </Button>
+      </div>
+    </section>
+  )
+}
+
 const TABS = [
   { id: 'summary', label: '요약' },
   { id: 'week', label: '이번 주' },
@@ -245,6 +276,8 @@ export default function Stats() {
   const [stats] = useState(() => getStats())
   const [week] = useState(() => getWeeklyStats())
   const [tab, setTab] = useState('summary')
+  const { query } = useRoute()
+  const demo = query.demo === '1'
 
   return (
     <Screen title="기록·통계">
@@ -274,6 +307,8 @@ export default function Stats() {
       <Button variant="soft" block onClick={() => navigate(ROUTES.home)}>
         메인으로
       </Button>
+
+      {demo ? <DemoPanel /> : null}
     </Screen>
   )
 }
