@@ -66,7 +66,7 @@ export default function Stretch() {
   const currentMove = moves[index]
   useStretchVoice({
     id: currentMove?.id,
-    narration: currentMove?.narration,
+   narration: currentMove?.name,
     remaining,
     active: stage === 'move',
   })                  
