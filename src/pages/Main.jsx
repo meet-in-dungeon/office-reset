@@ -89,7 +89,7 @@ export default function Main() {
         <div className="home-bubble">
           <Asset file="rays-pink.png" kind="decor" className="home-bubble__rays" />
           <Asset file="speech-bubble.svg" kind="decor" className="home-bubble__shape" />
-          <p className="home-bubble__text">
+          <p className={`home-bubble__text${bubbleLines[0] === '오늘도 수고했어요!' ? ' home-bubble__text--compact' : ''}`}>
             <strong>{bubbleLines[0]}</strong>
             <span>{bubbleLines[1]}</span>
           </p>

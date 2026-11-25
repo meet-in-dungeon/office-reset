@@ -428,3 +428,12 @@
     transition: none;
   }
 }
+
+/* 하루 끝 문구("오늘도 수고했어요!")는 글자가 길어서 말풍선 안에 맞도록 한 단계 작게. 다른 문구는 그대로 */
+.home-bubble__text--compact strong {
+  font-size: 18px;
+}
+
+.home-bubble__text--compact > span {
+  font-size: 14px;
+}
