@@ -18,17 +18,18 @@
 
 .home-calm .btn--round {
   background: var(--color-alert);
+  border: 2px solid var(--color-outline);
 }
 
 .home-calm__burst {
   position: absolute;
-  top: -22px;
-  left: -50px;
+  top: -22px; /* 화면 위쪽 여백(24px) 안에 들어가도록 유지 */
+  left: -66px;
   z-index: 2;
   display: grid;
   place-items: center;
-  width: 58px;
-  height: 58px;
+  width: 76px; /* 기존 58px에서 약 30% 확대 */
+  height: 76px;
   pointer-events: none;
 }
 
@@ -40,7 +41,7 @@
 
 .home-calm__burst-text {
   grid-area: 1 / 1;
-  font-size: 0.9375rem;
+  font-size: 1.125rem;
   font-weight: 900;
   letter-spacing: -0.04em;
   color: var(--color-text);
@@ -82,8 +83,11 @@
 
 .home-hero__bubble {
   flex: 1;
+  /* 캐릭터 머리 오른쪽의 빈 공간까지 살짝 넓힌다 (너비 약 20%, 높이 약 22% 확대) */
+  margin-left: -28px;
+  min-height: 104px;
   margin-top: var(--space-5);
-  padding: var(--space-3);
+  padding: var(--space-4) 20px;
   font-size: var(--text-small);
   font-weight: 400; /* 첫 문장만 굵게(strong), 나머지는 일반 굵기 */
   line-height: 1.45;
