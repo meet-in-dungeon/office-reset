@@ -1,0 +1,14 @@
+[
+  {
+    "id": "c_mock_1",
+    "startedAt": "2026-11-23T15:10:00",
+    "completedAt": "2026-11-23T15:10:30",
+    "breathCount": 3
+  },
+  {
+    "id": "c_mock_2",
+    "startedAt": "2026-11-24T14:20:00",
+    "completedAt": "2026-11-24T14:20:30",
+    "breathCount": 3
+  }
+]

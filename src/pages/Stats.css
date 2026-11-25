@@ -1,0 +1,274 @@
+/* 통계 화면 전용 스타일 (담당: 이주연). 색·여백은 index.css의 공통 값을 쓴다. */
+
+.stats-today {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.stats-today--done {
+  background: var(--color-primary-soft);
+}
+
+.stats-today__icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.stats-today__title {
+  font-size: var(--text-large);
+  font-weight: 700;
+}
+
+.stats-numbers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.stats-number {
+  text-align: center;
+}
+
+.stats-number__value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.stats-number__unit {
+  margin-left: var(--space-1);
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.stats-badges__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.stats-badges {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stats-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  text-align: center;
+  word-break: keep-all; /* 한글이 글자 중간에서 끊기지 않게 단어 단위로 줄바꿈 */
+}
+
+.stats-badge__icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  font-size: 2rem;
+  background: var(--color-primary-soft);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-round);
+}
+
+.stats-badge__name {
+  font-size: var(--text-small);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* 등급 글자 (브론즈·실버·골드). 색만으로 구분하지 않게 글자로 보여준다 */
+.stats-badge__tier {
+  padding: 0 var(--space-2);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-round);
+}
+
+.stats-badge__sub {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+/* 아직 못 받은 배지: 회색으로 흐리게 */
+.stats-badge--locked .stats-badge__icon {
+  filter: grayscale(1);
+  opacity: 0.45;
+  background: var(--color-bg);
+  border-color: var(--color-border);
+  border-style: dashed;
+}
+
+.stats-badge--locked .stats-badge__name {
+  color: var(--color-text-muted);
+}
+
+.stats-note {
+  text-align: center;
+}
+
+/* 탭: [요약] [이번 주] */
+.stats-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-round);
+}
+
+.stats-tab {
+  padding: var(--space-2) var(--space-3);
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-round);
+  cursor: pointer;
+}
+
+.stats-tab--active {
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.stats-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.stats-streak {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: var(--color-primary-soft);
+}
+
+/* 요일별 세로 막대 */
+.stats-week {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stats-week__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.stats-week__count {
+  font-size: var(--text-small);
+  font-weight: 700;
+}
+
+.stats-week__track {
+  display: flex;
+  align-items: flex-end;
+  width: 28px;
+  height: 96px;
+  background: var(--color-bg);
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+}
+
+.stats-week__fill {
+  width: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-md, 8px);
+}
+
+.stats-week__label {
+  font-size: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.stats-week__day--today .stats-week__label {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* 가로 막대 (부위별, 시간대별) */
+.stats-bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stats-bar {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr 3rem;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.stats-bar__label {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--text-small);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.stats-bar__range {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.stats-bar__track {
+  height: 12px;
+  background: var(--color-bg);
+  border-radius: var(--radius-round);
+  overflow: hidden;
+}
+
+.stats-bar__fill {
+  display: block;
+  height: 100%;
+  background: var(--color-calm);
+  border-radius: var(--radius-round);
+}
+
+.stats-bar__value {
+  font-size: var(--text-small);
+  font-weight: 700;
+  text-align: right;
+}
+
+.stats-tip {
+  margin-top: var(--space-3);
+  font-size: var(--text-small);
+}
+
+/* 화면에는 안 보이고 화면 낭독기만 읽는 글자 */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
