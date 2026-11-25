@@ -1,15 +1,22 @@
 // 온보딩 화면 (담당: 김민지)
-// 1차: 서비스 소개 + 업무 시간·알림 주기 설정 한 장. 3페이지 완성(프롤로그·알림 설정·사용 가이드/주의사항)은 2차.
-// 위쪽 소개 영역(카피+캐릭터) 아래에 설정 카드가 이어지고, 시작하기 버튼은 화면 아래에 붙어 있다.
+// 구성: 텍스트 로고 · 메인 카피 · 히어로(캐릭터·장식) · '이렇게 쓰세요' 안내 카드 · 설정 카드 · 하단 시작하기 버튼.
+// 시안 기준으로 배치하고, 시작하기 버튼은 메인 화면의 노란 버튼 스타일(Main.css)을 그대로 재사용한다.
+// 설정 카드(업무 시간, 알림 권한)와 주의 카드는 기존 기능이므로 그대로 둔다.
 import Asset from '../components/Asset'
 import Button from '../components/Button'
-import { PlayIcon } from '../components/Icons'
 import Screen from '../components/Screen'
 import NotificationPermission from '../components/NotificationPermission'
 import WorkTimeSettings from '../components/WorkTimeSettings'
 import { navigate, ROUTES } from '../lib/router'
 import { updateSettings } from '../lib/settings'
+import '../pages/Main.css' // 시작하기 버튼 스타일 재사용 (.home-actions .home-cta--stretch)
 import './Onboarding.css'
+
+const STEPS = [
+  '정해진 시각(평일)에 알림이 오면 눌러서 스트레칭을 시작해요.',
+  '동작 3개를 5초씩 따라 해요. 하루의 마지막 루틴에는 호흡 5회가 붙어요.',
+  '루틴을 마치면 배지를 받고, 통계에서 기록을 볼 수 있어요.',
+]
 
 export default function Onboarding() {
   function start() {
@@ -20,37 +27,47 @@ export default function Onboarding() {
   return (
     <Screen
       className="onboarding"
-      title={
-        <span className="brand">
-          삭신이 쑤신다<span className="brand__tag">(가제)</span>
-        </span>
-      }
+      title={<Asset file="logo-text-only.png" kind="decor" alt="잠깐만 휴식" className="onboarding-logo" />}
+      titleClassName="onboarding-logo-title"
     >
-      <section className="onboarding-hero" aria-label="서비스 소개">
-        <h2 className="onboarding-hero__copy">
-          업무 중에도
+      <section className="onboarding-intro" aria-label="서비스 소개">
+        <h2 className="onboarding-copy">
+          업무 중에도 잠깐,
           <br />
-          잠깐, 몸과 마음을
-          <br />
-          <span className="highlight">리셋</span> 해요!
+          몸과 마음을 <span className="onboarding-copy__hl">휴식</span> 시켜요!
         </h2>
-        <p className="onboarding-hero__desc">
+        <p className="onboarding-desc">
           스트레칭과 호흡으로 뻐근함은 풀고,
           <br />
           집중력은 다시 채우세요.
         </p>
-        <div className="onboarding-hero__character">
-          <Asset file="sticker-accent.svg" kind="decor" className="onboarding-hero__sticker" />
-          <Asset file="character-welcome.webp" size="권장 720×900" alt="안내 캐릭터" className="onboarding-hero__img" />
+
+        <div className="onboarding-hero">
+          <Asset file="lavender-cloud-bg.png" kind="decor" className="onboarding-wave" />
+          <Asset file="rays-yellow.png" kind="decor" className="onboarding-deco onboarding-deco--rays-yellow" />
+          <Asset file="rays-pink.png" kind="decor" className="onboarding-deco onboarding-deco--rays-pink" />
+          <Asset file="star-blue.png" kind="decor" className="onboarding-deco onboarding-deco--star-blue" />
+          <Asset file="star-orange.png" kind="decor" className="onboarding-deco onboarding-deco--star-orange" />
+          <Asset file="sparkle-yellow-pair.png" kind="decor" className="onboarding-deco onboarding-deco--sparkle-pair" />
+          <Asset file="motion-puff.svg" kind="decor" className="onboarding-deco onboarding-deco--puff" />
+          <div className="onboarding-hero__character">
+            <Asset file="character-welcome.webp" size="권장 720×900" alt="안내 캐릭터" />
+          </div>
         </div>
       </section>
 
-      <div className="card onboarding-guide">
-        <strong className="section-title">이렇게 쓰세요</strong>
+      <div className="onboarding-guide">
+        <div className="onboarding-guide__badge">
+          <Asset file="onboarding-howto-sticker.png" kind="decor" alt="이렇게 쓰세요" className="onboarding-guide__sticker" />
+          <Asset file="rays-pink.png" kind="decor" className="onboarding-guide__rays" />
+        </div>
         <ol className="onboarding-steps">
-          <li>정해진 시각(평일)에 알림이 오면 눌러서 스트레칭을 시작해요.</li>
-          <li>동작 3개를 5초씩 따라 해요. 하루의 마지막 루틴에는 호흡 5회가 붙어요.</li>
-          <li>루틴을 마치면 배지를 받고, 통계에서 기록을 볼 수 있어요.</li>
+          {STEPS.map((text, index) => (
+            <li key={text}>
+              <span className="onboarding-steps__num" aria-hidden="true">{index + 1}</span>
+              <span className="onboarding-steps__text">{text}</span>
+            </li>
+          ))}
         </ol>
       </div>
 
@@ -78,9 +95,13 @@ export default function Onboarding() {
       </div>
 
       <div className="onboarding-start">
-        <Button size="large" block onClick={start}>
-          시작하기 <PlayIcon className="icon" width="16" height="16" />
-        </Button>
+        <div className="home-actions">
+          <Button size="large" block className="home-cta home-cta--stretch" onClick={start}>
+            <span>시작하기</span>
+            <Asset file="icon-play.png" kind="decor" className="home-cta__icon" />
+            <Asset file="sparkle.svg" kind="decor" className="home-cta__spark" />
+          </Button>
+        </div>
       </div>
     </Screen>
   )
