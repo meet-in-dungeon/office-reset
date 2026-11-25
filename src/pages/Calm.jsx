@@ -15,6 +15,7 @@ import { recordCalm } from '../lib/records'
 import { navigate, ROUTES } from '../lib/router'
 import { nowLocalISO } from '../lib/time'
 import { useCalmBgm } from '../lib/bgm'
+import '../pages/Main.css' // 공통 3D 버튼 스타일 재사용
 import './Calm.css'
 
 // 배경 이미지 주소. 사이트가 하위 경로(예: /office-reset/)에 올라가도 맞도록 BASE_URL을 붙인다.
@@ -96,9 +97,17 @@ function DoneStage({ newBadges, tierUps }) {
       <div className="calm-done" aria-live="polite">
         <div className="calm-done__character">
           <Asset file="character-calm.webp" size="권장 560×560" alt="명상 캐릭터" />
+          <Asset file="sparkle-yellow-pair.png" kind="decor" className="calm-done__spark calm-done__spark--right" />
+          <Asset file="sparkle-yellow-pair.png" kind="decor" className="calm-done__spark calm-done__spark--left" />
         </div>
-        <p className="calm-done__title">{DONE_MESSAGE}</p>
-        <p className="muted">숨 {CALM_BREATH_COUNT}번에 마음이 조금 가벼워졌나요?</p>
+        <p className="calm-done__title">
+          <span className="calm-done__hl">{DONE_MESSAGE}</span>
+        </p>
+        <p className="muted">
+          마음이 조금 가벼워지셨나요?
+          <br />
+          필요하다면 몇 번 더 반복해 보세요.
+        </p>
         {newBadges.map((badge) => (
           <BadgeCard key={badge.id} badge={badge} label="새 배지" />
         ))}
@@ -144,7 +153,12 @@ export default function Calm() {
 
   return (
     <Screen
-      title="잠깐 숨 돌리기"
+      title={
+        <>
+          <span className="calm-title__lead">마음의 정화가 필요하신가요?</span>
+          <span className="calm-title__main">잠깐 여기서 쉬고 가세요.</span>
+        </>
+      }
       align="center"
       className="calm-screen"
       style={LANDSCAPE_STYLE}
@@ -154,14 +168,18 @@ export default function Calm() {
         {done ? <DoneStage newBadges={result?.newBadges ?? []} tierUps={result?.tierUps ?? []} /> : <BreathingStage step={step} />}
       </div>
 
-      <div className="calm-actions">
+      <div className="calm-actions home-actions">
         {done ? (
-          <Button variant="soft" block onClick={restart}>
-            한 번 더 하기
+          <Button block className="home-cta home-cta--stats" onClick={restart}>
+            <span>한 번 더 하기</span>
           </Button>
         ) : null}
-        <Button variant={done ? 'primary' : 'soft'} block onClick={() => navigate(ROUTES.home)}>
-          <ChevronIcon dir="left" className="icon" width="18" height="18" /> 돌아가기
+        <Button
+          block
+          className={done ? 'home-cta home-cta--stretch' : 'home-cta calm-back'}
+          onClick={() => navigate(ROUTES.home)}
+        >
+          <ChevronIcon dir="left" className="icon" width="20" height="20" /> <span>돌아가기</span>
         </Button>
       </div>
     </Screen>

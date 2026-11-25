@@ -23,13 +23,6 @@
   position: relative;
 }
 
-/* 제목이 배경 나뭇잎과 겹쳐 읽히지 않아서 제목 뒤에만 반투명 흰색(85%) 바탕을 둔다. 배경 이미지는 그대로 */
-.calm-screen .screen__title {
-  padding: 2px var(--space-3);
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: var(--radius-sm);
-}
-
 .calm {
   flex: 1;
   display: flex;
@@ -63,9 +56,15 @@
   width: 240px;
   height: 240px;
   border-radius: var(--radius-round);
-  background: radial-gradient(circle, rgba(205, 197, 246, 0.85) 0%, rgba(205, 197, 246, 0.55) 70%, rgba(255, 255, 255, 0.5) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  /* 하루 마지막 호흡 원과 같은 입체감. 투명도를 남겨 뒤의 자연 배경이 은은하게 비친다 */
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 38%),
+    radial-gradient(circle at 50% 55%, rgba(205, 197, 246, 0.78) 0%, rgba(176, 160, 238, 0.6) 70%, rgba(150, 130, 226, 0.5) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.9);
   box-shadow:
+    inset -8px -12px 22px rgba(120, 98, 208, 0.22),
+    inset 6px 8px 14px rgba(255, 255, 255, 0.45),
+    0 10px 22px rgba(120, 98, 208, 0.2),
     0 0 0 14px rgba(205, 197, 246, 0.28),
     0 0 0 15px rgba(255, 255, 255, 0.7),
     0 0 0 32px rgba(205, 197, 246, 0.16),
@@ -85,42 +84,47 @@
 }
 
 .calm-circle__text {
-  font-size: var(--text-title);
-  font-weight: 800;
+  font-size: 1.75rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
   color: var(--color-text);
 }
 
 .calm-guide {
-  font-size: var(--text-large);
-  font-weight: 600;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--main-outline);
 }
 
 .calm-count {
-  font-size: var(--text-large);
-  font-weight: 600;
-  color: var(--color-text-muted);
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--main-outline);
 }
 
 .calm-count__now {
-  font-weight: 800;
-  color: var(--color-text);
+  font-size: 1.5rem;
+  font-weight: 900;
 }
 
 .calm-progress {
   display: flex;
-  gap: var(--space-2);
+  gap: 10px; /* 하루 마지막 호흡 화면의 진행 점과 같은 디자인 */
   justify-content: center;
 }
 
 .calm-progress__dot {
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   border-radius: var(--radius-round);
-  background: var(--color-disabled);
+  background: #ffffff;
+  border: 1px solid var(--main-outline);
 }
 
 .calm-progress__dot--done {
-  background: #8c7fe0; /* 라벤더 점 (진행 표시) */
+  background: #a99ae4;
+  border-color: #a99ae4;
 }
 
 .calm-done {
@@ -131,10 +135,22 @@
   text-align: center;
 }
 
+/* 명상 캐릭터를 화면의 중심으로: 크게 키우고, 노란 반짝이는 두 개만 */
 .calm-done__character {
-  width: 180px;
-  height: 180px;
+  position: relative;
+  width: 260px;
+  height: 260px;
 }
+
+.calm-done__spark {
+  position: absolute;
+  width: 15% !important;
+  height: auto !important;
+  pointer-events: none;
+}
+
+.calm-done__spark--right { right: 4%; top: 6%; }
+.calm-done__spark--left { left: 6%; top: 24%; width: 11% !important; }
 
 .calm-done__character .asset,
 .calm-done__character .asset-placeholder {
@@ -144,17 +160,46 @@
 }
 
 .calm-done__title {
-  font-size: var(--text-title);
-  font-weight: 700;
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 1.3;
+  color: var(--main-outline);
 }
 
+/* 메인 말풍선과 같은 둥근 형광펜: 글자 하단 약 46%, 양끝이 완전히 둥글다 */
+.calm-done__hl {
+  position: relative;
+  isolation: isolate;
+  display: inline-block;
+  padding: 0 4px;
+}
+
+.calm-done__hl::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  bottom: 6%;
+  height: 46%;
+  z-index: -1;
+  background: #ffe522;
+  border-radius: 999px;
+}
+
+/* 배지 카드: 공통 카드 스타일(흰색, 진한 외곽선, 보라 오프셋 그림자) */
 .calm-badge {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   width: 100%;
   text-align: left;
-  border: 1px solid var(--color-border);
+  padding-block: 14.4px; /* 내부 상하 여백 약 10% 축소 */
+  background: #ffffff;
+  border: 3px solid var(--main-outline);
+  border-radius: 24px;
+  box-shadow: 3px 5px 0 var(--main-shadow);
 }
 
 .calm-badge__icon {
@@ -168,7 +213,7 @@
 
 .calm-badge__label {
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: 800;
   color: var(--color-calm);
 }
 
@@ -191,4 +236,57 @@
   .calm-circle {
     transition: none;
   }
+}
+
+
+/* 돌아가기(명상 중): 메인 화면의 흰색 버튼. 크기만 다른 화면과 맞춘다 */
+.calm-actions .home-cta {
+  height: 56px;
+  font-size: 18px;
+}
+
+.calm-actions .home-cta--stats,
+.calm-actions .home-cta--stretch {
+  height: 67px;
+  font-size: 21px;
+}
+
+/* 상단 안내 문구: 소리 버튼(오른쪽 위, 그대로) 아래 가운데에 놓는다. 박스·외곽선 없이 짙은 네이비 글자만 쓰고,
+   위쪽 나뭇잎과 겹치지 않도록 소리 버튼 줄 아래로 간격을 둔다 */
+.calm-screen .screen__header {
+  display: block;
+  min-height: 0;
+  padding-top: calc(var(--tap-size) + 30px);
+  text-align: center;
+}
+
+.calm-screen .screen__header-right {
+  top: 0;
+  transform: none;
+}
+
+.calm-screen .screen__title {
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: -0.02em;
+  color: #1b2748;
+  background: none;
+  border-radius: 0;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
+}
+
+.calm-title__lead {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.calm-title__main {
+  display: block;
+  margin-top: 3px; /* 두 문장 사이: 이전보다 눈에 보이는 간격을 약 1/3 줄임 */
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.3;
 }
