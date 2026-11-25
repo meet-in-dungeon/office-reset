@@ -4,10 +4,11 @@
 // 알림으로 들어오면 주소가 #/stretch?from=notification 이 된다. (useRoute().query.from)
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Asset from '../components/Asset'
+import '../pages/Main.css' // 다음 버튼 스타일 재사용 (.home-cta--stretch)
 import Button from '../components/Button'
 import BreathCircle from '../components/BreathCircle'
 import SoundToggle from '../components/SoundToggle'
-import CountRing, { CountAccent } from '../components/CountRing'
+import CountRing from '../components/CountRing'
 import { AlertIcon, ChevronIcon, PlayIcon } from '../components/Icons'
 import Screen from '../components/Screen'
 import data from '../data/stretches.json'
@@ -245,15 +246,35 @@ export default function Stretch() {
   }
 
   return (
-    <Screen title="스트레칭" align="center" className="stretch-screen" headerRight={<SoundToggle />}>
+    <Screen
+      title={<span className="visually-hidden">스트레칭</span>}
+      className="stretch-screen stretch-screen--move"
+    >
       <div className="stretch-move">
-        <div className="stretch-head">
+        <div className="stretch-topbar">
+          <button type="button" className="stretch-back" aria-label="메인 화면으로" onClick={() => navigate(ROUTES.home)}>
+            <ChevronIcon width="20" height="20" />
+          </button>
+          <div className="stretch-pills" aria-hidden="true">
+            {moves.map((m, i) => (
+              <span key={m.id} className={`stretch-pill${i <= index ? ' stretch-pill--on' : ''}`} />
+            ))}
+          </div>
           <p className="stretch-progress">
             <span className="stretch-progress__now">{index + 1}</span> / {moves.length}
           </p>
+          <SoundToggle />
+        </div>
+
+        <div className="stretch-head">
           <h2 className="stretch-name">
-            <span className="stretch-name__label">
-              {move.name.includes(data.parts[move.part]) ? move.name : `${data.parts[move.part]} · ${move.name}`}
+            <span className="stretch-name__banner">
+              <Asset file="rays-yellow.png" kind="decor" className="stretch-name__rays stretch-name__rays--left" />
+              <Asset file="stretch-title-banner.png" kind="decor" className="stretch-name__bg" />
+              <span className="stretch-name__label">
+                {move.name.includes(data.parts[move.part]) ? move.name : `${data.parts[move.part]} · ${move.name}`}
+              </span>
+              <Asset file="rays-pink.png" kind="decor" className="stretch-name__rays stretch-name__rays--right" />
             </span>
           </h2>
         </div>
@@ -267,24 +288,14 @@ export default function Stretch() {
 
         <div className={`stretch-count stretch-count--${countState}`}>
           <div className="stretch-count__ring" role="status" aria-label={COUNT_LABELS[countState](remaining)}>
-            {countState === 'run' ? (
-              <Asset
-                file="sticker-accent.svg"
-                kind="decor"
-                className="stretch-count__sticker stretch-count__sticker--left"
-                fallback={<CountAccent side="left" />}
-              />
+            {countState !== 'done' ? (
+              <Asset file="rays-yellow.png" kind="decor" className="stretch-count__sticker stretch-count__sticker--left" />
             ) : null}
             <CountRing ratio={countState === 'run' ? remaining / MOVE_SECONDS : 1} state={countState}>
               {countState === 'prepare' ? '준비' : String(remaining).padStart(2, '0')}
             </CountRing>
-            {countState === 'run' ? (
-              <Asset
-                file="sticker-accent.svg"
-                kind="decor"
-                className="stretch-count__sticker stretch-count__sticker--right"
-                fallback={<CountAccent side="right" />}
-              />
+            {countState !== 'done' ? (
+              <Asset file="rays-yellow.png" kind="decor" className="stretch-count__sticker stretch-count__sticker--right" />
             ) : null}
           </div>
           <p className="stretch-count__caption" aria-live="polite">
@@ -312,9 +323,18 @@ export default function Stretch() {
 
         {/* 다음 버튼은 화면 아래에 붙어 있어서 스크롤 없이 누를 수 있다. 버튼 위 내용은 가려지지 않는다 */}
         <div className="stretch-next">
-          <Button size="large" block onClick={handleNext} disabled={!countDone && !ALLOW_EARLY_NEXT}>
-            {isLastMove && !isLastRoutine ? '마치기' : '다음'} <ChevronIcon className="icon" width="18" height="18" />
-          </Button>
+          <div className="home-actions">
+            <Button
+              size="large"
+              block
+              className="home-cta home-cta--stretch stretch-cta"
+              onClick={handleNext}
+              disabled={!countDone && !ALLOW_EARLY_NEXT}
+            >
+              {isLastMove && !isLastRoutine ? '마치기' : '다음'} <ChevronIcon className="icon" width="18" height="18" />
+              <Asset file="sparkle.svg" kind="decor" className="home-cta__spark" />
+            </Button>
+          </div>
         </div>
       </div>
     </Screen>
