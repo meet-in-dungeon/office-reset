@@ -17,6 +17,9 @@
 }
 
 .screen {
+  /* 한글이 단어 중간에서 끊기지 않게. 아주 긴 단어만 어쩔 수 없이 꺾는다 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -217,13 +220,30 @@
   transform: rotate(-4deg);
 }
 
+/* 말풍선: 네이비 외곽선. 꼬리는 ::before(같은 외곽선)로 화면별 CSS에서 붙인다 */
 .bubble {
+  position: relative;
   display: inline-block;
   padding: var(--space-3) var(--space-4);
   font-weight: 700;
+  word-break: keep-all;
   background: var(--color-surface);
-  border: 1px solid var(--color-outline);
+  border: 2px solid var(--color-outline);
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.bubble::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  bottom: 20px;
+  width: 12px;
+  height: 12px;
+  background: var(--color-surface);
+  border-left: 2px solid var(--color-outline);
+  border-bottom: 2px solid var(--color-outline);
+  transform: rotate(45deg);
 }
 
 /* 개발 중 임시 표시. 기능을 만들면 지운다. */
@@ -299,9 +319,9 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-3);
-  margin: var(--space-3) var(--space-3) 0;
-  padding: var(--space-4);
+  gap: var(--space-2) var(--space-3);
+  margin: var(--space-2) var(--space-3) 0;
+  padding: var(--space-3);
   background: linear-gradient(135deg, #ece8fb 0%, #e2dcfa 100%);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -312,22 +332,22 @@
   flex: none;
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   color: #f2b705;
 }
 
 .alert-banner__icon svg {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
 }
 
 .alert-banner__sticker {
   position: absolute;
-  top: -10px;
-  left: 6px;
-  width: 36px;
-  height: 36px;
+  top: -12px;
+  left: -6px;
+  width: 30px;
+  height: 30px;
   pointer-events: none;
 }
 
@@ -339,7 +359,7 @@
 }
 
 .alert-banner__text strong {
-  font-size: var(--text-large);
+  font-size: 1.0625rem;
   font-weight: 800;
   line-height: 1.35;
 }
@@ -348,6 +368,13 @@
   display: flex;
   gap: var(--space-2);
   margin-left: auto;
+}
+
+/* 좁은 화면에서는 안내 문구가 한 줄을 다 쓰고 버튼은 아래 줄 오른쪽에 둔다 */
+@media (max-width: 420px) {
+  .alert-banner__text {
+    flex-basis: calc(100% - 52px);
+  }
 }
 
 .alert-banner__actions .btn {
@@ -400,11 +427,13 @@
   object-fit: contain;
 }
 
+/* 이미지가 없을 때만 쓰는 이모지 대체 (원 안에 표시) */
 .badge-image--emoji {
   display: grid;
   place-items: center;
   line-height: 1;
   background: var(--color-primary-soft);
+  border: 2px solid var(--color-lavender);
   border-radius: var(--radius-round);
 }
 
@@ -423,4 +452,52 @@
   margin-bottom: var(--space-2);
   font-size: var(--text-large);
   font-weight: 700;
+}
+
+/* 알림 권한 안내 카드 (NotificationPermission): 허용 전 흰색 · 허용 완료 민트 · 차단 크림 */
+.perm {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.perm__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-round);
+}
+
+.perm__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.perm--granted {
+  background: var(--color-calm-soft);
+  border-color: #b4e2cf;
+}
+
+.perm--granted .perm__icon {
+  color: #fff;
+  background: #2f9e6e;
+}
+
+.perm--denied,
+.perm--unsupported {
+  background: var(--color-sun-soft);
+  border-color: #f0e2b8;
+}
+
+.perm--denied .perm__icon,
+.perm--unsupported .perm__icon {
+  color: #a67c00;
+  background: #fff0c2;
 }

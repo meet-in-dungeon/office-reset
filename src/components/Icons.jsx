@@ -91,3 +91,16 @@ export const MedalIcon = (props) => (
     <path d="m9 3 3 5.5L15 3M10.2 14.5l1.2 1.2 2.4-2.4" />
   </svg>
 )
+
+export const BellOffIcon = (props) => (
+  <svg {...base} {...props}>
+    <path d="M8.5 4.6A6 6 0 0 1 18 9v3.2c0 .7.3 1.4.8 1.9l1.2 1.4V17H8.5M6 9.6V12c0 .7-.3 1.4-.8 1.9L4 15.5V17h2M10 19.5a2.3 2.3 0 0 0 4 0M3 3l18 18" />
+  </svg>
+)
+
+export const VideoOffIcon = (props) => (
+  <svg {...base} {...props}>
+    <rect x="3" y="6" width="12" height="12" rx="2.5" />
+    <path d="m15 10.5 5-3v9l-5-3M3 3l18 18" />
+  </svg>
+)

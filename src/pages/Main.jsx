@@ -40,18 +40,26 @@ export default function Main() {
 
   let timerLabel = '알림이 꺼져 있어요'
   let timerValue = '--:--'
+  // 말풍선 문구는 타이머 상태에 따라 바뀐다. (임시 문구, PM 확정 전)
+  let bubbleLines = ['알림이 꺼져 있어요!', '켜 두면 제때 알려 드릴게요']
   if (settings.alertsEnabled && next) {
     timerLabel = `다음 알림 ${formatClock(next)}까지`
     timerValue = formatRemaining(next.getTime() - now.getTime())
+    bubbleLines = ['잠깐만요!', '지금이 딱 몸 풀기 좋은 타이밍이에요!']
   } else if (settings.alertsEnabled && !isAlertDay(now)) {
     timerLabel = '주말에는 알림이 없어요'
+    bubbleLines = ['주말이에요!', '푹 쉬어도 좋고, 가볍게 풀어도 좋아요']
   } else if (settings.alertsEnabled) {
     timerLabel = '오늘 알림은 모두 끝났어요'
+    bubbleLines = ['오늘도 수고했어요!', '더 풀고 싶다면 지금 시작해요']
   }
 
   const calmButton = (
     <div className="home-calm">
-      <Asset file="sticker-impact.svg" kind="decor" className="home-calm__sticker" />
+      <span className="home-calm__burst" aria-hidden="true">
+        <Asset file="sticker-impact.svg" kind="decor" className="home-calm__sticker" />
+        <span className="home-calm__burst-text">빡침!</span>
+      </span>
       <Button variant="alert" size="round" aria-label="빡침 버튼" onClick={() => navigate(ROUTES.calm)}>
         <Asset
           file="character-angry.webp"
@@ -73,13 +81,12 @@ export default function Main() {
 
       <div className="home-hero">
         <div className="home-hero__character">
-          <Asset file="sticker-accent.svg" kind="decor" className="home-hero__sticker" />
-          <Asset file="character-main.webp" size="권장 560×660 (표시 약 150×220)" alt="안내 캐릭터" />
+          <Asset file="character-main.webp" size="권장 560×660" alt="안내 캐릭터" />
         </div>
         <p className="bubble home-hero__bubble">
-          잠깐만요!
+          {bubbleLines[0]}
           <br />
-          지금이 딱 몸 풀기 좋은 타이밍이에요!
+          {bubbleLines[1]}
         </p>
       </div>
 

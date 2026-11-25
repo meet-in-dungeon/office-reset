@@ -7,6 +7,17 @@ import {
   sendTestAlert,
 } from '../lib/alerts'
 import Button from './Button'
+import { BellIcon, BellOffIcon, CheckIcon } from './Icons'
+
+// 권한 상태별 안내 카드: 허용 전(흰색+알림) · 허용(민트+체크) · 차단(크림+알림 끄기)
+function PermCard({ kind, icon, children }) {
+  return (
+    <div className={`perm perm--${kind}`}>
+      <span className="perm__icon">{icon}</span>
+      <div className="perm__body">{children}</div>
+    </div>
+  )
+}
 
 export default function NotificationPermission() {
   const [permission, setPermission] = useState(getNotificationPermission)
@@ -34,35 +45,45 @@ export default function NotificationPermission() {
   }
 
   if (permission === 'unsupported') {
-    return <p className="muted">이 브라우저는 알림을 지원하지 않아요. 알림 시각에는 화면 안에서 알려 드려요.</p>
+    return (
+      <PermCard kind="unsupported" icon={<BellOffIcon width="20" height="20" />}>
+        <p className="muted">이 브라우저는 알림을 지원하지 않아요. 알림 시각에는 화면 안에서 알려 드려요.</p>
+      </PermCard>
+    )
   }
 
   if (permission === 'granted') {
     return (
-      <div className="stack">
-        <p className="muted">브라우저 알림이 켜져 있어요. 다른 탭이나 프로그램을 쓰는 중에도 알려 드려요.</p>
-        <Button variant="soft" onClick={test} disabled={testing}>
-          {testing ? '5초 뒤에 알림이 와요. 다른 탭으로 이동해 보세요' : '알림 테스트'}
-        </Button>
-      </div>
+      <PermCard kind="granted" icon={<CheckIcon width="18" height="18" />}>
+        <div className="stack">
+          <p className="muted">브라우저 알림이 켜져 있어요. 다른 탭이나 프로그램을 쓰는 중에도 알려 드려요.</p>
+          <Button variant="soft" onClick={test} disabled={testing}>
+            {testing ? '5초 뒤에 알림이 와요. 다른 탭으로 이동해 보세요' : '알림 테스트'}
+          </Button>
+        </div>
+      </PermCard>
     )
   }
 
   if (permission === 'denied') {
     return (
-      <p className="muted">
-        브라우저에서 알림이 차단되어 있어요. 주소창 왼쪽 아이콘 → 사이트 설정 → 알림을 "허용"으로 바꾼 뒤 새로고침해 주세요.
-        차단된 동안에는 화면 안에서 알려 드려요.
-      </p>
+      <PermCard kind="denied" icon={<BellOffIcon width="20" height="20" />}>
+        <p className="muted">
+          브라우저에서 알림이 차단되어 있어요. 주소창 왼쪽 아이콘 → 사이트 설정 → 알림을 "허용"으로 바꾼 뒤 새로고침해 주세요.
+          차단된 동안에는 화면 안에서 알려 드려요.
+        </p>
+      </PermCard>
     )
   }
 
   return (
-    <div className="stack">
-      <p className="muted">다른 탭이나 프로그램을 쓰는 중에도 알림을 받으려면 허용해 주세요.</p>
-      <Button variant="soft" onClick={allow}>
-        브라우저 알림 허용하기
-      </Button>
-    </div>
+    <PermCard kind="default" icon={<BellIcon width="20" height="20" />}>
+      <div className="stack">
+        <p className="muted">다른 탭이나 프로그램을 쓰는 중에도 알림을 받으려면 허용해 주세요.</p>
+        <Button variant="soft" onClick={allow}>
+          브라우저 알림 허용하기
+        </Button>
+      </div>
+    </PermCard>
   )
 }

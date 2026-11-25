@@ -5,8 +5,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Asset from '../components/Asset'
 import Button from '../components/Button'
+import BreathCircle from '../components/BreathCircle'
 import CountRing, { CountAccent } from '../components/CountRing'
-import { AlertIcon, ChevronIcon } from '../components/Icons'
+import { AlertIcon, ChevronIcon, PlayIcon } from '../components/Icons'
 import Screen from '../components/Screen'
 import data from '../data/stretches.json'
 import { getLastNotifiedAt } from '../lib/alerts'
@@ -74,7 +75,8 @@ export default function Stretch() {
   const [stage, setStage] = useState(START_GATE_ENABLED && fromNotification ? 'start' : 'move')
   const [index, setIndex] = useState(0)
   const [remaining, setRemaining] = useState(MOVE_SECONDS)
-  // 동작 하나의 진행 순서 (2026-11-25 팀 결정): 음성 안내 → 영상 1회 재생 → 5초 카운트다운. 영상은 카운트 중에도 계속 반복.
+  // 동작 하나의 진행 순서 (2026-11-26 팀 결정): 음성 안내와 영상이 동시에 시작 → 음성 종료 + 영상 최소 1회 재생이 모두 끝나면 5초 카운트다운.
+  // 영상은 카운트 중에도 계속 반복한다. 소리가 꺼져 있으면 음성 단계는 바로 끝나므로 영상 1회가 끝난 뒤 카운트가 시작된다.
   // 둘 다 끝나야(moveReady) 카운트가 시작되고, 그 전에는 "준비" 상태다. 동작이 바뀔 때마다 처음부터 다시 한다.
   const [voiceDone, setVoiceDone] = useState(false)
   const [videoDone, setVideoDone] = useState(false)
@@ -147,13 +149,11 @@ export default function Stretch() {
       <Screen title="스트레칭" align="center" className="stretch-screen">
         <div className="stretch-start">
           <div className="stretch-start__character">
-            <Asset file="character-main.webp" size="권장 560×660 (표시 약 200×240)" alt="안내 캐릭터" />
+            <Asset file="character-main.webp" size="권장 560×660" alt="안내 캐릭터" />
           </div>
-          <p className="stretch-start__copy">
-            잠깐, 몸 풀기 좋은 타이밍이에요!
-          </p>
+          <p className="stretch-start__copy">잠깐, 몸 풀기 좋은 타이밍이에요!</p>
           <Button size="large" block onClick={() => setStage('move')}>
-            시작
+            <PlayIcon className="icon" width="18" height="18" /> 시작
           </Button>
           <p className="stretch-caution">{data.commonCaution}</p>
         </div>
@@ -170,18 +170,27 @@ export default function Stretch() {
       ? BREATH_IN_SECONDS - withinCycle
       : BREATH_CYCLE_SECONDS - withinCycle
     return (
-      <Screen title="호흡" align="center" className="stretch-screen">
+      <Screen title="호흡" align="center" className="stretch-screen stretch-screen--breath">
         <div className="stretch-breath">
+          <BreathCircle
+            breathingIn={breathingIn}
+            seconds={breathingIn ? BREATH_IN_SECONDS : BREATH_OUT_SECONDS}
+            left={phaseLeft}
+          />
+          <p className="stretch-breath__text" aria-live="polite">
+            {breathingIn ? BREATH_IN_TEXT : BREATH_OUT_TEXT}
+          </p>
           <p className="stretch-progress">
             <span className="stretch-progress__now">{cycle + 1}</span> / {BREATH_COUNT}회
           </p>
-          <p className="stretch-breath__text">{breathingIn ? BREATH_IN_TEXT : BREATH_OUT_TEXT}</p>
-          <div className="stretch-count" aria-live="polite">
-            <CountRing ratio={phaseLeft / BREATH_IN_SECONDS}>{phaseLeft}</CountRing>
+          <div className="stretch-breath__dots" aria-hidden="true">
+            {Array.from({ length: BREATH_COUNT }, (_, i) => (
+              <span key={i} className={`stretch-breath__dot${i <= cycle ? ' stretch-breath__dot--on' : ''}`} />
+            ))}
           </div>
           {/* 호흡은 넘기기가 아니라 중단이다. 호흡을 마치지 못했으니 breathCount는 0으로 기록하고 완료 화면으로 간다.
               (동작 3개는 마쳤으므로 루틴 기록은 저장되고, 하루 완성 배지는 호흡을 마친 루틴에서만 나간다.) */}
-          <Button variant="ghost" onClick={() => finish(false)}>
+          <Button variant="soft" className="stretch-breath__stop" onClick={() => finish(false)}>
             중단
           </Button>
         </div>
@@ -228,7 +237,7 @@ export default function Stretch() {
           key={move.id}
           file={move.videoFile}
           name={move.name}
-          playing={voiceDone}
+          playing
           onFirstPlayEnd={() => setVideoDone(true)}
         />
 

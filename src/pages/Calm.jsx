@@ -41,12 +41,15 @@ function BreathingStage({ step }) {
 
   return (
     <div className="calm-stage">
-      <div
-        className={`calm-circle ${grow ? 'calm-circle--in' : 'calm-circle--out'}`}
-        style={{ transitionDuration: `${seconds}s` }}
-        aria-hidden="true"
-      >
-        <span className="calm-circle__text">{inhale ? '들이쉬기' : '내쉬기'}</span>
+      {/* 호흡 원이 가장 크게 퍼졌을 때까지 들어가는 칸. 아래 안내 글자와 겹치지 않는다 */}
+      <div className="calm-area">
+        <div
+          className={`calm-circle ${grow ? 'calm-circle--in' : 'calm-circle--out'}`}
+          style={{ transitionDuration: `${seconds}s` }}
+          aria-hidden="true"
+        >
+          <span className="calm-circle__text">{inhale ? '들이쉬기' : '내쉬기'}</span>
+        </div>
       </div>
       <p className="calm-guide" aria-live="polite">
         {inhale ? `코로 천천히 들이쉬어요 (${seconds}초)` : `입으로 길게 내쉬어요 (${seconds}초)`}
@@ -90,7 +93,7 @@ function DoneStage({ newBadges, tierUps }) {
     <div className="calm-stage">
       <div className="calm-done" aria-live="polite">
         <div className="calm-done__character">
-          <Asset file="character-calm.webp" size="권장 560×560 (표시 약 180×180)" alt="명상 캐릭터" />
+          <Asset file="character-calm.webp" size="권장 560×560" alt="명상 캐릭터" />
         </div>
         <p className="calm-done__title">{DONE_MESSAGE}</p>
         <p className="muted">숨 {CALM_BREATH_COUNT}번에 마음이 조금 가벼워졌나요?</p>

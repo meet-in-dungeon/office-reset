@@ -41,11 +41,11 @@ export default function Onboarding() {
         </p>
         <div className="onboarding-hero__character">
           <Asset file="sticker-accent.svg" kind="decor" className="onboarding-hero__sticker" />
-          <Asset file="character-welcome.webp" size="권장 720×900 (표시 약 260×330)" alt="안내 캐릭터" />
+          <Asset file="character-welcome.webp" size="권장 720×900" alt="안내 캐릭터" className="onboarding-hero__img" />
         </div>
       </section>
 
-      <div className="card">
+      <div className="card onboarding-guide">
         <strong className="section-title">이렇게 쓰세요</strong>
         <ol className="onboarding-steps">
           <li>정해진 시각(평일)에 알림이 오면 눌러서 스트레칭을 시작해요.</li>

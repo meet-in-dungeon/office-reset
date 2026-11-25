@@ -131,15 +131,22 @@ export function useStretchVoice({ id, narration, active = true, onDone }) {
       finish()
       return undefined
     }
-    if (!speak(narration, { onEnd: finish })) {
-      finish()
-      return undefined
-    }
-    timer = setTimeout(finish, MAX_VOICE_MS)
+    // 읽기 시작을 한 박자(0ms 타이머) 미룬다. 개발 모드의 React StrictMode는 effect를 "실행 → 정리 → 다시 실행"으로 곧바로 두 번 돌리는데,
+    // 한 박자 미루면 첫 번째 실행은 타이머가 정리되어 읽기가 시작되지 않는다. (개발 모드에서 같은 문장이 두 번 읽히거나 앞부분이 끊겨 들리는 것을 막는다)
+    // 영상은 같은 시점에 시작하므로 체감 지연은 없다.
+    const starter = setTimeout(() => {
+      if (finished) return
+      if (!speak(narration, { onEnd: finish })) {
+        finish()
+        return
+      }
+      timer = setTimeout(finish, MAX_VOICE_MS)
+    }, 0)
 
     return () => {
       // 동작이 바뀌거나 화면을 떠나면 이 동작의 끝 신호는 더 보내지 않고 읽던 문장도 멈춘다.
       finished = true
+      clearTimeout(starter)
       clearTimeout(timer)
       stopSpeaking()
     }

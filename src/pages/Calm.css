@@ -1,19 +1,33 @@
 /* 빡침 명상 화면 전용 스타일 (담당: 이주연). 색·여백은 index.css의 공통 값을 쓴다. */
 
-/* 자연 배경: 하늘·구름·산 이미지(public/images/calm-landscape.webp)가 위에 깔리고 아래로 갈수록 연한 라벤더로 이어진다.
-   이미지가 아직 없으면 같은 분위기의 색 그라데이션만 보인다. (화면 전체를 감싸는 배경) */
+/* 자연 배경: 하늘·구름·산 이미지(public/images/calm-landscape.webp)가 화면 위쪽 약 45%에 깔리고 아래로 갈수록 라벤더 배경으로 이어진다.
+   이미지가 없으면 같은 분위기의 색 그라데이션만 보인다. 이미지 주소는 Calm.jsx가 BASE_URL을 붙여 CSS 변수로 넘긴다. */
 .calm-screen {
-  background:
-    linear-gradient(180deg, rgba(246, 244, 255, 0) 0%, rgba(246, 244, 255, 0) 30%, var(--color-bg) 62%),
-    var(--calm-landscape, none) top center / 100% auto no-repeat,
-    linear-gradient(180deg, #cfe8f3 0%, #dfeee9 28%, var(--color-bg) 60%, var(--color-primary-soft) 100%);
+  position: relative;
+  background: linear-gradient(180deg, #cfe8f3 0%, #dfeee9 28%, var(--color-bg) 60%, var(--color-primary-soft) 100%);
+}
+
+.calm-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 45%;
+  max-height: 420px;
+  background: var(--calm-landscape, none) top center / cover no-repeat;
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+  pointer-events: none;
+}
+
+.calm-screen > * {
+  position: relative;
 }
 
 .calm {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: var(--space-3) 0;
+  padding: var(--space-2) 0;
 }
 
 .calm-stage {
@@ -22,8 +36,17 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
   text-align: center;
+}
+
+/* 가장 크게 퍼졌을 때(원 240 + 바깥 테두리 겹 33px)까지 들어가는 칸 */
+.calm-area {
+  display: grid;
+  place-items: center;
+  width: 320px;
+  max-width: 100%;
+  aspect-ratio: 1;
 }
 
 /* 호흡 원: 반투명 라벤더 + 여러 겹의 얇은 테두리. 들이쉬면 커지고 내쉬면 작아진다 */

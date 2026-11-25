@@ -131,6 +131,24 @@ function objectParticle(word) {
   return code >= 0 && code <= 11171 && code % 28 !== 0 ? '을' : '를'
 }
 
+// 시간대별 누적 막대: 스트레칭(라벤더)과 빡침 명상(코랄)을 한 줄에 나란히 쌓는다. 숫자는 "스트레칭 · 빡침"으로 그대로 표시.
+function StackedBarRow({ label, routine, calm, max }) {
+  const pct = (n) => (max > 0 ? (n / max) * 100 : 0)
+  return (
+    <li className="stats-bar">
+      <span className="stats-bar__label">{label}</span>
+      <span className="stats-bar__track stats-bar__track--stack" aria-hidden="true">
+        <span className="stats-bar__fill stats-bar__fill--routine" style={{ width: `${pct(routine)}%` }} />
+        <span className="stats-bar__fill stats-bar__fill--calm" style={{ width: `${pct(calm)}%` }} />
+      </span>
+      <span className="stats-bar__value">
+        {routine} · {calm}
+        <span className="visually-hidden"> (스트레칭 {routine}회, 빡침 명상 {calm}회)</span>
+      </span>
+    </li>
+  )
+}
+
 // 가로 막대 한 줄 (부위별·시간대별)
 function BarRow({ label, value, max, sub }) {
   const width = max > 0 ? Math.round((value / max) * 100) : 0
@@ -218,9 +236,19 @@ function WeekTab({ week, todayDone }) {
           <strong>시간대별</strong>
           <span className="muted">스트레칭 · 빡침</span>
         </div>
+        <ul className="stats-legend" aria-label="범례">
+          <li>
+            <span className="stats-legend__dot stats-legend__dot--routine" aria-hidden="true" />
+            스트레칭
+          </li>
+          <li>
+            <span className="stats-legend__dot stats-legend__dot--calm" aria-hidden="true" />
+            빡침 명상
+          </li>
+        </ul>
         <ul className="stats-bars">
           {timeRows.map(([label, range, t]) => (
-            <BarRow
+            <StackedBarRow
               key={label}
               label={
                 <>
@@ -228,9 +256,9 @@ function WeekTab({ week, todayDone }) {
                   <span className="stats-bar__range">{range}</span>
                 </>
               }
-              value={t.routine + t.calm}
+              routine={t.routine}
+              calm={t.calm}
               max={timeMax}
-              sub={`${t.routine} · ${t.calm}`}
             />
           ))}
         </ul>
@@ -262,7 +290,7 @@ function DemoPanel() {
   }
   return (
     <section className="card stats-demo" aria-label="시연 모드">
-      <strong>🎬 시연 모드</strong>
+      <strong className="section-title">시연 모드</strong>
       <p className="muted stats-tip">
         샘플 기록은 지난 3주 평일 기록과 빡침 명상 9번이에요. 오늘과 해커톤 기간은 비워 둬서, 지금 루틴을 하면 숨겨진 배지가
         나와요.

@@ -74,7 +74,7 @@ export default function Complete() {
       <Asset file="sticker-confetti.svg" kind="decor" className="complete-confetti" />
       <section className="complete-hero" aria-live="polite">
         <div className="complete-hero__character">
-          <Asset file="character-cheer.webp" size="권장 560×680 (표시 약 170×220)" alt="축하 캐릭터" />
+          <Asset file="character-cheer.webp" size="권장 560×680" alt="축하 캐릭터" />
         </div>
         <p className="bubble complete-hero__bubble">
           <strong className="complete-hero__title">수고했어요!</strong>
