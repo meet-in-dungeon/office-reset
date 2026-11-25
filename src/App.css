@@ -56,6 +56,15 @@
   margin-left: auto;
 }
 
+/* 제목을 가운데에 둔 화면에서는 오른쪽 부품이 제목 위치를 밀지 않도록 제목 줄 오른쪽 끝에 띄워 둔다 */
+.screen__header--center .screen__header-right {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin: 0;
+  transform: translateY(-50%);
+}
+
 /* 서비스 이름 (온보딩·메인 상단) */
 .brand {
   font-size: var(--text-large);
@@ -547,4 +556,33 @@
 
 .tier-chip.tier-chip--2 {
   color: var(--color-tier-gold-text);
+}
+
+/* 소리 ON/OFF 원형 버튼: ON은 라임, OFF는 흰색. 네이비 외곽선과 짧은 오프셋 그림자(카툰 스타일) */
+.sound-toggle {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  color: var(--color-outline);
+  background: var(--color-surface);
+  border: var(--outline-width) solid var(--color-outline);
+  border-radius: var(--radius-round);
+  box-shadow: 2px 3px 0 var(--color-outline);
+  cursor: pointer;
+}
+
+.sound-toggle--on {
+  background: var(--color-accent);
+}
+
+.sound-toggle:active {
+  transform: translate(2px, 3px);
+  box-shadow: 0 0 0 var(--color-outline);
+}
+
+.sound-toggle:focus-visible {
+  outline: 3px solid var(--color-primary-strong);
+  outline-offset: 2px;
 }

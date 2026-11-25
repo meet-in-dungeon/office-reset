@@ -104,3 +104,19 @@ export const VideoOffIcon = (props) => (
     <path d="m15 10.5 5-3v9l-5-3M3 3l18 18" />
   </svg>
 )
+
+// 소리 켜짐: 스피커 + 음파
+export const VolumeIcon = (props) => (
+  <svg {...base} {...props}>
+    <path d="M4 9.5v5h3.2L12 18.5v-13L7.2 9.5H4Z" />
+    <path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.6 7.6 0 0 1 0 11" />
+  </svg>
+)
+
+// 소리 꺼짐(음소거): 스피커 + 가위표
+export const VolumeOffIcon = (props) => (
+  <svg {...base} {...props}>
+    <path d="M4 9.5v5h3.2L12 18.5v-13L7.2 9.5H4Z" />
+    <path d="m16 9.5 5 5M21 9.5l-5 5" />
+  </svg>
+)

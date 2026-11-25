@@ -126,14 +126,6 @@ export default function Main() {
         <div className="stack home-settings__body">
           <WorkTimeSettings />
           <NotificationPermission />
-          <label className="check">
-            <input
-              type="checkbox"
-              checked={settings.soundOn}
-              onChange={(event) => updateSettings({ soundOn: event.target.checked })}
-            />
-            소리 켜기
-          </label>
         </div>
       </details>
     </Screen>
