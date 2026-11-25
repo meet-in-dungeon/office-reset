@@ -253,7 +253,7 @@ export default function Stretch() {
           </p>
           <h2 className="stretch-name">
             <span className="stretch-name__label">
-              {data.parts[move.part]} · {move.name}
+              {move.name.includes(data.parts[move.part]) ? move.name : `${data.parts[move.part]} · ${move.name}`}
             </span>
           </h2>
         </div>
