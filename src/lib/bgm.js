@@ -17,11 +17,12 @@
 //
 // 음악 출처 (음악을 바꾸거나 추가하면 이 기록도 함께 고친다)
 // - public/audio/bgm.mp3 (스트레칭): Pixabay Music (https://pixabay.com/music/)에서 받음.
-//   2분 19초, 약 4.2MB. 2026-11-24 서진수 확인
+//   2분 35초, 약 4.7MB. 2026-11-25 서진수가 새 곡으로 교체 (이전 곡: 2분 19초, 약 4.2MB)
+//   곡 이름·작곡가는 기록하지 못했다.
 // - public/audio/calm.mp3 (빡침 명상): Pixabay Music (https://pixabay.com/music/)에서 받음.
 //   1분 58초, 약 3.6MB. 2026-11-25 서진수 확인
-// - 두 곡 모두 Pixabay 검색어 "relaxing piano" 결과에서 골랐다.
-//   (https://pixabay.com/music/search/relaxing%20piano/) 곡 이름·작곡가는 기록하지 못했다.
+//   Pixabay 검색어 "relaxing piano" 결과에서 골랐다. (https://pixabay.com/music/search/relaxing%20piano/)
+//   곡 이름·작곡가는 기록하지 못했다.
 // - 두 곡 모두 라이선스: Pixabay Content License. 무료 상업적 사용 가능, 출처 표기 의무 없음
 //   (음악 파일만 따로 떼어 팔거나 재배포하는 것은 금지. 앱 배경음악으로 쓰는 것은 괜찮다)
 //   라이선스 요약: https://pixabay.com/service/license-summary/ (2026-11-25 확인)
