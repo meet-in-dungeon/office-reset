@@ -16,4 +16,4 @@
 | `badges/<배지ID>.webp` | 완료·통계·명상 배지 | 통계 72, 완료 120, 명상 64 | 정사각 360 |
 | `badges/<등급형 배지ID>-bronze·silver·gold.webp` | 등급형 배지 (attendance, reset_master 등 `tiers`가 있는 것) | 위와 같음 | 정사각 360 |
 
-배지 ID는 `src/lib/badges.js`의 `BADGE_IDS` (13개). 이미지가 없으면 기존 이모지가 원 안에 나온다.
+배지 ID는 `src/lib/badges.js`의 `BADGE_IDS` (14종, 히든 3종 포함: `hackathon_2026`, `body_boss`, `friday_fire`). 이미지가 없으면 기존 이모지가 원 안에 나온다.
