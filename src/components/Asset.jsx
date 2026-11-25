@@ -5,8 +5,16 @@
 //   - 스티커 같은 장식: 아무것도 보이지 않는다 (kind="decor")
 // 파일 목록과 크기는 docs/DESIGN_ASSETS.md
 import { useState } from 'react'
+import './CharacterMotion.css'
 
 const IMAGE_DIR = `${import.meta.env.BASE_URL}images/`
+
+// 캐릭터 그림별 반복 움직임 (CharacterMotion.css). 여기 없는 그림은 움직이지 않는다.
+const MOTION_BY_FILE = {
+  'character-main.webp': 'asset--float',
+  'character-calm.webp': 'asset--breathe',
+  'character-angry.webp': 'asset--fume',
+}
 
 export default function Asset({ file, size, kind = 'character', className = '', fallback, alt = '' }) {
   const [failed, setFailed] = useState(false)
@@ -24,7 +32,7 @@ export default function Asset({ file, size, kind = 'character', className = '', 
 
   return (
     <img
-      className={`asset ${className}`}
+      className={`asset ${MOTION_BY_FILE[file] ?? ''} ${className}`}
       src={`${IMAGE_DIR}${file}`}
       alt={alt}
       aria-hidden={alt ? undefined : 'true'}

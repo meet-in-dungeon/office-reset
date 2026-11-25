@@ -1,0 +1,48 @@
+/* 캐릭터 그림에 붙는 작은 반복 움직임. (담당: 김민지)
+   어떤 그림에 어떤 움직임을 줄지는 Asset.jsx의 MOTION_BY_FILE에서 정한다.
+   그림 자체는 그대로이고, 위치·크기만 살짝 바뀐다. */
+
+/* 메인 캐릭터: 위로 살짝 떠올랐다 내려온다.
+   아래쪽은 알림 카드 뒤로 잘려 있으므로(Main.css clip-path) 아래로는 내려가지 않게 위로만 움직인다. */
+.asset--float {
+  animation: character-float 3.2s ease-in-out infinite;
+}
+
+@keyframes character-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3%); }
+}
+
+/* 명상 캐릭터: 숨 쉬듯 천천히 커졌다 작아진다. 발 아래(바닥)를 기준으로 커져서 떠 보이지 않는다. */
+.asset--breathe {
+  transform-origin: 50% 100%;
+  animation: character-breathe 4s ease-in-out infinite;
+}
+
+@keyframes character-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+/* 빡침 버튼 얼굴: 씩씩대듯 좌우로 살짝 흔들린다. */
+.asset--fume {
+  transform-origin: 50% 80%;
+  animation: character-fume 2.4s ease-in-out infinite;
+}
+
+@keyframes character-fume {
+  0%, 60%, 100% { transform: rotate(0); }
+  66% { transform: rotate(-6deg); }
+  74% { transform: rotate(6deg); }
+  82% { transform: rotate(-4deg); }
+  90% { transform: rotate(3deg); }
+}
+
+/* 휴대폰·컴퓨터에서 '동작 줄이기'를 켠 사용자에게는 움직이지 않는다. */
+@media (prefers-reduced-motion: reduce) {
+  .asset--float,
+  .asset--breathe,
+  .asset--fume {
+    animation: none;
+  }
+}
