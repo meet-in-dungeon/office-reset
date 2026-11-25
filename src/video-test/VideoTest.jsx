@@ -131,6 +131,9 @@ export default function VideoTest() {
   const [running, setRunning] = useState(false)
   const [bgmOn, setBgmOn] = useState(false)
   const [calmBgmOn, setCalmBgmOn] = useState(false)
+  // 첫 재생 끝 신호(onFirstPlayEnd) 확인용: 동작을 고른 시각과 신호가 온 뒤 걸린 초
+  const [shownAt, setShownAt] = useState(() => Date.now())
+  const [firstPlaySeconds, setFirstPlaySeconds] = useState(null)
   const move = TEST_MOVES[index]
 
   // 실제 루틴과 같이 동작 이름만 읽는다. (2026-11-25 팀 결정)
@@ -148,6 +151,8 @@ export default function VideoTest() {
 
   const select = (nextIndex) => {
     setIndex(nextIndex)
+    setShownAt(Date.now())
+    setFirstPlaySeconds(null)
     setRunning(false)
     setRemaining(0)
   }
@@ -209,7 +214,16 @@ export default function VideoTest() {
         <h2 style={{ fontSize: 'var(--text-large)' }}>
           {move.id} · {move.name}
         </h2>
-        <StretchVideo key={move.id} file={move.videoFile} name={move.name} />
+        <StretchVideo
+          key={move.id}
+          file={move.videoFile}
+          name={move.name}
+          onFirstPlayEnd={() => setFirstPlaySeconds(((Date.now() - shownAt) / 1000).toFixed(1))}
+        />
+        <p style={{ fontSize: 'var(--text-small)' }} aria-live="polite">
+          첫 재생 끝 신호(onFirstPlayEnd):{' '}
+          {firstPlaySeconds === null ? '아직 안 옴 (영상 재생 중)' : `받음 (${firstPlaySeconds}초 뒤)`}
+        </p>
 
         <p style={{ fontSize: 'var(--text-title)', textAlign: 'center' }} aria-live="polite">
           {running ? (remaining === 0 ? '완료' : remaining) : '-'}
