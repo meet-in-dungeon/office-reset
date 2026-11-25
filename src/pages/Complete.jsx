@@ -4,7 +4,6 @@
 // 배지가 여러 개면 카드는 2장까지만 보여주고 나머지는 "+N개 더"로 묶는다.
 import { useState } from 'react'
 import Asset from '../components/Asset'
-import BubbleShape from '../components/BubbleShape'
 import BadgeImage from '../components/BadgeImage'
 import Button from '../components/Button'
 import { ChevronIcon, MedalIcon } from '../components/Icons'
@@ -12,6 +11,7 @@ import Screen from '../components/Screen'
 import { clearLastResult, getStats, readLastResult } from '../lib/records'
 import { navigate, ROUTES } from '../lib/router'
 import { isLastRoutine } from '../lib/schedule'
+import '../pages/Main.css' // 말풍선·버튼 스타일 재사용 (.home-bubble, .home-cta)
 import './Complete.css'
 
 // 한 번에 보여주는 배지 카드 수. 나머지는 "+N개 더"로 묶는다. (설계안 6장)
@@ -73,19 +73,42 @@ export default function Complete() {
       titleClassName="complete-title"
     >
       <Asset file="sticker-confetti.svg" kind="decor" className="complete-confetti" />
-      <section className="complete-hero" aria-live="polite">
-        <div className="complete-hero__character">
+      <section className="home-hero complete-hero" aria-live="polite">
+        <Asset file="sparkle-yellow-pair.png" kind="decor" className="home-deco complete-deco complete-deco--sparkle-left" />
+        <Asset file="star-blue.png" kind="decor" className="home-deco complete-deco complete-deco--star-blue" />
+        <Asset file="star-orange.png" kind="decor" className="home-deco complete-deco complete-deco--star-orange" />
+        <Asset file="star-pink.png" kind="decor" className="home-deco complete-deco complete-deco--star-pink" />
+        <Asset file="motion-puff.svg" kind="decor" className="home-deco complete-deco complete-deco--puff" />
+        <div className="home-hero__character complete-hero__character">
           <Asset file="character-cheer.webp" size="권장 560×680" alt="축하 캐릭터" />
+          {/* 원본 이미지에 그려진 연한 노란 강조선은 배경색 면으로 가린다 (새 장식과 겹치지 않게, 이미지 파일은 그대로) */}
+          <span className="complete-hero__mask complete-hero__mask--left" aria-hidden="true" />
+          <span className="complete-hero__mask complete-hero__mask--right" aria-hidden="true" />
         </div>
-        <p className="bubble complete-hero__bubble">
-          <BubbleShape />
-          <strong className="complete-hero__title">수고했어요!</strong>
-          오늘도 한 번 더 리셋 완료!
-        </p>
+        <div className="home-bubble complete-hero__bubble">
+          <Asset file="rays-pink.png" kind="decor" className="home-bubble__rays" />
+          <Asset file="speech-bubble.svg" kind="decor" className="home-bubble__shape" />
+          <p className="home-bubble__text">
+            <strong>수고했어요!</strong>
+            <span>오늘도 한 번 더 리셋 완료!</span>
+          </p>
+        </div>
       </section>
       <p className="muted complete-count">
-        {todayCount > 0 ? `오늘 ${todayCount}번째 스트레칭을 마쳤어요.` : '스트레칭을 마쳤어요.'}
-        {totalCount > 0 ? ` 지금까지 모두 ${totalCount}번 했어요.` : ''}
+        {todayCount > 0 ? (
+          <>
+            오늘 <strong>{todayCount}번째</strong> 스트레칭을 마쳤어요.
+          </>
+        ) : (
+          '스트레칭을 마쳤어요.'
+        )}
+        {totalCount > 0 ? (
+          <>
+            {' '}지금까지 모두 <strong>{totalCount}번</strong> 했어요.
+          </>
+        ) : (
+          ''
+        )}
       </p>
       {breathStopped ? <p className="complete-hero__note">호흡은 다음 루틴에서 다시 할 수 있어요 🌿</p> : null}
 
@@ -103,15 +126,16 @@ export default function Complete() {
           ) : null}
         </section>
       ) : (
-        <p className="card complete-empty">오늘도 몸을 챙겼어요. 이 작은 습관이 쌓이고 있어요 🌱</p>
+        <p className="card complete-empty">오늘도 몸을 챙겼어요. 습관이 조금씩 쌓이고 있어요.</p>
       )}
 
-      <div className="complete-actions">
-        <Button block size="large" onClick={() => leave(ROUTES.home)}>
-          업무 복귀 <ChevronIcon className="icon" width="18" height="18" />
+      <div className="home-actions complete-actions">
+        <Button block size="large" className="home-cta home-cta--stretch" onClick={() => leave(ROUTES.home)}>
+          <span>업무 복귀</span> <ChevronIcon className="icon" width="20" height="20" />
+          <Asset file="sparkle.svg" kind="decor" className="home-cta__spark" />
         </Button>
-        <Button variant="soft" block onClick={() => leave(ROUTES.stats)}>
-          <MedalIcon className="icon" width="20" height="20" /> 기록·배지 보기
+        <Button block className="home-cta home-cta--stats" onClick={() => leave(ROUTES.stats)}>
+          <MedalIcon className="icon" width="22" height="22" /> <span>기록·배지 보기</span>
         </Button>
       </div>
     </Screen>

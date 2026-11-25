@@ -1,15 +1,33 @@
-/* 메인 화면 전용 스타일 (담당: 김민지) */
+/* 메인 화면 전용 스타일 (담당: 김민지)
+   최종 시안(reference-main.png)을 375px 기준으로 재현한다. 이미지 에셋은 public/images/ 의 전달 파일을 그대로 쓴다.
+   좌표 기준: 화면 내용 영역 좌상단(0,0). 히어로 영역(.home-hero)을 기준으로 장식을 절대 배치한다. */
+:root {
+  --main-bg: #f3efff;
+  --main-outline: #171624;
+  --main-yellow: #ffea39;
+  --main-shadow: #b98bf0;
+}
+
 .home {
-  gap: var(--space-3);
+  gap: 14px;
+  padding: 12px 14px 24px;
+  overflow-x: clip;
+  background: var(--main-bg);
 }
 
-.home-title {
-  font-size: var(--text-title);
-  font-weight: 800;
-  letter-spacing: -0.02em;
+/* 로고: 제공 파일 그대로, 좌측 상단, 폭 190px */
+.home-logo-title {
+  margin: 0;
 }
 
-/* 빡침 버튼(원형, 눌리는 영역은 버튼 하나뿐) + 왼쪽 위 폭발 스티커. 스티커와 글자는 클릭을 가로채지 않는다 */
+.home-logo {
+  display: block;
+  width: 190px;
+  height: auto;
+  margin-left: -5px;
+}
+
+/* 빡침 얼굴 버튼(지름 72px) + 왼쪽 위 노란 스티커(폭 66px). 스티커는 얼굴 버튼과 살짝 겹친다 */
 .home-calm {
   position: relative;
   display: flex;
@@ -17,35 +35,26 @@
 }
 
 .home-calm .btn--round {
+  width: 72px;
+  height: 72px;
   background: var(--color-alert);
-  border: 2px solid var(--color-outline);
+  border: 3px solid var(--main-outline);
+  box-shadow: 0 4px 0 var(--main-outline);
 }
 
-.home-calm__burst {
-  position: absolute;
-  top: -22px; /* 화면 위쪽 여백(24px) 안에 들어가도록 유지 */
-  left: -66px;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  width: 76px; /* 기존 58px에서 약 30% 확대 */
-  height: 76px;
-  pointer-events: none;
+.home-calm .btn--round:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--main-outline);
 }
 
 .home-calm__sticker {
-  grid-area: 1 / 1;
-  width: 100%;
-  height: 100%;
-}
-
-.home-calm__burst-text {
-  grid-area: 1 / 1;
-  font-size: 1.125rem;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  color: var(--color-text);
-  transform: rotate(-10deg);
+  position: absolute;
+  top: -6px;
+  left: -60px;
+  z-index: 2;
+  width: 66px;
+  height: 66px;
+  pointer-events: none;
 }
 
 .home-calm__face {
@@ -55,22 +64,26 @@
   object-position: center top;
 }
 
-/* 캐릭터는 왼쪽, 말풍선은 오른쪽. 아래 타이머 카드가 캐릭터 발치에 겹친다.
-   캐릭터 이미지에는 강조선이 이미 그려져 있어서 따로 강조선을 붙이지 않는다 */
+/* 히어로 컨테이너: 로고 아래 ~ 알림 카드 직전. 375px 기준 347×250 (너비에 비례). 모든 자식은 좌상단 기준 absolute.
+   레이어: 2 캐릭터 · 3 별/구름/강조선 · 4 말풍선 · 5 알림 카드 */
 .home-hero {
   position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  min-height: 230px;
-  margin-bottom: -40px;
+  width: 100%;
+  aspect-ratio: 347 / 250;
+  margin-bottom: -22px; /* 캐릭터 하단이 알림 카드 뒤로 들어가도록 */
 }
 
+/* 캐릭터: 보이는 인물이 left 4% · 폭 65%가 되도록 보정(박스 left -6.6% · 폭 77.5%). 비율 유지(560×660) */
 .home-hero__character {
-  position: relative;
-  flex: none;
-  width: 196px;
-  height: 230px;
+  position: absolute;
+  /* 이미지 좌우 투명 여백(보이는 인물 폭 약 84%)을 보정해서, 보이는 인물이 left 4% · 폭 65%에 맞도록 박스를 잡는다 */
+  left: -6.6%;
+  top: -1%;
+  width: 77.5%;
+  aspect-ratio: 560 / 660;
+  z-index: 2;
+  /* 히어로 하단 아래로 넘친 부분은 잘라서 알림 카드 아래로 비치지 않게 한다 (히어로 높이 기준 약 79%에서 자름) */
+  clip-path: inset(-10% -10% 21.1% -10%);
 }
 
 .home-hero__character .asset,
@@ -81,79 +94,296 @@
   object-position: bottom left;
 }
 
-.home-hero__bubble {
-  flex: 1;
-  /* 캐릭터 머리 오른쪽의 빈 공간까지 살짝 넓힌다 (너비 약 20%, 높이 약 22% 확대) */
-  margin-left: -28px;
-  min-height: 104px;
-  margin-top: var(--space-5);
-  padding: var(--space-4) 20px;
-  font-size: var(--text-small);
-  font-weight: 400; /* 첫 문장만 굵게(strong), 나머지는 일반 굵기 */
-  line-height: 1.45;
-  text-wrap: balance;
+/* 원본 캐릭터 이미지의 연한 노란 강조선 3개를 배경색 면으로 가린다 (이미지 파일은 변경하지 않음). 캐릭터 박스 기준 % */
+.home-hero__mask {
+  position: absolute;
+  left: 6%;
+  top: 14%;
+  width: 26%;
+  height: 21%;
+  z-index: 1;
+  background: var(--main-bg);
+  pointer-events: none;
 }
 
-.home-hero__bubble strong {
-  font-weight: 800;
+/* 꾸밈 요소: 모든 위치·폭은 히어로 기준 % (지정 좌표) */
+.home-deco {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  height: auto;
 }
 
-.home-timer {
+.home-deco--rays-left { left: 6%; top: 8%; width: 13%; }      /* 캐릭터 왼손 위 · 굵은 노랑 */
+.home-deco--star-blue { left: 4%; top: 59%; width: 8%; }
+.home-deco--star-orange { left: 65%; top: 62%; width: 9%; }
+.home-deco--star-pink { left: 90%; top: 57%; width: 7%; }
+.home-deco--puff { left: 71%; top: 68%; width: 19%; }          /* 구름 */
+.home-deco--rays-right { left: 83%; top: 90%; width: 13%; }    /* 하단 노랑 · 알림 카드 우상단 뒤 */
+
+/* 말풍선 wrapper: left 55% · top 5.6% · 폭 45%(이전 43%의 +5%) · 비율 약 1.4:1 · 중심 높이 유지. 오른쪽 여백 14px */
+.home-bubble {
+  position: absolute;
+  left: 55%;
+  top: 5.6%;
+  width: 45%;
+  aspect-ratio: 1.4 / 1;
+  z-index: 4;
+}
+
+/* 외곽: 흰 면 + 네이비 2.75px, 꼬리 포함 하나의 path */
+.home-bubble__shape {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+
+/* 분홍 강조선 3개: 말풍선 기준 left -2% · top -9% · 폭 21%. 말풍선보다 아래 z-index */
+.home-bubble__rays {
+  position: absolute;
+  left: -2%;
+  top: -9%;
+  width: 21%;
+  height: auto;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 텍스트: 몸체 폭의 약 80%, 상하 여백 약 18% */
+.home-bubble__text {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 5% 7% 5%;
+  text-align: center;
+  color: var(--main-outline);
+  word-break: keep-all;
+}
+
+/* 첫 문장: 21px · 900 · 자간 -0.06em · 행간 1.2 · -5도. 노란 강조선은 글자 하단 약 46%에만 */
+.home-bubble__text strong {
   position: relative;
+  isolation: isolate;
+  display: inline-block;
+  font-size: 22px; /* 시안 21~22px 권장. 긴 문구가 두 줄을 넘지 않도록 한 단계 줄였다 */
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  line-height: 1.2;
+  transform: rotate(-5deg);
+}
+
+.home-bubble__text strong::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  right: -3px;
+  bottom: 6%;
+  height: 46%;
+  z-index: -1;
+  background: #ffe522;
+  border-radius: 999px;
+}
+
+/* 두 번째 안내 문장: 16px · 800 · 자간 -0.045em · 행간 1.4 · -3도. 첫 문장과 13px 간격 */
+.home-bubble__text > span {
+  display: block;
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.3;
+  transform: rotate(-3deg);
+}
+
+/* 알림 카드: 가로 3영역 (시계 23% · 시간 42% · 체크 35%). 349px 폭, 캡슐형 */
+.home-alarm {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 14px 0 10px;
+  background: #ffffff;
+  border: 3px solid var(--main-outline);
+  border-radius: 999px;
+  box-shadow: 3px 5px 0 var(--main-shadow);
+}
+
+.home-alarm__icon {
+  flex: 0 0 62px;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.home-alarm__center {
+  flex: 1 1 42%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-3) var(--space-4);
+  min-width: 0;
+  padding: 0 6px;
+  border-left: 2px solid #e4dcf5;
+  border-right: 2px solid #e4dcf5;
   text-align: center;
-  border: 1px solid var(--color-outline);
-  box-shadow: 2px 3px 0 var(--color-lavender);
 }
 
-.home-timer__label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-small);
-  font-weight: 600;
-}
-
-.home-timer__value {
-  font-size: var(--text-timer);
-  font-weight: 800;
+.home-alarm__label {
+  font-size: 12px;
+  font-weight: 700;
   line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* 카운트다운: 은은한 세로 그라데이션 + 둥근 캡슐 */
+.home-alarm__value {
+  display: inline-block;
+  margin-top: 3px;
+  padding: 0 12px;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.3;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
-  text-shadow: 1px 2px 0 var(--color-lavender);
+  background: linear-gradient(180deg, #fff7a6 0%, #ffe94a 55%, #ffe02a 100%);
+  border-radius: 999px;
+  box-shadow: inset 0 -2px 0 rgba(23, 22, 36, 0.08);
 }
 
-.home-timer__check {
-  min-height: var(--tap-size);
+/* 체크박스와 텍스트는 가로로 나란히 */
+.home-alarm__check {
+  flex: 0 0 35%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
+.home-alarm__check input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--main-outline);
+}
+
+/* 하단 버튼 3종: 캡슐형, 굵은 외곽선, 하단 입체 음영, 우측 하단 보라색 오프셋 그림자 */
 .home-actions {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  margin-top: var(--space-2);
+  gap: 14px;
 }
 
-.home-actions .btn--soft {
-  min-height: 56px;
+.home-actions .home-cta {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  padding: 0 18px;
+  color: var(--main-outline);
+  font-weight: 900;
+  background: #ffffff;
+  border: 3px solid var(--main-outline);
+  border-radius: 999px;
+  box-shadow: 3px 6px 0 var(--main-shadow);
+  transition: transform 0.1s, box-shadow 0.1s;
 }
 
-/* 설정은 접고 펼친다. (열고 닫아도 입력값은 그대로 저장된다) */
+/* 곡면을 따라 가는 좌상단 흰색 광택 + 작은 원형 광택 */
+.home-actions .home-cta::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 8px;
+  width: 52px;
+  height: 14px;
+  background: linear-gradient(180deg, #ffffff, rgba(255, 255, 255, 0.7));
+  border-radius: 60px 40px 30px 20px / 14px 12px 8px 8px;
+  transform: rotate(-14deg);
+  pointer-events: none;
+}
+
+.home-actions .home-cta::after {
+  content: '';
+  position: absolute;
+  left: 74px;
+  top: 10px;
+  width: 9px;
+  height: 9px;
+  background: #ffffff;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.home-actions .home-cta--stretch {
+  height: 78px;
+  font-size: 23px;
+  background: linear-gradient(180deg, #fff46b 0%, #ffea39 55%, #ffdc1f 100%);
+  box-shadow: inset 0 -8px 0 #efbc1b, 3px 6px 0 var(--main-shadow);
+}
+
+.home-actions .home-cta--stats {
+  height: 67px;
+  font-size: 21px;
+  background: linear-gradient(180deg, #efe2ff 0%, #d8bdf8 55%, #c59df0 100%);
+  box-shadow: inset 0 -7px 0 #b58ae6, 3px 6px 0 var(--main-shadow);
+}
+
+.home-actions .home-cta:active {
+  transform: translate(2px, 3px);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.08), 1px 2px 0 var(--main-shadow);
+}
+
+.home-cta__icon {
+  flex: none;
+  height: 34px;
+  width: auto;
+  object-fit: contain;
+}
+
+.home-cta--stats .home-cta__icon {
+  height: 27px;
+}
+
+.home-cta__spark {
+  position: absolute;
+  top: -14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+}
+
+/* 설정: 흰색 캡슐 카드, 같은 외곽선과 입체 그림자 */
 .home-settings {
-  padding: 0 var(--space-4);
-  margin-top: var(--space-2);
+  padding: 0 18px;
+  background: #ffffff;
+  border: 3px solid var(--main-outline);
+  border-radius: 999px;
+  box-shadow: 3px 6px 0 var(--main-shadow);
 }
 
 .home-settings__summary {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 12px;
   min-height: 56px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 900;
   cursor: pointer;
   list-style: none;
 }
@@ -163,9 +393,16 @@
 }
 
 .home-settings__summary:focus-visible {
-  outline: 3px solid var(--color-lavender);
+  outline: 3px solid var(--main-shadow);
   outline-offset: 2px;
-  border-radius: var(--radius-sm);
+  border-radius: 999px;
+}
+
+.home-settings__icon {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
 }
 
 .home-settings__chevron {
@@ -173,16 +410,30 @@
   transition: transform 0.2s;
 }
 
+.home-settings[open] {
+  border-radius: 28px;
+}
+
 .home-settings[open] .home-settings__chevron {
   transform: rotate(90deg);
 }
 
 .home-settings__body {
-  padding-bottom: var(--space-4);
+  padding-bottom: 16px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home-settings__chevron {
+  .home-settings__chevron,
+  .home-actions .home-cta {
     transition: none;
   }
+}
+
+/* 하루 끝 문구("오늘도 수고했어요!")는 글자가 길어서 말풍선 안에 맞도록 한 단계 작게. 다른 문구는 그대로 */
+.home-bubble__text--compact strong {
+  font-size: 18px;
+}
+
+.home-bubble__text--compact > span {
+  font-size: 14px;
 }

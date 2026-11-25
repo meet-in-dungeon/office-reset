@@ -11,6 +11,7 @@ import Screen from '../components/Screen'
 import { BADGES, TIER_NAMES } from '../lib/badges'
 import { fillDemoRecords, getStats, getWeeklyStats, PART_NAMES, resetRecords } from '../lib/records'
 import { navigate, ROUTES, useRoute } from '../lib/router'
+import '../pages/Main.css' // 공통 3D 버튼 스타일 재사용
 import './Stats.css'
 
 // '2026-11-24T13:05:10' → '11월 24일'
@@ -295,11 +296,11 @@ function DemoPanel() {
         샘플 기록은 지난 3주 평일 기록과 빡침 명상 9번이에요. 오늘과 해커톤 기간은 비워 둬서, 지금 루틴을 하면 숨겨진 배지가
         나와요.
       </p>
-      <div className="stats-demo__actions">
-        <Button variant="soft" block onClick={fill}>
+      <div className="stats-demo__actions home-actions">
+        <Button block className="home-cta home-cta--stats" onClick={fill}>
           샘플 기록 채우기
         </Button>
-        <Button variant="ghost" block onClick={reset}>
+        <Button block className="home-cta" onClick={reset}>
           기록 초기화
         </Button>
       </div>
@@ -345,9 +346,11 @@ export default function Stats() {
 
       <p className="muted stats-note">기록은 이 브라우저에 저장돼요. 브라우저 기록을 지우면 함께 지워져요.</p>
 
-      <Button variant="soft" block onClick={() => navigate(ROUTES.home)}>
-        메인으로
-      </Button>
+      <div className="home-actions">
+        <Button block className="home-cta stats-home" onClick={() => navigate(ROUTES.home)}>
+          <span>메인으로</span>
+        </Button>
+      </div>
 
       {demo ? <DemoPanel /> : null}
     </Screen>

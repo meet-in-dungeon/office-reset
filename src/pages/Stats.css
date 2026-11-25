@@ -443,3 +443,78 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* ---- 공통 디자인 통일 (메인·온보딩과 같은 흰 카드, 진한 외곽선, 보라 오프셋 그림자) ---- */
+.stats {
+  background: var(--main-bg);
+}
+
+/* 정보 화면이라 메인보다 강도를 낮춘다: 얇은 외곽선 + 연한 보라 그림자 */
+.stats .card {
+  border: 2px solid var(--main-outline);
+  border-radius: 24px;
+  box-shadow: 2px 4px 0 #d9c8f6;
+}
+
+/* 오늘 완료 카드는 민트 유지, 시연 패널은 점선으로 구분 */
+.stats .stats-today--done {
+  background: var(--color-calm-soft);
+}
+
+.stats .stats-demo {
+  border: 2px dashed var(--main-shadow);
+  box-shadow: none;
+}
+
+/* 탭: 선택된 탭은 보라색, 아닌 탭은 흰색 */
+.stats .stats-tabs {
+  padding: 4px;
+  background: #ffffff;
+  border: 3px solid var(--main-outline);
+  box-shadow: 3px 5px 0 var(--main-shadow);
+}
+
+.stats .stats-tab {
+  font-weight: 800;
+  color: var(--main-outline);
+}
+
+/* 선택된 탭: 메인의 보라색 버튼과 같은 밝은 보라 + 진한 네이비 글자 */
+.stats .stats-tab--active {
+  color: var(--main-outline);
+  background: linear-gradient(180deg, #efe2ff 0%, #d8bdf8 55%, #c59df0 100%);
+  box-shadow: inset 0 -4px 0 #b58ae6;
+}
+
+/* 숫자: 오늘 완료·지금까지 횟수를 크고 굵게 */
+.stats .stats-number__value {
+  font-size: 3.25rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--main-outline);
+}
+
+.stats .stats-number__unit {
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.stats .stats-number__label {
+  font-weight: 700;
+  color: #4a4a5e;
+}
+
+.stats .stats-today__title {
+  font-weight: 900;
+}
+
+/* 메인으로: 메인 화면의 흰색 버튼 */
+.stats .stats-home {
+  height: 56px;
+  font-size: 18px;
+}
+
+/* 이번 주 그래프: 오늘(활성) 막대를 네이비에서 서비스 보라색으로. 나머지 막대는 연보라 그대로 */
+.stats .stats-week__day--today .stats-week__fill {
+  background: #8f6fe0;
+}

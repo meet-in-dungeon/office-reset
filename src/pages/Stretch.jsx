@@ -4,11 +4,12 @@
 // 알림으로 들어오면 주소가 #/stretch?from=notification 이 된다. (useRoute().query.from)
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Asset from '../components/Asset'
+import '../pages/Main.css' // 다음 버튼 스타일 재사용 (.home-cta--stretch)
 import Button from '../components/Button'
 import BreathCircle from '../components/BreathCircle'
 import SoundToggle from '../components/SoundToggle'
-import CountRing, { CountAccent } from '../components/CountRing'
-import { AlertIcon, ChevronIcon, PlayIcon } from '../components/Icons'
+import CountRing from '../components/CountRing'
+import { AlertIcon, ChevronIcon } from '../components/Icons'
 import Screen from '../components/Screen'
 import data from '../data/stretches.json'
 import { getLastNotifiedAt } from '../lib/alerts'
@@ -168,15 +169,32 @@ export default function Stretch() {
 
   if (stage === 'start') {
     return (
-      <Screen title="스트레칭" align="center" className="stretch-screen" headerRight={<SoundToggle />}>
+      <Screen title="스트레칭" align="center" className="stretch-screen stretch-screen--start" headerRight={<SoundToggle />}>
         <div className="stretch-start">
-          <div className="stretch-start__character">
-            <Asset file="character-main.webp" size="권장 560×660" alt="안내 캐릭터" />
+          {/* 캐릭터와 장식은 이 relative 컨테이너 안에서만 좌표로 배치하고, 아래 문구·버튼은 일반 흐름으로 놓는다 */}
+          <div className="stretch-start__hero">
+            <Asset file="lavender-cloud-bg.png" kind="decor" className="stretch-start__wave" />
+            <Asset file="rays-yellow.png" kind="decor" className="stretch-start__deco stretch-start__deco--rays-yellow" />
+            <Asset file="rays-pink.png" kind="decor" className="stretch-start__deco stretch-start__deco--rays-pink" />
+            <Asset file="star-blue.png" kind="decor" className="stretch-start__deco stretch-start__deco--star-blue" />
+            <Asset file="star-orange.png" kind="decor" className="stretch-start__deco stretch-start__deco--star-orange" />
+            <Asset file="sparkle-yellow-pair.png" kind="decor" className="stretch-start__deco stretch-start__deco--sparkle" />
+            <Asset file="motion-puff.svg" kind="decor" className="stretch-start__deco stretch-start__deco--puff" />
+            <div className="stretch-start__character">
+              <Asset file="character-main.webp" size="권장 560×660" alt="안내 캐릭터" />
+              <span className="stretch-start__mask" aria-hidden="true" />
+            </div>
           </div>
-          <p className="stretch-start__copy">잠깐, 몸 풀기 좋은 타이밍이에요!</p>
-          <Button size="large" block onClick={() => setStage('move')}>
-            <PlayIcon className="icon" width="18" height="18" /> 시작
-          </Button>
+          <p className="stretch-start__copy">
+            잠깐, <span className="stretch-start__hl">몸 풀기</span> 좋은 타이밍이에요!
+          </p>
+          <div className="home-actions stretch-start__actions">
+            <Button size="large" block className="home-cta home-cta--stretch" onClick={() => setStage('move')}>
+              <Asset file="icon-play.png" kind="decor" className="home-cta__icon" />
+              <span>시작</span>
+              <Asset file="sparkle.svg" kind="decor" className="home-cta__spark" />
+            </Button>
+          </div>
           <p className="stretch-caution">{data.commonCaution}</p>
         </div>
       </Screen>
@@ -217,9 +235,11 @@ export default function Stretch() {
           </div>
           {/* 호흡은 넘기기가 아니라 중단이다. 호흡을 마치지 못했으니 breathCount는 0으로 기록하고 완료 화면으로 간다.
               (동작 3개는 마쳤으므로 루틴 기록은 저장되고, 하루 완성 배지는 호흡을 마친 루틴에서만 나간다.) */}
-          <Button variant="soft" className="stretch-breath__stop" onClick={() => finish(false)}>
-            중단
-          </Button>
+          <div className="home-actions stretch-breath__actions">
+            <Button block className="home-cta stretch-breath__stop" onClick={() => finish(false)}>
+              중단
+            </Button>
+          </div>
         </div>
       </Screen>
     )
@@ -245,15 +265,35 @@ export default function Stretch() {
   }
 
   return (
-    <Screen title="스트레칭" align="center" className="stretch-screen" headerRight={<SoundToggle />}>
+    <Screen
+      title={<span className="visually-hidden">스트레칭</span>}
+      className="stretch-screen stretch-screen--move"
+    >
       <div className="stretch-move">
-        <div className="stretch-head">
+        <div className="stretch-topbar">
+          <button type="button" className="stretch-back" aria-label="메인 화면으로" onClick={() => navigate(ROUTES.home)}>
+            <ChevronIcon width="20" height="20" />
+          </button>
+          <div className="stretch-pills" aria-hidden="true">
+            {moves.map((m, i) => (
+              <span key={m.id} className={`stretch-pill${i <= index ? ' stretch-pill--on' : ''}`} />
+            ))}
+          </div>
           <p className="stretch-progress">
             <span className="stretch-progress__now">{index + 1}</span> / {moves.length}
           </p>
+          <SoundToggle />
+        </div>
+
+        <div className="stretch-head">
           <h2 className="stretch-name">
-            <span className="stretch-name__label">
-              {move.name.includes(data.parts[move.part]) ? move.name : `${data.parts[move.part]} · ${move.name}`}
+            <span className="stretch-name__banner">
+              <Asset file="rays-yellow.png" kind="decor" className="stretch-name__rays stretch-name__rays--left" />
+              <Asset file="stretch-title-banner.png" kind="decor" className="stretch-name__bg" />
+              <span className="stretch-name__label">
+                {move.name.includes(data.parts[move.part]) ? move.name : `${data.parts[move.part]} · ${move.name}`}
+              </span>
+              <Asset file="rays-pink.png" kind="decor" className="stretch-name__rays stretch-name__rays--right" />
             </span>
           </h2>
         </div>
@@ -267,24 +307,14 @@ export default function Stretch() {
 
         <div className={`stretch-count stretch-count--${countState}`}>
           <div className="stretch-count__ring" role="status" aria-label={COUNT_LABELS[countState](remaining)}>
-            {countState === 'run' ? (
-              <Asset
-                file="sticker-accent.svg"
-                kind="decor"
-                className="stretch-count__sticker stretch-count__sticker--left"
-                fallback={<CountAccent side="left" />}
-              />
+            {countState !== 'done' ? (
+              <Asset file="rays-yellow.png" kind="decor" className="stretch-count__sticker stretch-count__sticker--left" />
             ) : null}
             <CountRing ratio={countState === 'run' ? remaining / MOVE_SECONDS : 1} state={countState}>
               {countState === 'prepare' ? '준비' : String(remaining).padStart(2, '0')}
             </CountRing>
-            {countState === 'run' ? (
-              <Asset
-                file="sticker-accent.svg"
-                kind="decor"
-                className="stretch-count__sticker stretch-count__sticker--right"
-                fallback={<CountAccent side="right" />}
-              />
+            {countState !== 'done' ? (
+              <Asset file="rays-yellow.png" kind="decor" className="stretch-count__sticker stretch-count__sticker--right" />
             ) : null}
           </div>
           <p className="stretch-count__caption" aria-live="polite">
@@ -312,9 +342,18 @@ export default function Stretch() {
 
         {/* 다음 버튼은 화면 아래에 붙어 있어서 스크롤 없이 누를 수 있다. 버튼 위 내용은 가려지지 않는다 */}
         <div className="stretch-next">
-          <Button size="large" block onClick={handleNext} disabled={!countDone && !ALLOW_EARLY_NEXT}>
-            {isLastMove && !isLastRoutine ? '마치기' : '다음'} <ChevronIcon className="icon" width="18" height="18" />
-          </Button>
+          <div className="home-actions">
+            <Button
+              size="large"
+              block
+              className="home-cta home-cta--stretch stretch-cta"
+              onClick={handleNext}
+              disabled={!countDone && !ALLOW_EARLY_NEXT}
+            >
+              {isLastMove && !isLastRoutine ? '마치기' : '다음'} <ChevronIcon className="icon" width="18" height="18" />
+              <Asset file="sparkle.svg" kind="decor" className="home-cta__spark" />
+            </Button>
+          </div>
         </div>
       </div>
     </Screen>

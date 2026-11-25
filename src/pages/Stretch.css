@@ -15,20 +15,6 @@
   text-align: center;
 }
 
-.stretch-start__character {
-  width: 230px;
-  margin: 0 auto;
-}
-
-.stretch-start__character .asset {
-  width: 100%;
-  height: auto;
-}
-
-.stretch-start__character .asset-placeholder {
-  min-height: 270px;
-}
-
 .stretch-start__copy {
   font-size: 1.25rem;
   font-weight: 800;
@@ -480,13 +466,6 @@
   background: #8c7fe0;
 }
 
-/* 중단 버튼: 보조 버튼(흰 바탕 + 라벤더 테두리 + 네이비 글자). 눌리는 영역 48px 이상 */
-.stretch-breath__stop {
-  min-width: 160px;
-  margin-top: var(--space-2);
-  border-color: var(--color-lavender);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .count-ring__bar,
   .breath-circle {
@@ -497,4 +476,389 @@
   .stretch-count--run .stretch-count__caption {
     animation: none;
   }
+}
+
+/* ---- 스트레칭 진행 화면 디자인 (시안 기준). 시작·호흡 화면은 바뀌지 않는다 ---- */
+.stretch-screen--move .screen__header {
+  display: none; /* 제목 줄 대신 아래 위쪽 바 (뒤로 · 진행 막대 · 1 / 3 · 소리) */
+}
+
+.stretch-screen--move {
+  padding-top: 14px;
+}
+
+.stretch-topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stretch-topbar .stretch-back,
+.stretch-topbar .sound-toggle {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  min-height: 0;
+  padding: 0;
+  border: 2.5px solid var(--main-outline);
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 3px 0 var(--main-outline);
+  color: var(--main-outline);
+  cursor: pointer;
+}
+
+.stretch-back svg {
+  transform: rotate(180deg);
+}
+
+.stretch-pills {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+}
+
+.stretch-pill {
+  width: 36px;
+  height: 13px;
+  border: 2px solid var(--main-outline);
+  border-radius: 999px;
+  background: #d9cdf6;
+}
+
+.stretch-pill--on {
+  background: var(--main-yellow);
+}
+
+.stretch-topbar .stretch-progress {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+/* 동작 이름 배너: 제공 배너 PNG 위에 HTML 텍스트. 노란 강조선·분홍 강조선은 배너 좌우에 */
+.stretch-name {
+  margin: 4px 0 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.stretch-name__banner {
+  position: relative;
+  display: block;
+  width: 292px;
+  max-width: 100%;
+  margin: 0 auto;
+  aspect-ratio: 1280 / 308;
+}
+
+.stretch-name__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.stretch-name__label {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 34px;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.25;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.stretch-name__rays {
+  position: absolute;
+  z-index: 2;
+  height: auto;
+  pointer-events: none;
+}
+
+.stretch-name__rays--left {
+  left: -18px;
+  top: -20px;
+  width: 52px;
+}
+
+.stretch-name__rays--right {
+  right: -14px;
+  top: -18px;
+  width: 46px;
+  transform: scaleX(-1);
+}
+
+/* 카운트다운 좌우 노란 강조선: 준비·진행 모두 표시, 오른쪽은 좌우 반전 */
+.stretch-count__sticker {
+  position: absolute;
+  top: 50%;
+  width: 46px;
+  height: auto;
+  transform: translateY(-50%);
+}
+
+.stretch-count__sticker--left {
+  left: -50px;
+  transform-origin: center center;
+  transform: translateY(-50%) rotate(0deg); /* 왼쪽: 현재(30도)에서 반시계 방향 30도 → 0도 */
+}
+
+.stretch-count__sticker--right {
+  right: -50px;
+  transform-origin: center center;
+  transform: translateY(-50%) rotate(0deg) scaleX(-1); /* 오른쪽: 현재(-30도)에서 시계 방향 30도 → 0도, 좌우 반전 유지 */
+}
+
+/* 동작 단계 카드: 흰 바탕, 연한 테두리, 보라 번호 원형 */
+.stretch-steps {
+  padding: 6px 18px;
+  border: 1.5px solid #e4dcf5;
+  border-radius: 24px;
+  box-shadow: none;
+}
+
+.stretch-steps li {
+  padding: 12px 0 12px 46px;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.stretch-steps li + li {
+  border-top: 1.5px solid #e4dcf5;
+}
+
+.stretch-steps li::before {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border: 2.5px solid var(--main-outline);
+  background: radial-gradient(circle at 35% 30%, #dccbff 0%, #a98bf0 70%, #8f6fe0 100%);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 900;
+  -webkit-text-stroke: 1.5px var(--main-outline);
+  paint-order: stroke fill;
+}
+
+/* 다음 버튼: 메인 화면의 노란 버튼 스타일 재사용, 높이만 시안(약 62px) */
+.stretch-next {
+  margin: 4px 0 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
+.stretch-next .home-actions .home-cta--stretch.stretch-cta {
+  min-height: 62px;
+  height: 62px;
+  font-size: 20px;
+}
+
+/* ---- 스트레칭 시작 화면 디자인 (온보딩 히어로와 같은 방식). 동작 진행·호흡 화면은 바뀌지 않는다 ---- */
+.stretch-screen--start {
+  gap: 0;
+  padding-top: 4px;
+  background: var(--main-bg);
+}
+
+.stretch-screen--start .screen__header {
+  min-height: var(--tap-size);
+}
+
+.stretch-screen--start .stretch-start {
+  justify-content: flex-start;
+  gap: 14px;
+  padding-bottom: 20px;
+}
+
+/* 히어로: 캐릭터·장식만 이 relative 컨테이너 안에서 % 좌표로 배치한다. 높이는 너비에 비례해서 고정 */
+.stretch-start__hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 343 / 330;
+  margin-bottom: 8px; /* 캐릭터 하단(컨테이너 아래로 조금 넘침)과 안내 문구 사이 12~16px 확보 */
+}
+
+/* 연보라 구름 배경(온보딩과 같은 에셋). 캐릭터 뒤쪽 */
+.stretch-start__wave {
+  position: absolute;
+  left: -1.5%;
+  top: calc(60% - 30px);
+  width: 100%;
+  height: auto;
+  z-index: 1;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* 캐릭터: 보이는 인물이 가운데 약 70%를 차지하도록 크게. 원본 비율(560×660) 유지 */
+.stretch-start__character {
+  position: absolute;
+  left: 8%;
+  top: 0;
+  width: 84%;
+  aspect-ratio: 560 / 660;
+  z-index: 2;
+}
+
+.stretch-start__character .asset,
+.stretch-start__character .asset-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+}
+
+/* 원본 캐릭터 이미지의 연한 노란 강조선을 배경색 면으로 가린다 (메인 화면과 같은 방식, 이미지 파일은 그대로) */
+.stretch-start__mask {
+  position: absolute;
+  left: 6%;
+  top: 14%;
+  width: 26%;
+  height: 21%;
+  background: var(--main-bg);
+  pointer-events: none;
+}
+
+.stretch-start__deco {
+  position: absolute;
+  z-index: 3;
+  height: auto;
+  pointer-events: none;
+}
+
+.stretch-start__deco--rays-yellow { left: 7%; top: 14%; width: 14%; }
+.stretch-start__deco--rays-pink { left: 76%; top: 5%; width: 13%; transform: scaleX(-1); }
+.stretch-start__deco--sparkle { left: 79%; top: 25%; width: 10%; }
+.stretch-start__deco--star-blue { left: 5%; top: 56%; width: 9%; }
+.stretch-start__deco--star-orange { left: 87%; top: 52%; width: 9%; }
+.stretch-start__deco--puff { left: 82%; top: 78%; width: 16%; }
+
+/* 안내 문구: 굵고 크게. 핵심 단어에만 노란 형광펜 */
+.stretch-screen--start .stretch-start__copy {
+  margin: 0;
+  font-size: 1.33rem;
+  font-weight: 900;
+  line-height: 1.35;
+  letter-spacing: -0.045em;
+  color: var(--main-outline);
+  word-break: keep-all;
+}
+
+/* 메인 말풍선과 같은 둥근 형광펜: 글자 하단 약 46%, 양끝이 완전히 둥글다 */
+.stretch-start__hl {
+  position: relative;
+  isolation: isolate;
+  display: inline-block;
+  padding: 0 3px;
+}
+
+.stretch-start__hl::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  right: -3px;
+  bottom: 6%;
+  height: 46%;
+  z-index: -1;
+  background: #ffe522;
+  border-radius: 999px;
+}
+
+.stretch-start__actions {
+  margin-top: 2px;
+}
+
+/* ---- 하루 마지막 호흡 화면: 배경과 호흡 원 애니메이션은 그대로, 입체감·글자·버튼만 정리 ---- */
+.stretch-breath .breath-circle {
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 38%),
+    radial-gradient(circle at 50% 55%, rgba(205, 197, 246, 0.95) 0%, rgba(176, 160, 238, 0.8) 70%, rgba(150, 130, 226, 0.7) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  box-shadow:
+    inset -8px -12px 22px rgba(120, 98, 208, 0.28),
+    inset 6px 8px 14px rgba(255, 255, 255, 0.55),
+    0 10px 22px rgba(120, 98, 208, 0.25),
+    0 0 0 12px rgba(205, 197, 246, 0.28),
+    0 0 0 13px rgba(255, 255, 255, 0.7),
+    0 0 0 26px rgba(205, 197, 246, 0.16),
+    0 0 0 27px rgba(255, 255, 255, 0.5);
+}
+
+.stretch-breath .breath-circle__label {
+  font-size: 1.75rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--main-outline);
+}
+
+.stretch-breath .breath-circle__left {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--main-outline);
+}
+
+.stretch-breath .stretch-breath__text {
+  font-size: 1.375rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--main-outline);
+}
+
+/* 진행 횟수: 현재 횟수를 크게, 점도 또렷하게 */
+.stretch-breath .stretch-progress {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--main-outline);
+}
+
+.stretch-breath .stretch-progress__now {
+  margin-right: 6px; /* 현재 숫자와 "/ 5회" 사이 여백 */
+  font-size: 1.75rem;
+  font-weight: 900;
+}
+
+.stretch-breath .stretch-breath__dots {
+  gap: 10px;
+}
+
+.stretch-breath .stretch-breath__dot {
+  width: 14px;
+  height: 14px;
+  background: #ffffff;
+  border: 1px solid var(--main-outline);
+}
+
+.stretch-breath .stretch-breath__dot--on {
+  background: #a99ae4; /* 부드러운 보라색 */
+  border-color: #a99ae4;
+}
+
+/* 중단 버튼: 메인 화면의 흰색 버튼(.home-cta) */
+.stretch-breath__actions {
+  width: 220px;
+  max-width: 100%;
+  margin-top: var(--space-2);
+}
+
+.stretch-breath__actions .home-cta {
+  height: 56px;
+  font-size: 18px;
 }

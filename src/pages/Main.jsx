@@ -2,9 +2,8 @@
 // 다음 알림까지 남은 시간, 스트레칭 시작 버튼, 오른쪽 위 빡침 버튼, 기록·통계 진입, 간단한 설정.
 import { useEffect, useState } from 'react'
 import Asset from '../components/Asset'
-import BubbleShape from '../components/BubbleShape'
 import Button from '../components/Button'
-import { AlarmIcon, ChartIcon, ChevronIcon, GearIcon, PlayIcon } from '../components/Icons'
+import { ChevronIcon } from '../components/Icons'
 import Screen from '../components/Screen'
 import NotificationPermission from '../components/NotificationPermission'
 import WorkTimeSettings from '../components/WorkTimeSettings'
@@ -57,10 +56,7 @@ export default function Main() {
 
   const calmButton = (
     <div className="home-calm">
-      <span className="home-calm__burst" aria-hidden="true">
-        <Asset file="sticker-impact.svg" kind="decor" className="home-calm__sticker" />
-        <span className="home-calm__burst-text">빡침!</span>
-      </span>
+      <Asset file="anger-sticker.svg" kind="decor" className="home-calm__sticker" />
       <Button variant="alert" size="round" aria-label="빡침 버튼" onClick={() => navigate(ROUTES.calm)}>
         <Asset
           file="character-angry.webp"
@@ -75,51 +71,63 @@ export default function Main() {
   return (
     <Screen
       className="home"
-      title={<span className="brand">삭신이 쑤신다</span>}
+      title={<Asset file="logo-main.png" kind="decor" alt="잠깐만 휴식" className="home-logo" />}
+      titleClassName="home-logo-title"
       headerRight={calmButton}
     >
-      <h2 className="home-title">오늘의 회복 루틴</h2>
-
       <div className="home-hero">
+        <Asset file="rays-yellow.png" kind="decor" className="home-deco home-deco--rays-left" />
+        <Asset file="star-blue.png" kind="decor" className="home-deco home-deco--star-blue" />
+        <Asset file="star-orange.png" kind="decor" className="home-deco home-deco--star-orange" />
+        <Asset file="star-pink.png" kind="decor" className="home-deco home-deco--star-pink" />
+        <Asset file="motion-puff.svg" kind="decor" className="home-deco home-deco--puff" />
+        <Asset file="rays-yellow.png" kind="decor" className="home-deco home-deco--rays-right" />
         <div className="home-hero__character">
           <Asset file="character-main.webp" size="권장 560×660" alt="안내 캐릭터" />
+          <span className="home-hero__mask" aria-hidden="true" />
         </div>
-        <p className="bubble home-hero__bubble">
-          <BubbleShape />
-          <strong>{bubbleLines[0]}</strong>
-          <br />
-          {bubbleLines[1]}
-        </p>
+        <div className="home-bubble">
+          <Asset file="rays-pink.png" kind="decor" className="home-bubble__rays" />
+          <Asset file="speech-bubble.svg" kind="decor" className="home-bubble__shape" />
+          <p className={`home-bubble__text${bubbleLines[0] === '오늘도 수고했어요!' ? ' home-bubble__text--compact' : ''}`}>
+            <strong>{bubbleLines[0]}</strong>
+            <span>{bubbleLines[1]}</span>
+          </p>
+        </div>
       </div>
 
-      <section className="card home-timer" aria-label="업무 타이머">
-        <p className="home-timer__label">
-          <AlarmIcon width="22" height="22" />
-          {timerLabel}
-        </p>
-        <p className="home-timer__value">{timerValue}</p>
-        <label className="check home-timer__check">
+      <section className="home-alarm" aria-label="업무 타이머">
+        <Asset file="alarm-clock.png" kind="decor" className="home-alarm__icon" />
+        <div className="home-alarm__center">
+          <p className="home-alarm__label">{timerLabel}</p>
+          <p className="home-alarm__value">{timerValue}</p>
+        </div>
+        <label className="home-alarm__check">
           <input
             type="checkbox"
             checked={settings.alertsEnabled}
             onChange={(event) => updateSettings({ alertsEnabled: event.target.checked })}
           />
-          알림 받기
+          <span>알림 받기</span>
         </label>
       </section>
 
       <div className="home-actions">
-        <Button size="large" block onClick={() => navigate(ROUTES.stretch)}>
-          <PlayIcon className="icon" width="18" height="18" /> 스트레칭 시작
+        <Button size="large" block className="home-cta home-cta--stretch" onClick={() => navigate(ROUTES.stretch)}>
+          <Asset file="icon-play.png" kind="decor" className="home-cta__icon" />
+          <span>스트레칭 시작</span>
+          <Asset file="sparkle.svg" kind="decor" className="home-cta__spark" />
         </Button>
-        <Button variant="soft" block onClick={() => navigate(ROUTES.stats)}>
-          <ChartIcon className="icon" width="20" height="20" /> 기록·통계 보기
+        <Button variant="soft" block className="home-cta home-cta--stats" onClick={() => navigate(ROUTES.stats)}>
+          <Asset file="icon-stats.png" kind="decor" className="home-cta__icon" />
+          <span>기록·통계 보기</span>
+          <Asset file="sparkle.svg" kind="decor" className="home-cta__spark" />
         </Button>
       </div>
 
-      <details className="card home-settings">
+      <details className="home-settings">
         <summary className="home-settings__summary">
-          <GearIcon className="icon" width="22" height="22" />
+          <Asset file="icon-settings.png" kind="decor" className="home-settings__icon" />
           <span>알림·루틴 설정</span>
           <ChevronIcon className="home-settings__chevron" width="20" height="20" />
         </summary>

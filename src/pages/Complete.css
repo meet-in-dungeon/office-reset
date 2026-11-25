@@ -1,30 +1,32 @@
 /* 완료 화면 전용 스타일 (담당: 이주연). 색·여백은 index.css의 공통 값을 쓴다. */
 
-/* B급 감성을 가장 크게 주는 화면. 굵고 기울어진 제목 + 색종이 + 축하 캐릭터 */
+/* 성취감을 느끼는 화면이라 카툰 요소를 가장 적극적으로 쓴다. 메인·온보딩의 보라 오프셋 그림자 카드 스타일을 따른다 */
 .complete {
   position: relative;
-  background: linear-gradient(180deg, var(--color-primary-soft) 0%, transparent 340px);
+  background: var(--main-bg);
   overflow-x: clip;
 }
 
 .complete .screen__header {
   justify-content: center;
+  min-height: 72px;
 }
 
-/* 축하 타이틀: 노란 비정형 사각 도형 위에 글자. 클릭 기능 없음 */
+/* 축하 타이틀: 크고 역동적인 노란 카툰 스티커. 굵은 외곽선 + 보라 오프셋 그림자, 살짝 기울임. 클릭 기능 없음 */
 .complete-title {
   position: relative;
   display: inline-block;
-  padding: 8px 22px 10px;
-  font-size: 2.25rem;
+  padding: 8px 26px 12px;
+  font-size: 2.75rem;
   font-weight: 900;
-  letter-spacing: -0.04em;
-  line-height: 1.25;
-  background: var(--color-sun);
-  border: 2px solid var(--color-outline);
-  border-radius: 12px 16px 10px 14px / 14px 10px 14px 12px;
-  box-shadow: 3px 4px 0 var(--color-outline);
-  transform: rotate(-4.5deg);
+  letter-spacing: -0.05em;
+  line-height: 1.2;
+  color: var(--main-outline);
+  background: linear-gradient(180deg, #fff46b 0%, var(--main-yellow) 55%, #ffdc1f 100%);
+  border: 3px solid var(--main-outline);
+  border-radius: 18px 24px 16px 22px / 22px 16px 22px 18px;
+  box-shadow: inset 0 -6px 0 #efbc1b, 4px 6px 0 var(--main-shadow);
+  transform: rotate(-4deg);
 }
 
 .complete-confetti {
@@ -36,49 +38,60 @@
   pointer-events: none;
 }
 
-.complete-hero {
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  gap: var(--space-2);
-  min-height: 226px;
+/* 히어로: 메인 화면과 같은 좌표 방식(말풍선 left 55% · 폭 45%)을 쓰고, 캐릭터와 장식은 이 컨테이너 안에서만 배치한다 */
+.complete-hero.home-hero {
+  aspect-ratio: 347 / 300;
+  margin-bottom: 0;
 }
 
-.complete-hero__character {
-  flex: none;
-  width: 186px;
-  height: 226px;
+.complete-hero .complete-hero__character {
+  left: -2%;
+  top: 0;
+  width: 72%;
+  aspect-ratio: 560 / 680;
+  clip-path: none;
 }
 
-.complete-hero__character .asset,
-.complete-hero__character .asset-placeholder {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: bottom left;
+.complete-hero .complete-hero__character .asset,
+.complete-hero .complete-hero__character .asset-placeholder {
+  object-position: bottom center;
 }
 
-/* 말풍선 외곽선·꼬리는 공통 .bubble(메인과 같은 모양)을 쓴다 */
-.complete-hero__bubble {
-  flex: 1;
-  /* 너비 약 18%, 높이 약 22% 확대. 캐릭터 머리 오른쪽 빈 공간까지 쓴다 */
-  margin-left: -24px;
-  min-height: 110px;
-  margin-bottom: 110px;
-  padding: var(--space-4) var(--space-3);
-  font-size: var(--text-small);
-  font-weight: 600;
-  line-height: 1.45;
+/* 말풍선을 키운다: 오른쪽 끝(오른쪽 여백)은 그대로 두고 왼쪽으로 넓혀 캐릭터와 살짝 겹친다 */
+.complete-hero .home-bubble {
+  left: 47%;
+  top: calc(5% + 10px); /* 10px 아래로 */
+  width: 53%;
 }
 
-.complete-hero__title {
-  display: block;
-  font-size: var(--text-large);
-  font-weight: 800;
+.complete-hero__mask {
+  position: absolute;
+  z-index: 1;
+  top: 15%;
+  height: 18%;
+  background: var(--main-bg);
+  pointer-events: none;
 }
+
+.complete-hero__mask--left { left: 10%; width: 16%; }
+.complete-hero__mask--right { left: 74%; width: 10%; }
+
+.complete-deco--sparkle-left { left: 3%; top: 6%; width: 12%; }
+.complete-deco--star-blue { left: 6%; top: 62%; width: 8%; }
+.complete-deco--star-orange { left: 61%; top: 56%; width: 8%; }
+.complete-deco--star-pink { left: 90%; top: 52%; width: 7%; }
+.complete-deco--puff { left: 74%; top: 65.5%; width: 19%; } /* 이전보다 약 30px 위 */
 
 .complete-count {
   text-align: center;
+  font-weight: 700;
+  color: #4a4a5e;
+}
+
+/* 오늘·누적 횟수만 굵고 진하게 */
+.complete-count strong {
+  font-weight: 900;
+  color: var(--main-outline);
 }
 
 /* 마지막 루틴에서 호흡을 중단했을 때 나오는 안내 한 줄 */
@@ -95,40 +108,41 @@
 .complete-badges {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: 32px;
   margin: 0;
   padding: var(--space-3) 0 0;
   list-style: none;
 }
 
-/* 새 배지 카드: 가운데 큰 이미지, 위에 노란 "새 배지 획득!" 라벨 */
+/* 새 배지 카드: 온보딩의 흰색 카드(진한 외곽선 + 보라 오프셋 그림자). 위에 노란 "새 배지" 라벨 */
 .complete-badge {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-1);
-  padding: var(--space-4) var(--space-4) var(--space-3);
+  padding: 21px var(--space-4) 14px;
   text-align: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
+  background: #ffffff;
+  border: 3px solid var(--main-outline);
+  border-radius: 24px;
+  box-shadow: 3px 5px 0 var(--main-shadow);
   animation: complete-badge-pop 0.6s ease-out both;
 }
 
 .complete-badge__label {
   position: absolute;
-  top: -14px;
+  top: -16px;
   left: 50%;
   padding: 2px var(--space-4);
   font-size: var(--text-small);
-  font-weight: 800;
+  font-weight: 900;
   white-space: nowrap;
-  background: var(--color-sun);
-  border: 1px solid var(--color-outline);
-  border-radius: var(--radius-sm);
-  box-shadow: 2px 2px 0 var(--color-outline);
+  color: var(--main-outline);
+  background: var(--main-yellow);
+  border: 2px solid var(--main-outline);
+  border-radius: 999px;
+  box-shadow: 2px 3px 0 var(--main-shadow);
   transform: translateX(-50%) rotate(-2deg);
 }
 
@@ -177,6 +191,7 @@
 }
 
 .complete-badge__message {
+  margin-top: 4px; /* 배지명과 설명 사이 약 8px */
   font-size: var(--text-small);
   color: var(--color-text-muted);
 }
@@ -193,25 +208,27 @@
   padding: var(--space-3);
   font: inherit;
   font-size: var(--text-small);
-  font-weight: 600;
-  color: var(--color-text);
-  background: transparent;
-  border: 1px dashed var(--color-primary);
-  border-radius: var(--radius-lg);
+  font-weight: 700;
+  color: var(--main-outline);
+  background: #ffffff;
+  border: 2px dashed var(--main-shadow);
+  border-radius: 24px;
   cursor: pointer;
 }
 
 .complete-empty {
+  padding-block: 12px; /* 내부 상하 여백 약 25% 축소 */
   text-align: center;
-  color: var(--color-text-muted);
-  background: var(--color-sun-soft);
+  font-weight: 600;
+  color: var(--main-outline);
+  background: #ffffff;
+  border: 3px solid var(--main-outline);
+  border-radius: 24px;
+  box-shadow: 3px 5px 0 var(--main-shadow);
 }
 
 .complete-actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  margin-top: var(--space-3);
+  margin-top: calc(22px - var(--space-4)); /* 위 카드와 버튼 사이 약 22px */
 }
 
 /* 배지 카드가 살짝 튀어나오는 효과 (1초 이내) */
