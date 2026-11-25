@@ -13,6 +13,7 @@ import { BREATH_EXHALE_SECONDS, BREATH_INHALE_SECONDS } from '../lib/config'
 import { recordCalm } from '../lib/records'
 import { navigate, ROUTES } from '../lib/router'
 import { nowLocalISO } from '../lib/time'
+import { useCalmBgm } from '../lib/bgm'
 import './Calm.css'
 
 // 배경 이미지 주소. 사이트가 하위 경로(예: /office-reset/)에 올라가도 맞도록 BASE_URL을 붙인다.
@@ -113,6 +114,9 @@ export default function Calm() {
   const [session, setSession] = useState(() => ({ id: `c_${Date.now()}`, startedAt: nowLocalISO() }))
   const [step, setStep] = useState(0)
   const [result, setResult] = useState(null)
+
+  // 빡침 명상 배경음악 (서진수 님 bgm.js). 소리 설정이 켜져 있을 때만 나오고, 화면을 떠나면 멈춘다.
+  useCalmBgm()
 
   const totalSteps = CALM_BREATH_COUNT * 2
   const done = step >= totalSteps
