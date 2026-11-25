@@ -9,9 +9,9 @@
 //   - 첫 빡침 해소(first_calm): 빡침 명상에서 호흡 3회 안내를 끝까지 마쳤을 때 (이주연 결정, 11/24)
 // 2차 배지: 출근 도장, 리셋 장인, 평일 개근상, 스트레칭 도감, 모닝 리셋, 식곤증 격파, 불금(히든)
 // 벤치마킹 후 추가 (이주연 결정, 11/24): 이번 주 개근상(듀오링고 '완벽한 일주일'), 스킵은 사치(듀오링고 '무결점 학습자'),
-//   해커톤 기념(포스퀘어 '할로윈 2010' 같은 기간 한정 배지)
+//   해커톤 기념(포스퀘어 '할로윈 2010' 같은 기간 한정 배지, 히든. 11/26까지 루틴 1번)
 //   "광속 리셋"은 알림 시각 기록이 정해지지 않아 아직 만들지 않는다.
-//   히든 "몸관리 끝판왕"은 기준 횟수를 팀과 정한 뒤 추가한다.
+//   히든 "몸관리 끝판왕"은 하루 루틴 7번 (기본 알림 7번을 모두 따라 하면 받는다. 이주연 결정, 11/25)
 //
 // 등급 규칙 (설계안 3장): 처음 받는 순간이 브론즈, 반복하면 실버·골드로 오르고 내려가지 않는다.
 //   등급은 색만으로 구분하지 않고 "브론즈/실버/골드" 글자를 같이 보여준다.
@@ -23,6 +23,7 @@
 //   morningRoutines 7~10시 루틴 수 / lunchRoutines 13~15시 루틴 수 / fridayEvening 금요일 17시 이후 루틴 수
 //   perfectWeeks 월~금 5일 모두 한 주 수 / noSkipRoutines 넘긴 동작 없이 끝낸 루틴 수
 //   hackathonRoutines 해커톤 기간(HACKATHON_DAYS)에 한 루틴 수
+//   maxRoutinesInDay 하루에 가장 많이 한 루틴 수
 //   calmCount 빡침 명상 수 (빡침 명상 기록으로 따로 계산)
 // tierMessage의 {N}은 지금 값으로 바뀐다.
 
@@ -44,8 +45,12 @@ export const BADGE_IDS = {
   noSkip: 'no_skip',
   firstCalm: 'first_calm',
   hackathon: 'hackathon_2026',
+  bodyBoss: 'body_boss',
   fridayFire: 'friday_fire',
 }
+
+// 몸관리 끝판왕: 하루에 이만큼 루틴을 하면 받는다
+export const BODY_BOSS_ROUTINES = 7
 
 // 통계 화면 배지함에 보이는 순서
 export const BADGES = [
@@ -174,8 +179,20 @@ export const BADGES = [
     icon: '🎪',
     message: '던만 해커톤 기간에 함께 몸을 챙겼어요! 이 배지는 지금만 받을 수 있어요',
     condition: '11/24~11/26 기간 한정, 루틴 1회',
+    hint: '지금 이 3일 동안만 몰래 열리는 배지…', // 히든 배지: 받기 전에는 이름 대신 ???와 힌트만 보인다
+    hidden: true, // 히든 배지로 바꿈 (이주연 결정, 11/25). 11/26까지 루틴 1번만 해도 받는다
     metric: 'hackathonRoutines',
     limited: true, // 기간 한정 배지. 기간이 지나면 받을 수 없다
+  },
+  {
+    id: BADGE_IDS.bodyBoss,
+    name: '몸관리 끝판왕',
+    icon: '👑',
+    message: '오늘 하루, 몸관리 만렙 찍었습니다! 👑',
+    condition: `하루에 루틴 ${BODY_BOSS_ROUTINES}번`,
+    hint: '하루를 누구보다 꾸준히 보내면…?', // 히든 배지
+    hidden: true,
+    metric: 'bodyBoss', // 하루 최다 루틴 수가 기준 이상이면 1
   },
   {
     id: BADGE_IDS.fridayFire,
