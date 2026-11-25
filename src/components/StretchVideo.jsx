@@ -26,7 +26,7 @@ const VIDEO_DIR = `${import.meta.env.BASE_URL}videos/`
 // 값은 영상 전체를 40장면 훑어 사람(머리·팔·손)이 차지하는 가장 큰 범위를 구하고, 그 범위가 항상 들어오는 선에서 정했다. (2026-11-26)
 //   목: 얼굴·어깨 중심 1.3배(neck-01·02는 손이 무릎까지 내려와 1.15배) / 손목: 얼굴·상체·양손 중심 1.25배(팔을 길게 뻗는 wrist-02는 1.05배) / 어깨·허리: 팔 전체와 의자가 보이는 범위(1.0~1.08배)
 // 원본 영상 자체에서 손이 위 가장자리에 닿는 동작(shoulder-04, waist-02, waist-04)은 확대하지 않는다. 비워 두면 가운데·확대 없음.
-export const VIDEO_FRAMING = {
+const VIDEO_FRAMING = {
   'neck-01.mp4': { x: 52, ox: 50, oy: 0, scale: 1.15 },
   'neck-02.mp4': { x: 53, ox: 50, oy: 12, scale: 1.15 },
   'neck-03.mp4': { x: 39, ox: 50, oy: 26, scale: 1.3 },
