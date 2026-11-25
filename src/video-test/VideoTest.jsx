@@ -131,13 +131,20 @@ export default function VideoTest() {
   const [running, setRunning] = useState(false)
   const [bgmOn, setBgmOn] = useState(false)
   const [calmBgmOn, setCalmBgmOn] = useState(false)
-  // 첫 재생 끝 신호(onFirstPlayEnd) 확인용: 동작을 고른 시각과 신호가 온 뒤 걸린 초
+  // 신호 확인용: 동작을 고른 시각, 영상 한 바퀴(onLoop)가 끝난 시각들, 음성 읽기 끝(onEnd) 시각
   const [shownAt, setShownAt] = useState(() => Date.now())
-  const [firstPlaySeconds, setFirstPlaySeconds] = useState(null)
+  const [loopSeconds, setLoopSeconds] = useState([])
+  const [voiceEndSeconds, setVoiceEndSeconds] = useState(null)
   const move = TEST_MOVES[index]
+  const secondsSince = (from) => ((Date.now() - from) / 1000).toFixed(1)
 
   // 실제 루틴과 같이 동작 이름만 읽는다. (2026-11-25 팀 결정)
-  useStretchVoice({ id: move.id, narration: move.name, active: running })
+  useStretchVoice({
+    id: move.id,
+    narration: move.name,
+    active: running,
+    onEnd: () => setVoiceEndSeconds(secondsSince(shownAt)),
+  })
   useStretchBgm(bgmOn)
   useCalmBgm(calmBgmOn)
 
@@ -152,7 +159,8 @@ export default function VideoTest() {
   const select = (nextIndex) => {
     setIndex(nextIndex)
     setShownAt(Date.now())
-    setFirstPlaySeconds(null)
+    setLoopSeconds([])
+    setVoiceEndSeconds(null)
     setRunning(false)
     setRemaining(0)
   }
@@ -218,11 +226,18 @@ export default function VideoTest() {
           key={move.id}
           file={move.videoFile}
           name={move.name}
-          onFirstPlayEnd={() => setFirstPlaySeconds(((Date.now() - shownAt) / 1000).toFixed(1))}
+          onLoop={() => setLoopSeconds((prev) => [...prev, secondsSince(shownAt)])}
         />
         <p style={{ fontSize: 'var(--text-small)' }} aria-live="polite">
-          첫 재생 끝 신호(onFirstPlayEnd):{' '}
-          {firstPlaySeconds === null ? '아직 안 옴 (영상 재생 중)' : `받음 (${firstPlaySeconds}초 뒤)`}
+          영상 한 바퀴 신호(onLoop):{' '}
+          {loopSeconds.length === 0
+            ? '아직 안 옴 (첫 바퀴 재생 중)'
+            : `${loopSeconds.length}번 받음 (${loopSeconds.map((s) => `${s}초`).join(', ')})`}
+          <br />
+          음성 읽기 끝 신호(onEnd):{' '}
+          {voiceEndSeconds === null
+            ? '아직 안 옴 ("5초 카운트 시작"을 누르면 읽기 시작)'
+            : `받음 (${voiceEndSeconds}초)`}
         </p>
 
         <p style={{ fontSize: 'var(--text-title)', textAlign: 'center' }} aria-live="polite">
