@@ -54,7 +54,7 @@ GitHub 계정 연결은 팀장이 확인했다. (2026-11-24)
 | 영상 자리 연결 | 서진수 | (병합 완료) | `src/pages/Stretch.jsx`의 영상 자리(`stretch-video-slot`) **한 줄만** | 루틴 화면에서 영상이 나온다 | 완료 (영상은 #7, 스트레칭 BGM 연결은 #16, 빡침 명상 BGM 연결은 #20에 포함. 동작 이름 읽기와 `onLoop`·`onEnd` 사용은 김원규 님이 `Stretch.jsx`에서 한다) |
 | 기록·배지 판정 | 이주연 | `feature/badge-records` | `src/lib/records.js`, `badges.js` | `recordRoutine`으로 기록 저장, 배지 3종 판정, 중복 지급 방지 | 완료 (#9 병합) |
 | 완료·통계·빡침 화면 | 이주연 | `feature/complete-screen` | `src/pages/Complete.jsx`, `Stats.jsx`, `Calm.jsx`와 각 `.css` | 완료 화면에 배지 표시, 통계 유지, 빡침 화면 진입·복귀 | 작업 중 (push됨, PR 전) |
-| 배포 | 서진수 | 미정 | 배포 설정 (공통 파일이라 팀 합의 후) | HTTPS 주소에서 작동 | 미시작 |
+| 배포 | 서진수 | `chore/deploy` | 배포 설정 (공통 파일이라 팀 합의 후) | HTTPS 주소에서 작동 | 완료 (2026-11-25, Vercel). 주소: https://office-reset-seven.vercel.app . `main`에 병합되면 자동으로 다시 배포된다. 공통 파일(`vite.config.js`, `package.json` 등)은 바꾸지 않았다 |
 
 ## 4-1. 리뷰 당번표 (당번 배정은 제안, 팀 확인 필요)
 그날 올라온 PR을 당번 한 명이 모아서 승인한다. 리뷰어를 PR마다 고르지 않는다. 당번이 아닌 사람은 리뷰 요청을 받지 않는다.
