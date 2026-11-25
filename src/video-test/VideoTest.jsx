@@ -1,5 +1,5 @@
 // 영상·음성 개발용 테스트 화면 (담당: 서진수). 실제 서비스 화면이 아니다.
-// 확인할 것: 영상 재생, 영상이 없는 동작의 대체 안내, 소리 ON/OFF에 따른 음성 안내. (카운트다운 숫자는 읽지 않는다)
+// 확인할 것: 영상 재생, 영상이 없는 동작의 대체 안내, 소리 ON/OFF에 따른 음성 안내. (동작 이름만 읽고, 카운트다운 숫자는 읽지 않는다)
 // 동작 목록은 실제 루틴 화면과 같은 src/data/stretches.json(원규 님 파일)에서 읽는다.
 import { useEffect, useState } from 'react'
 import Button from '../components/Button'
@@ -18,7 +18,7 @@ import {
   useStretchVoice,
 } from '../lib/voice'
 
-const SAMPLE_TEXT = '귀를 어깨 쪽으로 천천히 기울여 주세요.'
+const SAMPLE_TEXT = '목 옆 늘이기'
 
 // 목소리 고르기 (테스트용). 고른 값은 이 페이지에서만 쓰이고, 새로고침하면 기본값으로 돌아간다.
 // 마음에 드는 값을 찾으면 src/lib/voice.js의 DEFAULT_VOICE_OPTIONS에 적는다.
@@ -133,7 +133,8 @@ export default function VideoTest() {
   const [calmBgmOn, setCalmBgmOn] = useState(false)
   const move = TEST_MOVES[index]
 
-  useStretchVoice({ id: move.id, narration: move.narration, active: running })
+  // 실제 루틴과 같이 동작 이름만 읽는다. (2026-11-25 팀 결정)
+  useStretchVoice({ id: move.id, narration: move.name, active: running })
   useStretchBgm(bgmOn)
   useCalmBgm(calmBgmOn)
 

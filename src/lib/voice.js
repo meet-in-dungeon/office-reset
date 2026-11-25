@@ -5,8 +5,9 @@
 // 사무실을 생각해 기본값은 꺼짐이다.
 //
 // 사용 예 (원규 님 Stretch.jsx, 동작 화면에서 한 줄):
-//   useStretchVoice({ id: move.id, narration: move.narration, active: stage === 'move' })
-//   → 동작이 바뀌면 narration을 한 번 읽는다. 카운트다운 숫자는 읽지 않는다.
+//   useStretchVoice({ id: move.id, narration: move.name, active: stage === 'move' })
+//   → 동작이 바뀌면 narration에 넘긴 글을 한 번 읽는다. 카운트다운 숫자는 읽지 않는다.
+//   2026-11-25 팀 결정: 동작 설명 문장 대신 동작 이름(move.name, 예: "목 옆 늘이기")만 읽는다.
 //
 // 주의
 // - 브라우저는 사용자가 화면을 한 번도 누르지 않았으면 소리를 막는다.
@@ -92,7 +93,7 @@ export function speak(text, { onEnd } = {}) {
 }
 
 // 스트레칭 동작 화면용 음성 안내.
-// - id가 바뀌면(새 동작) narration을 읽는다.
+// - id가 바뀌면(새 동작) narration에 넘긴 글을 읽는다. (지금은 동작 이름)
 // - 카운트다운 숫자는 읽지 않는다. (2026-11-24 팀 결정으로 제거)
 //   예전처럼 remaining을 넘겨도 쓰지 않고 무시한다.
 // - active가 false가 되거나, 소리를 끄거나, 화면을 떠나면 바로 멈춘다.
