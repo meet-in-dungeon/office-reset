@@ -29,7 +29,8 @@
 import { useEffect } from 'react'
 import { useSettings } from './settings'
 
-const BGM_VOLUME = 0.25 // 0(무음) ~ 1(최대)
+// 0(무음) ~ 1(최대). 2026-11-25 서진수가 테스트 페이지에서 들어 보고 5%로 정함 (이전 25%)
+const BGM_VOLUME = 0.05
 
 const TRACKS = {
   stretch: 'audio/bgm.mp3',
