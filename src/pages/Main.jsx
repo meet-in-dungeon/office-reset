@@ -2,6 +2,7 @@
 // 다음 알림까지 남은 시간, 스트레칭 시작 버튼, 오른쪽 위 빡침 버튼, 기록·통계 진입, 간단한 설정.
 import { useEffect, useState } from 'react'
 import Asset from '../components/Asset'
+import BubbleShape from '../components/BubbleShape'
 import Button from '../components/Button'
 import { AlarmIcon, ChartIcon, ChevronIcon, GearIcon, PlayIcon } from '../components/Icons'
 import Screen from '../components/Screen'
@@ -84,6 +85,7 @@ export default function Main() {
           <Asset file="character-main.webp" size="권장 560×660" alt="안내 캐릭터" />
         </div>
         <p className="bubble home-hero__bubble">
+          <BubbleShape />
           <strong>{bubbleLines[0]}</strong>
           <br />
           {bubbleLines[1]}

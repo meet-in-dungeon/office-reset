@@ -4,6 +4,7 @@
 // 배지가 여러 개면 카드는 2장까지만 보여주고 나머지는 "+N개 더"로 묶는다.
 import { useState } from 'react'
 import Asset from '../components/Asset'
+import BubbleShape from '../components/BubbleShape'
 import BadgeImage from '../components/BadgeImage'
 import Button from '../components/Button'
 import { ChevronIcon, MedalIcon } from '../components/Icons'
@@ -77,6 +78,7 @@ export default function Complete() {
           <Asset file="character-cheer.webp" size="권장 560×680" alt="축하 캐릭터" />
         </div>
         <p className="bubble complete-hero__bubble">
+          <BubbleShape />
           <strong className="complete-hero__title">수고했어요!</strong>
           오늘도 한 번 더 리셋 완료!
         </p>

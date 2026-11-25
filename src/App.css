@@ -226,34 +226,34 @@
 }
 
 /* 말풍선: 네이비 외곽선. 꼬리는 ::before(같은 외곽선)로 화면별 CSS에서 붙인다 */
+/* 몸체와 꼬리 외곽은 BubbleShape(SVG path 하나)가 그린다. 여기서는 글자 자리와 그림자만 정한다 */
 .bubble {
   position: relative;
+  isolation: isolate; /* 외곽 SVG를 글자 뒤(z-index -1)에 두기 위해 */
   display: inline-block;
   padding: var(--space-3) var(--space-4);
   font-weight: 700;
   text-align: center;
   text-wrap: balance;
   word-break: keep-all;
-  background: var(--color-surface);
-  border: var(--outline-width) solid var(--color-outline);
-  /* 타원에 가까운 유기적인 외곽 (카툰 말풍선) */
-  border-radius: 48px 50px 46px 50px / 40px 42px 38px 40px;
-  box-shadow: 0 4px 12px rgba(47, 49, 71, 0.12);
 }
 
-/* 캐릭터 쪽으로 휘어진 꼬리. 같은 외곽선을 가진 작은 곡선 조각 */
-.bubble::before {
-  content: '';
+.bubble__shape {
   position: absolute;
-  left: -9px;
-  bottom: 16px;
-  width: 14px;
-  height: 14px;
-  background: var(--color-surface);
-  border-left: var(--outline-width) solid var(--color-outline);
-  border-bottom: var(--outline-width) solid var(--color-outline);
-  border-radius: 0 0 0 100%;
-  transform: rotate(35deg);
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: visible; /* 왼쪽 아래 꼬리가 말풍선 상자 밖으로 나온다 */
+  pointer-events: none;
+  filter: drop-shadow(0 4px 6px rgba(47, 49, 71, 0.12));
+}
+
+.bubble__shape path {
+  fill: var(--color-surface);
+  stroke: var(--color-outline);
+  stroke-width: var(--outline-width);
+  stroke-linejoin: round;
 }
 
 /* 개발 중 임시 표시. 기능을 만들면 지운다. */
