@@ -378,7 +378,8 @@ export function getWeeklyStats(today = todayLocal()) {
 // ---------------------------------------------------------------------------
 
 const DEMO_MOVES = [
-  'neck-01', 'shoulder-01', 'wrist-01', 'waist-01', 'neck-02', 'shoulder-02',
+  // 루틴에 나오는 동작(stretches.json의 status "active") 12개 중 11개. wrist-01은 루틴에서 빠져서 wrist-04를 쓴다
+  'neck-01', 'shoulder-01', 'wrist-04', 'waist-01', 'neck-02', 'shoulder-02',
   'wrist-02', 'waist-02', 'neck-03', 'shoulder-03', 'wrist-03', // waist-03은 일부러 빼서 도감 "골드까지 1개"
 ]
 // 요일별 루틴 시각. 마지막 시각은 호흡까지 한 마지막 루틴이다. 금요일은 17시 전에 끝내 불금 배지를 숨겨 둔다.
