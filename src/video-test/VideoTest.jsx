@@ -1,5 +1,5 @@
 // 영상·음성 개발용 테스트 화면 (담당: 서진수). 실제 서비스 화면이 아니다.
-// 확인할 것: 영상 재생, 영상이 없는 동작의 대체 안내, 소리 ON/OFF에 따른 음성 안내. (카운트다운 숫자는 읽지 않는다)
+// 확인할 것: 영상 재생, 영상이 없는 동작의 대체 안내, 소리 ON/OFF에 따른 음성 안내. (동작 이름만 읽고, 카운트다운 숫자는 읽지 않는다)
 // 동작 목록은 실제 루틴 화면과 같은 src/data/stretches.json(원규 님 파일)에서 읽는다.
 import { useEffect, useState } from 'react'
 import Button from '../components/Button'
@@ -18,7 +18,7 @@ import {
   useStretchVoice,
 } from '../lib/voice'
 
-const SAMPLE_TEXT = '귀를 어깨 쪽으로 천천히 기울여 주세요.'
+const SAMPLE_TEXT = '목 옆 늘이기'
 
 // 목소리 고르기 (테스트용). 고른 값은 이 페이지에서만 쓰이고, 새로고침하면 기본값으로 돌아간다.
 // 마음에 드는 값을 찾으면 src/lib/voice.js의 DEFAULT_VOICE_OPTIONS에 적는다.
@@ -131,9 +131,20 @@ export default function VideoTest() {
   const [running, setRunning] = useState(false)
   const [bgmOn, setBgmOn] = useState(false)
   const [calmBgmOn, setCalmBgmOn] = useState(false)
+  // 신호 확인용: 동작을 고른 시각, 영상 한 바퀴(onLoop)가 끝난 시각들, 음성 읽기 끝(onEnd) 시각
+  const [shownAt, setShownAt] = useState(() => Date.now())
+  const [loopSeconds, setLoopSeconds] = useState([])
+  const [voiceEndSeconds, setVoiceEndSeconds] = useState(null)
   const move = TEST_MOVES[index]
+  const secondsSince = (from) => ((Date.now() - from) / 1000).toFixed(1)
 
-  useStretchVoice({ id: move.id, narration: move.narration, active: running })
+  // 실제 루틴과 같이 동작 이름만 읽는다. (2026-11-25 팀 결정)
+  useStretchVoice({
+    id: move.id,
+    narration: move.name,
+    active: running,
+    onEnd: () => setVoiceEndSeconds(secondsSince(shownAt)),
+  })
   useStretchBgm(bgmOn)
   useCalmBgm(calmBgmOn)
 
@@ -147,6 +158,9 @@ export default function VideoTest() {
 
   const select = (nextIndex) => {
     setIndex(nextIndex)
+    setShownAt(Date.now())
+    setLoopSeconds([])
+    setVoiceEndSeconds(null)
     setRunning(false)
     setRemaining(0)
   }
@@ -208,7 +222,23 @@ export default function VideoTest() {
         <h2 style={{ fontSize: 'var(--text-large)' }}>
           {move.id} · {move.name}
         </h2>
-        <StretchVideo key={move.id} file={move.videoFile} name={move.name} />
+        <StretchVideo
+          key={move.id}
+          file={move.videoFile}
+          name={move.name}
+          onLoop={() => setLoopSeconds((prev) => [...prev, secondsSince(shownAt)])}
+        />
+        <p style={{ fontSize: 'var(--text-small)' }} aria-live="polite">
+          영상 한 바퀴 신호(onLoop):{' '}
+          {loopSeconds.length === 0
+            ? '아직 안 옴 (첫 바퀴 재생 중)'
+            : `${loopSeconds.length}번 받음 (${loopSeconds.map((s) => `${s}초`).join(', ')})`}
+          <br />
+          음성 읽기 끝 신호(onEnd):{' '}
+          {voiceEndSeconds === null
+            ? '아직 안 옴 ("5초 카운트 시작"을 누르면 읽기 시작)'
+            : `받음 (${voiceEndSeconds}초)`}
+        </p>
 
         <p style={{ fontSize: 'var(--text-title)', textAlign: 'center' }} aria-live="polite">
           {running ? (remaining === 0 ? '완료' : remaining) : '-'}

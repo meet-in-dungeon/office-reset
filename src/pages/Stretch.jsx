@@ -86,7 +86,7 @@ export default function Stretch() {
 
   useStretchVoice({
     id: moveId,
-    narration: currentMove?.narration,
+    narration: currentMove?.name, // 음성은 동작 이름만 읽는다 (팀 결정)
     active: stage === 'move',
     onEnd: () => setVoiceDoneId(moveId),
   })
