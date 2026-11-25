@@ -1,9 +1,13 @@
 // 스트레칭 루틴 화면 (담당: 김원규. 영상 재생·음성은 서진수)
-// 흐름: (알림으로 들어오면 큰 시작 버튼) → 동작 ROUTINE_MOVE_COUNT개(5초 카운트, "다음" 버튼)
+// 흐름: (알림으로 들어오면 큰 시작 버튼) → 동작 ROUTINE_MOVE_COUNT개(영상이 한 바퀴 돌고 음성이 끝나면 5초 카운트, "다음" 버튼)
 //       → (하루 마지막 루틴이면) 호흡 BREATH_COUNT회 → 완료 화면
 // 알림으로 들어오면 주소가 #/stretch?from=notification 이 된다. (useRoute().query.from)
 import { useCallback, useEffect, useRef, useState } from 'react'
+import Asset from '../components/Asset'
 import Button from '../components/Button'
+import BreathCircle from '../components/BreathCircle'
+import CountRing, { CountAccent } from '../components/CountRing'
+import { AlertIcon, ChevronIcon, PlayIcon } from '../components/Icons'
 import Screen from '../components/Screen'
 import data from '../data/stretches.json'
 import { getLastNotifiedAt } from '../lib/alerts'
@@ -19,8 +23,9 @@ import { planRoutine, saveShownIds } from '../lib/pickMoves'
 import { recordRoutine } from '../lib/records'
 import { navigate, ROUTES, useRoute } from '../lib/router'
 import { isLastRoutine } from '../lib/schedule'
+import { useSettings } from '../lib/settings'
 import StretchVideo from '../components/StretchVideo'
-import { useStretchVoice } from '../lib/voice'
+import { isSpeechSupported, useStretchVoice } from '../lib/voice'
 import { useStretchBgm } from '../lib/bgm'
 import { nowLocalISO } from '../lib/time'
 import './Stretch.css'
@@ -34,9 +39,26 @@ const BREATH_TOTAL_SECONDS = BREATH_COUNT * BREATH_CYCLE_SECONDS
 const BREATH_IN_TEXT = `${BREATH_IN_SECONDS}초간 들이쉬세요`
 const BREATH_OUT_TEXT = '편안하게 내쉬세요'
 
+// 카운트다운 상태별 안내 문구와 화면 낭독용 설명 (준비 → 진행 → 완료)
+const COUNT_CAPTIONS = {
+  prepare: '동작을 먼저 봐주세요',
+  run: '지금 따라 해 보세요!',
+  done: '잘했어요!',
+}
+const COUNT_LABELS = {
+  prepare: () => '준비 중',
+  run: (remaining) => `${remaining}초 남았어요`,
+  done: () => '완료',
+}
+
 // 카운트가 끝나기 전에도 "다음"을 눌러 동작을 넘길 수 있다. (확정)
 // 카운트 중에 누른 동작은 skippedMoves에 센다.
 const ALLOW_EARLY_NEXT = true
+
+// 동작마다 영상이 한 바퀴 돌고(onLoop) 안내 음성이 끝나면(onEnd) 그때 5초 카운트를 시작한다. (진수 님과 합의)
+// 영상은 무한 반복이라 먼저 한 바퀴를 보여 주고 나서 카운트해야 따라 하기 쉽다.
+// 신호가 오지 않아도 멈춰 있지 않도록, 이 시간(초)이 지나면 카운트를 시작한다. (영상 최대 길이 23.5초보다 길게)
+const MAX_WAIT_SECONDS = 30
 
 // "하루의 마지막 루틴"인지 알아낸다. 판정은 민지 님의 isLastRoutine()이 한다.
 // (마지막 알림 시각 이후에 시작한 루틴이고, 오늘 아직 호흡을 하지 않았으면 true)
@@ -62,15 +84,29 @@ export default function Stretch() {
   const startedAtRef = useRef(null)
   const skippedRef = useRef(0)
   const doneRef = useRef(false)
-  // 영상·음성 (서진수): 동작이 바뀌면 안내 문장, 카운트마다 숫자를 읽는다    
+  // 영상·음성 (서진수): 동작이 바뀌면 안내 문장을 한 번 읽는다
   const currentMove = moves[index]
+  const moveId = currentMove?.id
+
+  // 카운트 시작 조건: 음성이 끝났고(소리가 꺼졌거나 못 읽으면 바로 끝난 것), 영상이 한 바퀴 돌았을 때(영상이 없으면 바로)
+  // "어느 동작의 신호인지"를 id로 기억해서, 동작이 바뀐 뒤 늦게 오는 이전 동작의 신호는 무시한다.
+  const [settings] = useSettings()
+  const voiceExpected = settings.soundOn && isSpeechSupported()
+  const [voiceDoneId, setVoiceDoneId] = useState(null)
+  const [loopDoneId, setLoopDoneId] = useState(null)
+  const [expiredId, setExpiredId] = useState(null)
+  const voiceDone = !voiceExpected || voiceDoneId === moveId
+  const loopDone = !currentMove?.videoFile || loopDoneId === moveId
+  const ready = (voiceDone && loopDone) || expiredId === moveId
+  const waiting = stage === 'move' && !ready
+
   useStretchVoice({
-    id: currentMove?.id,
-   narration: currentMove?.name,
-    remaining,
+    id: moveId,
+    narration: currentMove?.name, // 음성은 동작 이름만 읽는다 (팀 결정)
     active: stage === 'move',
-  })                  
-useStretchBgm(stage === 'move' || stage === 'breath')
+    onEnd: () => setVoiceDoneId(moveId),
+  })
+  useStretchBgm(stage === 'move' || stage === 'breath')
   const finish = useCallback(
     (breathed) => {
       if (doneRef.current) return
@@ -101,9 +137,10 @@ useStretchBgm(stage === 'move' || stage === 'breath')
     }
   }, [stage, index, plan])
 
-  // 동작 화면 또는 호흡 화면에서 1초씩 줄어드는 카운트
+  // 동작 화면 또는 호흡 화면에서 1초씩 줄어드는 카운트. 동작은 영상 한 바퀴와 음성이 끝난 뒤(ready)에 시작한다.
   useEffect(() => {
     if (stage !== 'move' && stage !== 'breath') return undefined
+    if (stage === 'move' && !ready) return undefined
     const timer = setInterval(() => {
       setRemaining((prev) => {
         if (prev <= 1) {
@@ -114,7 +151,14 @@ useStretchBgm(stage === 'move' || stage === 'breath')
       })
     }, 1000)
     return () => clearInterval(timer)
-  }, [stage, index])
+  }, [stage, index, ready])
+
+  // 신호가 끝내 오지 않는 경우를 위한 안전장치
+  useEffect(() => {
+    if (stage !== 'move' || ready) return undefined
+    const timer = setTimeout(() => setExpiredId(moveId), MAX_WAIT_SECONDS * 1000)
+    return () => clearTimeout(timer)
+  }, [stage, ready, moveId])
 
   // 호흡은 정해진 횟수가 끝나면 저절로 마친다. (동작은 버튼을 눌러야 넘어간다.)
   useEffect(() => {
@@ -123,10 +167,14 @@ useStretchBgm(stage === 'move' || stage === 'breath')
 
   if (stage === 'start') {
     return (
-      <Screen title="스트레칭">
+      <Screen title="스트레칭" align="center" className="stretch-screen">
         <div className="stretch-start">
+          <div className="stretch-start__character">
+            <Asset file="character-main.webp" size="권장 560×660" alt="안내 캐릭터" />
+          </div>
+          <p className="stretch-start__copy">잠깐, 몸 풀기 좋은 타이밍이에요!</p>
           <Button size="large" block onClick={() => setStage('move')}>
-            시작
+            <PlayIcon className="icon" width="18" height="18" /> 시작
           </Button>
           <p className="stretch-caution">{data.commonCaution}</p>
         </div>
@@ -143,18 +191,27 @@ useStretchBgm(stage === 'move' || stage === 'breath')
       ? BREATH_IN_SECONDS - withinCycle
       : BREATH_CYCLE_SECONDS - withinCycle
     return (
-      <Screen title="호흡">
+      <Screen title="호흡" align="center" className="stretch-screen stretch-screen--breath">
         <div className="stretch-breath">
+          <BreathCircle
+            breathingIn={breathingIn}
+            seconds={breathingIn ? BREATH_IN_SECONDS : BREATH_OUT_SECONDS}
+            left={phaseLeft}
+          />
+          <p className="stretch-breath__text" aria-live="polite">
+            {breathingIn ? BREATH_IN_TEXT : BREATH_OUT_TEXT}
+          </p>
           <p className="stretch-progress">
-            {cycle + 1} / {BREATH_COUNT}회
+            <span className="stretch-progress__now">{cycle + 1}</span> / {BREATH_COUNT}회
           </p>
-          <p className="stretch-breath__text">{breathingIn ? BREATH_IN_TEXT : BREATH_OUT_TEXT}</p>
-          <p className="stretch-count" aria-live="polite">
-            {phaseLeft}
-          </p>
+          <div className="stretch-breath__dots" aria-hidden="true">
+            {Array.from({ length: BREATH_COUNT }, (_, i) => (
+              <span key={i} className={`stretch-breath__dot${i <= cycle ? ' stretch-breath__dot--on' : ''}`} />
+            ))}
+          </div>
           {/* 호흡은 넘기기가 아니라 중단이다. 호흡을 마치지 못했으니 breathCount는 0으로 기록하고 완료 화면으로 간다.
               (동작 3개는 마쳤으므로 루틴 기록은 저장되고, 하루 완성 배지는 호흡을 마친 루틴에서만 나간다.) */}
-          <Button variant="ghost" onClick={() => finish(false)}>
+          <Button variant="soft" className="stretch-breath__stop" onClick={() => finish(false)}>
             중단
           </Button>
         </div>
@@ -165,6 +222,8 @@ useStretchBgm(stage === 'move' || stage === 'breath')
   const move = moves[index]
   const isLastMove = index === moves.length - 1
   const countDone = remaining === 0
+  // 카운트다운 두 상태: 진행(5초) → 완료
+  const countState = countDone ? 'done' : waiting ? 'prepare' : 'run'
 
   const handleNext = () => {
     if (!countDone) skippedRef.current += 1
@@ -180,14 +239,52 @@ useStretchBgm(stage === 'move' || stage === 'breath')
   }
 
   return (
-    <Screen title="스트레칭">
+    <Screen title="스트레칭" align="center" className="stretch-screen">
       <div className="stretch-move">
-        <p className="stretch-progress">
-          {index + 1} / {moves.length} · {data.parts[move.part]}
-        </p>
-        <h2 className="stretch-name">{move.name}</h2>
+        <div className="stretch-head">
+          <p className="stretch-progress">
+            <span className="stretch-progress__now">{index + 1}</span> / {moves.length}
+          </p>
+          <h2 className="stretch-name">
+            <span className="stretch-name__label">
+              {data.parts[move.part]} · {move.name}
+            </span>
+          </h2>
+        </div>
 
-        <StretchVideo key={move.id} file={move.videoFile} name={move.name} />
+        <StretchVideo
+          key={move.id}
+          file={move.videoFile}
+          name={move.name}
+          onLoop={() => setLoopDoneId(move.id)}
+        />
+
+        <div className={`stretch-count stretch-count--${countState}`}>
+          <div className="stretch-count__ring" role="status" aria-label={COUNT_LABELS[countState](remaining)}>
+            {countState === 'run' ? (
+              <Asset
+                file="sticker-accent.svg"
+                kind="decor"
+                className="stretch-count__sticker stretch-count__sticker--left"
+                fallback={<CountAccent side="left" />}
+              />
+            ) : null}
+            <CountRing ratio={countState === 'run' ? remaining / MOVE_SECONDS : 1} state={countState}>
+              {countState === 'prepare' ? '준비' : String(remaining).padStart(2, '0')}
+            </CountRing>
+            {countState === 'run' ? (
+              <Asset
+                file="sticker-accent.svg"
+                kind="decor"
+                className="stretch-count__sticker stretch-count__sticker--right"
+                fallback={<CountAccent side="right" />}
+              />
+            ) : null}
+          </div>
+          <p className="stretch-count__caption" aria-live="polite">
+            {COUNT_CAPTIONS[countState]}
+          </p>
+        </div>
 
         <ol className="stretch-steps">
           {move.steps.map((step) => (
@@ -195,20 +292,24 @@ useStretchBgm(stage === 'move' || stage === 'breath')
           ))}
         </ol>
 
-        <p className="stretch-count" aria-live="polite">
-          {countDone ? '완료' : remaining}
-        </p>
+        <div className="stretch-notice">
+          <AlertIcon className="icon" width="22" height="22" />
+          <div>
+            <ul className="stretch-cautions">
+              {move.cautions.map((caution) => (
+                <li key={caution}>{caution}</li>
+              ))}
+            </ul>
+            <p className="stretch-caution">{data.commonCaution}</p>
+          </div>
+        </div>
 
-        <ul className="stretch-cautions">
-          {move.cautions.map((caution) => (
-            <li key={caution}>{caution}</li>
-          ))}
-        </ul>
-        <p className="stretch-caution">{data.commonCaution}</p>
-
-        <Button block onClick={handleNext} disabled={!countDone && !ALLOW_EARLY_NEXT}>
-          {isLastMove && !isLastRoutine ? '마치기' : '다음'}
-        </Button>
+        {/* 다음 버튼은 화면 아래에 붙어 있어서 스크롤 없이 누를 수 있다. 버튼 위 내용은 가려지지 않는다 */}
+        <div className="stretch-next">
+          <Button size="large" block onClick={handleNext} disabled={!countDone && !ALLOW_EARLY_NEXT}>
+            {isLastMove && !isLastRoutine ? '마치기' : '다음'} <ChevronIcon className="icon" width="18" height="18" />
+          </Button>
+        </div>
       </div>
     </Screen>
   )

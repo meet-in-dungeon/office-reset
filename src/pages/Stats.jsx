@@ -4,7 +4,9 @@
 // 기록은 브라우저(localStorage)에 있어서 새로고침해도 유지된다. (src/lib/records.js)
 // 발표용 시연 모드: 주소를 #/stats?demo=1 로 열면 맨 아래에 "샘플 기록 채우기", "기록 초기화" 버튼이 보인다.
 import { useState } from 'react'
+import BadgeImage from '../components/BadgeImage'
 import Button from '../components/Button'
+import { CalendarCheckIcon, CheckIcon, ChartIcon, LockIcon } from '../components/Icons'
 import Screen from '../components/Screen'
 import { BADGES, TIER_NAMES } from '../lib/badges'
 import { fillDemoRecords, getStats, getWeeklyStats, PART_NAMES, resetRecords } from '../lib/records'
@@ -34,9 +36,9 @@ function BadgeItem({ badge, earned, value }) {
   // 히든 배지는 받기 전까지 이름 대신 ???와 힌트만 보여준다
   if (badge.hidden && !earned) {
     return (
-      <li className="stats-badge stats-badge--locked">
+      <li className="stats-badge stats-badge--locked stats-badge--hidden">
         <span className="stats-badge__icon" aria-hidden="true">
-          ❔
+          <LockIcon width="28" height="28" />
         </span>
         <p className="stats-badge__name">???</p>
         <p className="stats-badge__sub">
@@ -48,9 +50,14 @@ function BadgeItem({ badge, earned, value }) {
   }
 
   return (
-    <li className={`stats-badge${earned ? '' : ' stats-badge--locked'}`}>
+    <li className={`stats-badge${earned ? '' : ' stats-badge--locked'}${earned?.tierName ? ` stats-badge--tier-${earned.tier}` : ''}`}>
       <span className="stats-badge__icon" aria-hidden="true">
-        {badge.icon}
+        <BadgeImage badge={badge} tier={earned?.tier} className="stats-badge__img" />
+        {earned ? null : (
+          <span className="stats-badge__lock">
+            <LockIcon width="14" height="14" />
+          </span>
+        )}
       </span>
       <p className="stats-badge__name">{badge.name}</p>
       {earned?.tierName ? <p className="stats-badge__tier">{earned.tierName}</p> : null}
@@ -67,27 +74,33 @@ function SummaryTab({ stats }) {
   return (
     <>
       <section className={`card stats-today${stats.todayDone ? ' stats-today--done' : ''}`}>
-        <span className="stats-today__icon" aria-hidden="true">
-          {stats.todayDone ? '✅' : '⏳'}
+        <span className="stats-today__check" aria-hidden="true">
+          {stats.todayDone ? <CheckIcon width="20" height="20" /> : <CalendarCheckIcon width="22" height="22" />}
         </span>
         <div>
           <p className="stats-today__title">{stats.todayDone ? '오늘 스트레칭 완료!' : '오늘은 아직이에요'}</p>
           <p className="muted">
-            {stats.todayDone ? '오늘도 나를 챙겼어요.' : '알림이 오면 15초만 같이 움직여요.'}
+            {stats.todayDone ? '오늘도 나를 챙겼어요.' : '알림이 오면 잠깐 몸을 풀어 봐요.'}
           </p>
         </div>
       </section>
 
       <section className="stats-numbers" aria-label="완료 횟수">
         <div className="card stats-number">
-          <p className="muted">오늘</p>
+          <p className="stats-number__label">
+            <CalendarCheckIcon width="22" height="22" />
+            오늘 완료
+          </p>
           <p className="stats-number__value">
             {stats.todayCount}
             <span className="stats-number__unit">회</span>
           </p>
         </div>
         <div className="card stats-number">
-          <p className="muted">지금까지</p>
+          <p className="stats-number__label">
+            <ChartIcon width="22" height="22" />
+            지금까지
+          </p>
           <p className="stats-number__value">
             {stats.totalCount}
             <span className="stats-number__unit">회</span>
@@ -97,7 +110,7 @@ function SummaryTab({ stats }) {
 
       <section className="card" aria-label="배지">
         <div className="stats-badges__header">
-          <strong>배지</strong>
+          <strong className="stats-section-title">보유 배지</strong>
           <span className="muted">
             {stats.badges.length} / {BADGES.length}
           </span>
@@ -116,6 +129,24 @@ function SummaryTab({ stats }) {
 function objectParticle(word) {
   const code = word.charCodeAt(word.length - 1) - 0xac00
   return code >= 0 && code <= 11171 && code % 28 !== 0 ? '을' : '를'
+}
+
+// 시간대별 누적 막대: 스트레칭(라벤더)과 빡침 명상(코랄)을 한 줄에 나란히 쌓는다. 숫자는 "스트레칭 · 빡침"으로 그대로 표시.
+function StackedBarRow({ label, routine, calm, max }) {
+  const pct = (n) => (max > 0 ? (n / max) * 100 : 0)
+  return (
+    <li className="stats-bar">
+      <span className="stats-bar__label">{label}</span>
+      <span className="stats-bar__track stats-bar__track--stack" aria-hidden="true">
+        <span className="stats-bar__fill stats-bar__fill--routine" style={{ width: `${pct(routine)}%` }} />
+        <span className="stats-bar__fill stats-bar__fill--calm" style={{ width: `${pct(calm)}%` }} />
+      </span>
+      <span className="stats-bar__value">
+        {routine} · {calm}
+        <span className="visually-hidden"> (스트레칭 {routine}회, 빡침 명상 {calm}회)</span>
+      </span>
+    </li>
+  )
 }
 
 // 가로 막대 한 줄 (부위별·시간대별)
@@ -205,9 +236,19 @@ function WeekTab({ week, todayDone }) {
           <strong>시간대별</strong>
           <span className="muted">스트레칭 · 빡침</span>
         </div>
+        <ul className="stats-legend" aria-label="범례">
+          <li>
+            <span className="stats-legend__dot stats-legend__dot--routine" aria-hidden="true" />
+            스트레칭
+          </li>
+          <li>
+            <span className="stats-legend__dot stats-legend__dot--calm" aria-hidden="true" />
+            빡침 명상
+          </li>
+        </ul>
         <ul className="stats-bars">
           {timeRows.map(([label, range, t]) => (
-            <BarRow
+            <StackedBarRow
               key={label}
               label={
                 <>
@@ -215,9 +256,9 @@ function WeekTab({ week, todayDone }) {
                   <span className="stats-bar__range">{range}</span>
                 </>
               }
-              value={t.routine + t.calm}
+              routine={t.routine}
+              calm={t.calm}
               max={timeMax}
-              sub={`${t.routine} · ${t.calm}`}
             />
           ))}
         </ul>
@@ -249,7 +290,7 @@ function DemoPanel() {
   }
   return (
     <section className="card stats-demo" aria-label="시연 모드">
-      <strong>🎬 시연 모드</strong>
+      <strong className="section-title">시연 모드</strong>
       <p className="muted stats-tip">
         샘플 기록은 지난 3주 평일 기록과 빡침 명상 9번이에요. 오늘과 해커톤 기간은 비워 둬서, 지금 루틴을 하면 숨겨진 배지가
         나와요.
@@ -280,7 +321,7 @@ export default function Stats() {
   const demo = query.demo === '1'
 
   return (
-    <Screen title="기록·통계">
+    <Screen title="기록·통계" align="center" className="stats">
       <div className="stats-tabs" role="tablist" aria-label="통계 보기">
         {TABS.map((t) => (
           <button

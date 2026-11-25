@@ -2,10 +2,11 @@
 
 .stretch-video {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3; /* 캐릭터가 크게 보이도록 가로 영상을 4:3 상자에 맞춘다. 영상별 조정은 StretchVideo.jsx의 VIDEO_FRAMING */
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--color-primary-soft);
+  border: 1px solid var(--color-border);
   box-shadow: var(--shadow-card);
 }
 
@@ -14,19 +15,43 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* 영상별 위치·확대 (원본 MP4는 건드리지 않는다). 값은 StretchVideo.jsx의 VIDEO_FRAMING이 style로 넣는다 */
+  object-position: var(--video-x, 50%) 50%;
+  transform: scale(var(--video-scale, 1));
+  transform-origin: var(--video-ox, 50%) var(--video-oy, 50%);
 }
 
+/* 영상이 없거나 오류일 때: 큰 빈 영상 영역 대신 작은 안내 띠 */
 .stretch-video--fallback {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: var(--space-4);
-  border: 1px dashed var(--color-border);
+  gap: var(--space-3);
+  aspect-ratio: auto;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary-soft);
+  border: 1px solid var(--color-lavender);
   box-shadow: none;
 }
 
+.stretch-video__fallback-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: var(--color-primary);
+  background: var(--color-surface);
+  border-radius: var(--radius-round);
+}
+
 .stretch-video__fallback-text {
-  text-align: center;
   font-size: var(--text-small);
+  line-height: 1.5;
   color: var(--color-text-muted);
+}
+
+.stretch-video__fallback-text strong {
+  display: block;
+  font-size: var(--text-body);
+  color: var(--color-text);
 }

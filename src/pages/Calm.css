@@ -1,13 +1,40 @@
 /* 빡침 명상 화면 전용 스타일 (담당: 이주연). 색·여백은 index.css의 공통 값을 쓴다. */
 
-/* 자연 배경: 하늘에서 숲으로 내려가는 색. 사진·영상이 정해지면 바꾼다. */
+/* 자연 배경: 하늘·구름·산 이미지(public/images/calm-landscape.webp)가 화면 위쪽 약 45%에 깔리고 아래로 갈수록 라벤더 배경으로 이어진다.
+   이미지가 없으면 같은 분위기의 색 그라데이션만 보인다. 이미지 주소는 Calm.jsx가 BASE_URL을 붙여 CSS 변수로 넘긴다. */
+.calm-screen {
+  position: relative;
+  background: linear-gradient(180deg, #cfe8f3 0%, #dfeee9 28%, var(--color-bg) 60%, var(--color-primary-soft) 100%);
+}
+
+.calm-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 45%;
+  max-height: 420px;
+  background: var(--calm-landscape, none) top center / cover no-repeat;
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+  pointer-events: none;
+}
+
+.calm-screen > * {
+  position: relative;
+}
+
+/* 제목이 배경 나뭇잎과 겹쳐 읽히지 않아서 제목 뒤에만 반투명 흰색(85%) 바탕을 둔다. 배경 이미지는 그대로 */
+.calm-screen .screen__title {
+  padding: 2px var(--space-3);
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-sm);
+}
+
 .calm {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: var(--space-5) var(--space-4);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, var(--color-calm-soft) 0%, var(--color-bg) 55%, var(--color-primary-soft) 100%);
+  padding: var(--space-2) 0;
 }
 
 .calm-stage {
@@ -16,19 +43,33 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-5);
+  gap: var(--space-3);
   text-align: center;
 }
 
+/* 가장 크게 퍼졌을 때(원 240 + 바깥 테두리 겹 33px)까지 들어가는 칸 */
+.calm-area {
+  display: grid;
+  place-items: center;
+  width: 320px;
+  max-width: 100%;
+  aspect-ratio: 1;
+}
+
+/* 호흡 원: 반투명 라벤더 + 여러 겹의 얇은 테두리. 들이쉬면 커지고 내쉬면 작아진다 */
 .calm-circle {
   display: grid;
   place-items: center;
-  width: 200px;
-  height: 200px;
+  width: 240px;
+  height: 240px;
   border-radius: var(--radius-round);
-  background: radial-gradient(circle, var(--color-surface) 0%, var(--color-calm-soft) 70%);
-  border: 3px solid var(--color-calm);
-  box-shadow: 0 0 0 12px rgba(111, 155, 179, 0.15);
+  background: radial-gradient(circle, rgba(205, 197, 246, 0.85) 0%, rgba(205, 197, 246, 0.55) 70%, rgba(255, 255, 255, 0.5) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 0 0 14px rgba(205, 197, 246, 0.28),
+    0 0 0 15px rgba(255, 255, 255, 0.7),
+    0 0 0 32px rgba(205, 197, 246, 0.16),
+    0 0 0 33px rgba(255, 255, 255, 0.5);
   transform: scale(0.7);
   transition-property: transform;
   transition-timing-function: ease-in-out;
@@ -45,13 +86,24 @@
 
 .calm-circle__text {
   font-size: var(--text-title);
-  font-weight: 700;
+  font-weight: 800;
   color: var(--color-text);
 }
 
 .calm-guide {
   font-size: var(--text-large);
   font-weight: 600;
+}
+
+.calm-count {
+  font-size: var(--text-large);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.calm-count__now {
+  font-weight: 800;
+  color: var(--color-text);
 }
 
 .calm-progress {
@@ -64,11 +116,11 @@
   width: 10px;
   height: 10px;
   border-radius: var(--radius-round);
-  background: var(--color-border);
+  background: var(--color-disabled);
 }
 
 .calm-progress__dot--done {
-  background: var(--color-calm);
+  background: #8c7fe0; /* 라벤더 점 (진행 표시) */
 }
 
 .calm-done {
@@ -79,9 +131,16 @@
   text-align: center;
 }
 
-.calm-done__icon {
-  font-size: 3rem;
-  line-height: 1;
+.calm-done__character {
+  width: 180px;
+  height: 180px;
+}
+
+.calm-done__character .asset,
+.calm-done__character .asset-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .calm-done__title {
@@ -95,18 +154,16 @@
   gap: var(--space-3);
   width: 100%;
   text-align: left;
-  border: 2px solid var(--color-calm-soft);
+  border: 1px solid var(--color-border);
 }
 
 .calm-badge__icon {
   flex: none;
   display: grid;
   place-items: center;
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   font-size: 1.75rem;
-  background: var(--color-calm-soft);
-  border-radius: var(--radius-round);
 }
 
 .calm-badge__label {
@@ -119,16 +176,8 @@
   font-weight: 700;
 }
 
-/* 등급 글자 (브론즈·실버·골드). 색만으로 구분하지 않게 글자로 보여준다 */
 .calm-badge__tier {
-  margin-left: var(--space-2);
-  padding: 0 var(--space-2);
-  font-size: var(--text-small);
-  font-weight: 600;
-  color: var(--color-calm);
-  border: 1px solid var(--color-calm);
-  border-radius: var(--radius-round);
-  vertical-align: middle;
+  margin-left: var(--space-2); /* 모양·색은 공통 .tier-chip (App.css) */
 }
 
 .calm-actions {
