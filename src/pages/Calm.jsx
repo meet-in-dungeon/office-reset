@@ -104,8 +104,10 @@ export default function Calm() {
   const [session, setSession] = useState(() => ({ id: `c_${Date.now()}`, startedAt: nowLocalISO() }))
   const [step, setStep] = useState(0)
   const [result, setResult] = useState(null)
-useCalmBgm()
-  
+
+  // 빡침 명상 배경음악 (서진수 님 bgm.js). 소리 설정이 켜져 있을 때만 나오고, 화면을 떠나면 멈춘다.
+  useCalmBgm()
+
   const totalSteps = CALM_BREATH_COUNT * 2
   const done = step >= totalSteps
 
