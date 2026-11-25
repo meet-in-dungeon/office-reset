@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Asset from '../components/Asset'
 import Button from '../components/Button'
 import BreathCircle from '../components/BreathCircle'
+import SoundToggle from '../components/SoundToggle'
 import CountRing, { CountAccent } from '../components/CountRing'
 import { AlertIcon, ChevronIcon, PlayIcon } from '../components/Icons'
 import Screen from '../components/Screen'
@@ -167,7 +168,7 @@ export default function Stretch() {
 
   if (stage === 'start') {
     return (
-      <Screen title="스트레칭" align="center" className="stretch-screen">
+      <Screen title="스트레칭" align="center" className="stretch-screen" headerRight={<SoundToggle />}>
         <div className="stretch-start">
           <div className="stretch-start__character">
             <Asset file="character-main.webp" size="권장 560×660" alt="안내 캐릭터" />
@@ -191,7 +192,12 @@ export default function Stretch() {
       ? BREATH_IN_SECONDS - withinCycle
       : BREATH_CYCLE_SECONDS - withinCycle
     return (
-      <Screen title="호흡" align="center" className="stretch-screen stretch-screen--breath">
+      <Screen
+        title="호흡"
+        align="center"
+        className="stretch-screen stretch-screen--breath"
+        headerRight={<SoundToggle />}
+      >
         <div className="stretch-breath">
           <BreathCircle
             breathingIn={breathingIn}
@@ -239,7 +245,7 @@ export default function Stretch() {
   }
 
   return (
-    <Screen title="스트레칭" align="center" className="stretch-screen">
+    <Screen title="스트레칭" align="center" className="stretch-screen" headerRight={<SoundToggle />}>
       <div className="stretch-move">
         <div className="stretch-head">
           <p className="stretch-progress">

@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import Asset from '../components/Asset'
 import BadgeImage from '../components/BadgeImage'
 import Button from '../components/Button'
+import SoundToggle from '../components/SoundToggle'
 import { ChevronIcon } from '../components/Icons'
 import Screen from '../components/Screen'
 import { BREATH_EXHALE_SECONDS, BREATH_INHALE_SECONDS } from '../lib/config'
@@ -142,7 +143,13 @@ export default function Calm() {
   }
 
   return (
-    <Screen title="잠깐 숨 돌리기" align="center" className="calm-screen" style={LANDSCAPE_STYLE}>
+    <Screen
+      title="잠깐 숨 돌리기"
+      align="center"
+      className="calm-screen"
+      style={LANDSCAPE_STYLE}
+      headerRight={<SoundToggle />}
+    >
       <div className="calm">
         {done ? <DoneStage newBadges={result?.newBadges ?? []} tierUps={result?.tierUps ?? []} /> : <BreathingStage step={step} />}
       </div>

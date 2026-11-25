@@ -121,6 +121,8 @@ export function useStretchVoice({ id, narration, active = true, onEnd }) {
   // 새 동작이 나오면 안내 문장 읽기, 다 읽으면 onEnd
   useEffect(() => {
     if (!active) return undefined
+    // 이 동작의 음성 단계는 이미 끝났다. (소리를 껐다가 다시 켜도 같은 동작의 안내를 또 읽지 않는다)
+    if (endedIdRef.current === id) return undefined
 
     let stale = false // 다음 동작으로 넘어갔거나 화면이 바뀌면 true
     const finish = () => {
@@ -129,17 +131,24 @@ export function useStretchVoice({ id, narration, active = true, onEnd }) {
       onEndRef.current?.()
     }
 
-    // 소리가 꺼져 있거나 읽을 수 없으면 기다릴 것이 없으니 바로 알린다.
-    if (!soundOn || !speak(narration, { onEnd: finish })) {
+    // 소리가 꺼져 있으면 기다릴 것이 없으니 바로 알린다.
+    if (!soundOn || !narration) {
       finish()
       return () => {
         stale = true
       }
     }
 
+    // 읽기 시작을 한 박자(0ms 타이머) 미룬다. 개발 모드의 React StrictMode는 effect를 "실행 → 정리 → 다시 실행"으로 곧바로 두 번 돌리는데,
+    // 한 박자 미루면 첫 번째 실행은 정리되어 읽기가 시작되지 않아 같은 문장이 두 번 읽히지 않는다.
+    const starter = setTimeout(() => {
+      if (stale) return
+      if (!speak(narration, { onEnd: finish })) finish() // 읽을 수 없으면 바로 알린다.
+    }, 0)
     const timer = setTimeout(finish, VOICE_MAX_WAIT_MS)
     return () => {
       stale = true
+      clearTimeout(starter)
       clearTimeout(timer)
     }
   }, [id, narration, active, soundOn])
