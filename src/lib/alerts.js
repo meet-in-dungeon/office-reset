@@ -71,7 +71,7 @@ function showSystemNotification(slotLabel) {
     const n = new Notification('스트레칭 할 시간이에요', {
       body: '잠깐 몸을 풀고 올까요? 누르면 바로 시작해요.',
       tag: `office-reset-alert-${slotLabel}-${Date.now()}`, // 같은 tag면 이전 알림이 조용히 교체되어 매번 다르게
-      silent: !getSettings().soundOn, // 소리 설정을 따른다. (사무실을 고려해 기본은 무음)
+      // silent는 지정하지 않는다. 알림 소리는 앱 안 소리 설정(soundOn)과 무관하게 브라우저·운영체제의 알림 설정을 따른다.
     })
     n.onclick = () => {
       window.focus()
