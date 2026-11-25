@@ -20,8 +20,11 @@
 //   2분 19초, 약 4.2MB. 2026-11-24 서진수 확인
 // - public/audio/calm.mp3 (빡침 명상): Pixabay Music (https://pixabay.com/music/)에서 받음.
 //   1분 58초, 약 3.6MB. 2026-11-25 서진수 확인
+// - 두 곡 모두 Pixabay 검색어 "relaxing piano" 결과에서 골랐다.
+//   (https://pixabay.com/music/search/relaxing%20piano/) 곡 이름·작곡가는 기록하지 못했다.
 // - 두 곡 모두 라이선스: Pixabay Content License. 무료 상업적 사용 가능, 출처 표기 의무 없음
 //   (음악 파일만 따로 떼어 팔거나 재배포하는 것은 금지. 앱 배경음악으로 쓰는 것은 괜찮다)
+//   라이선스 요약: https://pixabay.com/service/license-summary/ (2026-11-25 확인)
 import { useEffect } from 'react'
 import { useSettings } from './settings'
 
