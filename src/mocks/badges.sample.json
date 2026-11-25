@@ -1,8 +1,41 @@
 {
-  "first_routine": { "unlockedAt": "2026-11-24T10:00:50" },
+  "first_routine": {
+    "unlockedAt": "2026-11-24T10:00:50",
+    "tier": 0,
+    "count": 3,
+    "tierUpAt": "2026-11-24T10:00:50"
+  },
+  "hackathon_2026": {
+    "unlockedAt": "2026-11-24T10:00:50",
+    "tier": 0,
+    "count": 3,
+    "tierUpAt": "2026-11-24T10:00:50"
+  },
   "daily_full": {
     "unlockedAt": "2026-11-24T17:01:30",
-    "days": ["2026-11-24"],
-    "count": 1
+    "tier": 0,
+    "count": 1,
+    "tierUpAt": "2026-11-24T17:01:30",
+    "days": [
+      "2026-11-24"
+    ]
+  },
+  "move_dex": {
+    "unlockedAt": "2026-11-24T13:05:50",
+    "tier": 1,
+    "count": 9,
+    "tierUpAt": "2026-11-24T17:01:30"
+  },
+  "lunch_slayer": {
+    "unlockedAt": "2026-11-24T13:05:50",
+    "tier": 0,
+    "count": 1,
+    "tierUpAt": "2026-11-24T13:05:50"
+  },
+  "first_calm": {
+    "unlockedAt": "2026-11-23T15:10:30",
+    "tier": 0,
+    "count": 2,
+    "tierUpAt": "2026-11-23T15:10:30"
   }
 }
