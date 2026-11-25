@@ -1,0 +1,112 @@
+/* 온보딩 화면 전용 스타일 (담당: 김민지) */
+.onboarding {
+  gap: var(--space-4);
+}
+
+.onboarding-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+
+.onboarding-hero__copy {
+  font-size: var(--text-hero);
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: -0.03em;
+}
+
+.onboarding-hero__desc {
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+/* 캐릭터는 화면의 주인공이라 크게. 소개 문구와의 사이는 좁게 */
+.onboarding-hero__character {
+  position: relative;
+  width: min(300px, 82%);
+  margin: 0 auto;
+}
+
+.onboarding-hero__img {
+  width: 100%;
+  height: auto;
+}
+
+.onboarding-hero__character .asset-placeholder {
+  min-height: 340px;
+}
+
+.onboarding-hero__sticker {
+  position: absolute;
+  top: 24%;
+  left: -26px;
+  width: 52px;
+  pointer-events: none;
+}
+
+/* 사용 가이드: 연한 라벤더 카드 + 굵은 번호로 위계를 높인다 */
+.onboarding-guide {
+  background: var(--color-primary-soft);
+  border-color: var(--color-lavender);
+}
+
+.onboarding-guide .section-title {
+  margin-bottom: var(--space-3);
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.onboarding-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--text-body);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.onboarding-steps li {
+  position: relative;
+  min-height: 28px;
+  padding-left: 36px;
+  counter-increment: step;
+}
+
+.onboarding-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  font-size: var(--text-small);
+  font-weight: 800;
+  color: #fff;
+  background: var(--color-primary);
+  border-radius: var(--radius-round);
+}
+
+.onboarding-caution {
+  background: var(--color-sun-soft);
+}
+
+/* 시작하기 버튼은 스크롤해도 화면 아래에 남는다. 바탕이 불투명해서 아래로 지나가는 내용과 글자가 겹쳐 보이지 않고,
+   버튼은 내용 맨 끝(마지막 카드 뒤)에 있어서 끝까지 스크롤하면 어떤 내용도 가려지지 않는다. */
+.onboarding-start {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin: var(--space-3) calc(var(--gutter) * -1) calc(var(--space-5) * -1);
+  padding: var(--space-3) var(--gutter) var(--space-4);
+  background: #efebff;
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -6px 16px rgba(47, 49, 71, 0.06);
+}

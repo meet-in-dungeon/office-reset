@@ -1,26 +1,46 @@
 /* 전체 디자인 기준 (색, 글자, 여백). 값은 여기서만 정하고 화면 CSS에서는 var(--이름)으로 가져다 쓴다.
-   분위기: 차분하고 편안한 명상·스트레칭 앱. 모바일 기준으로 만들고 PC에서는 가운데에 좁은 화면으로 보여준다. */
+   분위기: 세련된 웰니스 UI에 적당한 B급 감성. 기본 화면은 차분하게 두고, 재미는 캐릭터·빡침 버튼·배지·완료 화면에서만 준다.
+   색은 디자이너(ChatGPT) 시안의 팔레트를 따른다. (네이비 #2F3147 · 라벤더 #CDC5F6 · 라임 #E9EF72 · 민트 #CDEFE0 ...)
+   모바일 기준으로 만들고 PC에서는 가운데에 좁은 화면으로 보여준다.
+   변수 이름은 다른 화면이 쓰고 있어서 바꾸지 않는다. 값은 이 파일에서만 고친다. */
 
 :root {
   /* 색 */
-  --color-bg: #f6f4ee;
-  --color-surface: #ffffff;
-  --color-primary: #4f8a7b;
-  --color-primary-strong: #3b6f62;
-  --color-primary-soft: #e3efea;
-  --color-calm: #6f9bb3; /* 빡침 명상 등 진정 화면 */
-  --color-calm-soft: #e4eef3;
-  --color-alert: #d9674f; /* 빡침 버튼, 주의 */
-  --color-alert-soft: #fbe8e3;
-  --color-text: #26332f;
-  --color-text-muted: #6b7a75;
-  --color-border: #dde3df;
-  --color-page: #e9e6dd; /* PC에서 화면 바깥 배경 */
+  --color-bg: #f6f4ff; /* 기본 화면 배경 */
+  --color-surface: #ffffff; /* 카드 배경 */
+  --color-primary: #2f3147; /* 기본 네이비. 글자·테두리로도 쓰인다 */
+  --color-primary-strong: #151629;
+  --color-primary-soft: #ece8fb; /* 연한 라벤더 (비활성 탭, 보조 버튼 바탕) */
+  --color-calm: #2a6b58; /* 빡침 명상 등 진정 화면의 글자·강조 (민트 위에서 읽히는 진한 초록) */
+  --color-calm-soft: #cdefe0; /* 민트 */
+  --color-alert: #f27670; /* 빡침 포인트 (바탕용. 이 색을 글자로 쓰면 대비가 낮다 → --color-alert-text) */
+  --color-alert-soft: #ffe9e6;
+  --color-alert-text: #b3362f; /* 오류·주의 글자 */
+  --color-text: #151629; /* 주요 글자 */
+  --color-text-muted: #656477; /* 보조 글자 */
+  --color-border: #ddd7ed;
+  --color-page: #e6e1f7; /* PC에서 화면 바깥 배경 */
+  --color-accent: #e9ef72; /* 강조 버튼(라임). 이 색 위의 글자는 --color-on-accent를 쓴다 */
+  --color-accent-strong: #dde45a;
+  --color-on-accent: #151629;
+  --color-sun: #fff092; /* 보조 강조 옐로우 (동작 이름 라벨, 형광펜, 스티커) */
+  --color-sun-soft: #fff8ea; /* 크림 */
+  --color-lavender: #cdc5f6; /* 라벤더 (진행 링, 점, 배경 도형) */
+  --color-outline: #2f3147; /* 강조 버튼의 얇은 외곽선 */
+  --color-disabled: #d6d3e1; /* 비활성 버튼 배경 */
+  --color-tier-bronze: #c98a5a; /* 배지 등급 (글자 병기). 흰 배경 위 글자는 --color-tier-*-text */
+  --color-tier-silver: #aab0c0;
+  --color-tier-gold: #e8c33f;
+  --color-tier-bronze-text: #8a4f25;
+  --color-tier-silver-text: #4f5568;
+  --color-tier-gold-text: #7a5b00;
 
   /* 글자 */
   --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
     'Noto Sans KR', 'Malgun Gothic', system-ui, sans-serif;
-  --text-title: 1.5rem;
+  --text-title: 1.5rem; /* 24px 페이지 제목 */
+  --text-hero: 1.75rem; /* 28px 온보딩 메인 카피 */
+  --text-timer: 2.75rem; /* 44px 메인 타이머 */
   --text-large: 1.125rem;
   --text-body: 1rem;
   --text-small: 0.875rem;
@@ -34,11 +54,15 @@
   --space-6: 32px;
 
   /* 모양 */
-  --radius-md: 12px;
-  --radius-lg: 20px;
+  --radius-sm: 12px; /* 작은 카드·입력 */
+  --radius-md: 16px;
+  --radius-lg: 20px; /* 카드 */
   --radius-round: 999px;
-  --shadow-card: 0 2px 10px rgba(38, 51, 47, 0.08);
+  --shadow-card: 0 4px 16px rgba(47, 49, 71, 0.08);
+  --shadow-pop: 0 4px 10px rgba(47, 49, 71, 0.14); /* 버튼 그림자 */
+  --outline-width: 1.5px;
   --tap-size: 48px; /* 손가락으로 누르는 버튼의 최소 높이 */
+  --gutter: 20px; /* 화면 좌우 여백 */
   --app-width: 480px; /* 화면 폭. 모바일은 꽉 채우고 PC는 이 폭까지만 */
 
   font-family: var(--font-sans);

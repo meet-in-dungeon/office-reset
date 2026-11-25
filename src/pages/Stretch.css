@@ -1,28 +1,91 @@
 /* 스트레칭 루틴 화면 전용 스타일. 색·크기는 공통 변수(index.css)를 쓴다. */
+.stretch-screen {
+  background: linear-gradient(180deg, var(--color-primary-soft) 0%, transparent 320px);
+}
+
+/* 시작 단계: 캐릭터 · 안내 문구 · 시작 버튼 · 주의 문구를 화면 가운데에 모은다 */
 .stretch-start {
-  min-height: 60vh;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: stretch;
   gap: var(--space-4);
+  padding-bottom: var(--space-5);
   text-align: center;
 }
 
+.stretch-start__character {
+  width: 230px;
+  margin: 0 auto;
+}
+
+.stretch-start__character .asset {
+  width: 100%;
+  height: auto;
+}
+
+.stretch-start__character .asset-placeholder {
+  min-height: 270px;
+}
+
+.stretch-start__copy {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
 .stretch-move {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-3);
+}
+
+/* 동작 화면은 세로 길이를 아끼려고 위쪽 제목 줄과 여백을 줄인다 */
+.stretch-screen:not(.stretch-screen--breath) {
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+
+.stretch-screen:not(.stretch-screen--breath) .screen__header {
+  min-height: 28px;
+}
+
+/* 진행 상황(1 / 3)과 동작 이름 라벨 */
+.stretch-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
 }
 
 .stretch-progress {
   margin: 0;
   font-size: var(--text-small);
+  font-weight: 600;
   color: var(--color-text-muted);
+  text-align: center;
+}
+
+.stretch-progress__now {
+  font-weight: 800;
+  color: var(--color-text);
 }
 
 .stretch-name {
   margin: 0;
   font-size: var(--text-large);
+  font-weight: 700;
+}
+
+.stretch-name__label {
+  display: inline-block;
+  padding: 2px var(--space-4);
+  background: var(--color-sun);
+  border: 1px solid var(--color-outline);
+  border-radius: var(--radius-round);
+  transform: rotate(-2deg);
 }
 
 .stretch-video-slot {
@@ -35,22 +98,274 @@
   color: var(--color-text-muted);
 }
 
-.stretch-steps {
-  margin: 0;
-  padding-left: 1.2rem;
+/* 원형 카운트다운: 준비 → 진행 → 완료 세 상태 (2026-11-25 팀 결정). 호흡 화면의 링도 이 기본 모양을 쓴다. */
+.stretch-count {
+  --count-ring: #8b75d6; /* 진행 링 */
+  --count-run-bg: #fff092; /* 진행 상태 안쪽 바탕 */
+  --count-done-bg: #cdefe0; /* 완료 상태 바탕 */
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  font-size: var(--text-body);
-  line-height: 1.5;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
 }
 
-.stretch-count {
-  margin: 0;
-  font-size: var(--text-title);
+.stretch-count__ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.stretch-count__caption {
+  min-height: 1.5em;
+  font-size: 1.0625rem;
   font-weight: 700;
-  text-align: center;
-  color: var(--color-primary);
+}
+
+.stretch-count__sticker {
+  flex: none;
+  width: 40px;
+  pointer-events: none;
+}
+
+.stretch-count__sticker--right {
+  transform: scaleX(-1);
+}
+
+.count-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  background: var(--color-surface);
+  border-radius: var(--radius-round);
+  box-shadow: var(--shadow-card);
+}
+
+.count-ring__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.count-ring__track,
+.count-ring__bar {
+  fill: none;
+  stroke-width: 7;
+}
+
+.count-ring__track {
+  stroke: var(--color-primary-soft);
+}
+
+.count-ring__bar {
+  stroke: var(--color-lavender);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.count-ring__value {
+  font-size: 2.5rem; /* 40px */
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 동작 화면의 카운트다운은 더 크게. 세 상태가 같은 크기라 바뀔 때 화면이 흔들리지 않는다 */
+.stretch-count .count-ring {
+  width: 112px;
+  height: 112px;
+}
+
+/* ① 준비: 흰 바탕 + 라벤더 테두리, 카운트는 시작하지 않는다 */
+.count-ring--prepare .count-ring__track {
+  stroke: var(--color-lavender);
+}
+
+.count-ring--prepare .count-ring__value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-text-muted);
+}
+
+/* ② 진행: 노란 바탕 + 보라 진행 링 + 큰 숫자 */
+.count-ring--run {
+  background: #fff092;
+  box-shadow: 0 6px 18px rgba(139, 117, 214, 0.28);
+}
+
+.stretch-count .count-ring--run {
+  background: var(--count-run-bg);
+}
+
+.count-ring--run .count-ring__track {
+  stroke: rgba(139, 117, 214, 0.22);
+}
+
+.count-ring--run .count-ring__bar {
+  stroke: var(--count-ring);
+}
+
+/* 준비 → 진행으로 바뀌는 순간에 링이 통통 튀며 "시작됐다"를 알린다. 한 번만, 짧고 부드럽게 */
+.stretch-count .count-ring--run {
+  animation: count-start-pop 0.55s ease-out both;
+}
+
+.stretch-count--run .stretch-count__caption {
+  animation: count-caption-in 0.4s ease-out both;
+}
+
+@keyframes count-start-pop {
+  0% {
+    transform: scale(0.88);
+  }
+  55% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes count-caption-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.count-ring--run .count-ring__value {
+  font-size: 3.25rem; /* 52px: 진행 중에는 숫자가 가장 눈에 띄게 */
+  font-weight: 900;
+  color: var(--color-text);
+}
+
+/* ③ 완료: 민트 바탕 + 체크 */
+.stretch-count .count-ring--done {
+  background: var(--count-done-bg);
+}
+
+.count-ring--done .count-ring__track {
+  stroke: rgba(42, 107, 88, 0.25);
+}
+
+.count-ring__check {
+  color: var(--color-calm);
+}
+
+/* 진행 상태에서 링 좌우에 붙는 노란 만화풍 강조선 (CSS 임시. 강조선 에셋이 오면 Asset이 그 이미지로 대신한다) */
+.count-accent {
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 56px;
+}
+
+.count-accent i {
+  position: absolute;
+  left: 0;
+  width: 26px;
+  height: 9px;
+  background: #ffe34d;
+  border: 1.5px solid var(--color-outline);
+  border-radius: 6px;
+}
+
+.count-accent i:nth-child(1) {
+  top: 4px;
+  transform: rotate(-28deg);
+}
+
+.count-accent i:nth-child(2) {
+  top: 23px;
+  left: 4px;
+}
+
+.count-accent i:nth-child(3) {
+  top: 42px;
+  transform: rotate(28deg);
+}
+
+/* 오른쪽 강조선은 좌우 반전 */
+.count-accent--right {
+  transform: scaleX(-1);
+}
+
+/* 번호가 있는 동작 설명: 흰색 카드 하나 안에 번호별로 정리 */
+.stretch-steps {
+  counter-reset: step;
+  margin: 0;
+  padding: var(--space-1) var(--space-4);
+  list-style: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.stretch-steps li {
+  position: relative;
+  padding: 8px 0 8px 38px;
+  font-size: 0.96875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  counter-increment: step;
+}
+
+.stretch-steps li + li {
+  border-top: 1px solid var(--color-primary-soft);
+}
+
+.stretch-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 8px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  font-size: var(--text-small);
+  font-weight: 800;
+  background: var(--color-lavender);
+  border-radius: var(--radius-round);
+}
+
+/* 다음 버튼: 화면 아래에 붙인다. 바탕이 불투명해서 아래로 지나가는 내용과 글자가 겹쳐 보이지 않고, 버튼은 내용 맨 끝에 있어서 끝까지 스크롤하면 어떤 내용도 가려지지 않는다 */
+.stretch-next {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin: auto calc(var(--gutter) * -1) calc(var(--space-5) * -1);
+  padding: var(--space-2) var(--gutter) var(--space-3);
+  background: #efebff;
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -6px 16px rgba(47, 49, 71, 0.06);
+}
+
+/* 주의사항: 크림색 상자 */
+.stretch-notice {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-sun-soft);
+  border: 1px solid #f0e2b8;
+  border-radius: var(--radius-md);
+}
+
+.stretch-notice .icon {
+  flex: none;
+  margin-top: 2px;
+  color: #a67c00;
 }
 
 /* 영상이 한 바퀴 도는 동안(카운트 시작 전) 숫자 대신 보이는 안내 */
@@ -60,8 +375,8 @@
 }
 
 .stretch-cautions {
-  margin: 0;
-  padding-left: 1.2rem;
+  margin: 0 0 var(--space-1);
+  padding-left: 1.1rem;
   font-size: var(--text-small);
   line-height: 1.5;
 }
@@ -73,18 +388,112 @@
   color: var(--color-text-muted);
 }
 
+.stretch-start .stretch-caution {
+  text-align: center;
+}
+
+/* 하루 마지막 호흡: 부드러운 라벤더 배경의 편안한 화면. 호흡 원은 빡침 명상과 비슷한 반투명 원 */
+.stretch-screen--breath {
+  background: linear-gradient(180deg, #e4def9 0%, var(--color-bg) 55%, #ece8fb 100%);
+}
+
 .stretch-breath {
-  min-height: 55vh;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
   text-align: center;
+}
+
+/* 가장 크게 퍼졌을 때(원 240 + 바깥 테두리 겹)까지 들어가는 칸. 안내 글자와 겹치지 않는다 */
+.breath-area {
+  display: grid;
+  place-items: center;
+  width: 320px;
+  max-width: 100%;
+  aspect-ratio: 1;
+}
+
+.breath-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  width: 232px;
+  height: 232px;
+  border-radius: var(--radius-round);
+  background: radial-gradient(circle, rgba(205, 197, 246, 0.9) 0%, rgba(205, 197, 246, 0.55) 70%, rgba(255, 255, 255, 0.5) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 0 0 12px rgba(205, 197, 246, 0.28),
+    0 0 0 13px rgba(255, 255, 255, 0.7),
+    0 0 0 26px rgba(205, 197, 246, 0.16),
+    0 0 0 27px rgba(255, 255, 255, 0.5);
+  transform: scale(0.72);
+  transition-property: transform;
+  transition-timing-function: ease-in-out;
+}
+
+.breath-circle--in {
+  transform: scale(1);
+}
+
+.breath-circle--out {
+  transform: scale(0.72);
+}
+
+.breath-circle__label {
+  font-size: var(--text-title);
+  font-weight: 800;
+}
+
+.breath-circle__left {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .stretch-breath__text {
   margin: 0;
   font-size: var(--text-large);
   font-weight: 700;
+}
+
+.stretch-breath__dots {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.stretch-breath__dot {
+  width: 10px;
+  height: 10px;
+  background: var(--color-disabled);
+  border-radius: var(--radius-round);
+}
+
+.stretch-breath__dot--on {
+  background: #8c7fe0;
+}
+
+/* 중단 버튼: 보조 버튼(흰 바탕 + 라벤더 테두리 + 네이비 글자). 눌리는 영역 48px 이상 */
+.stretch-breath__stop {
+  min-width: 160px;
+  margin-top: var(--space-2);
+  border-color: var(--color-lavender);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .count-ring__bar,
+  .breath-circle {
+    transition: none;
+  }
+
+  .stretch-count .count-ring--run,
+  .stretch-count--run .stretch-count__caption {
+    animation: none;
+  }
 }
