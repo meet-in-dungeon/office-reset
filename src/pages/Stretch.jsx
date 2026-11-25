@@ -1,5 +1,5 @@
 // 스트레칭 루틴 화면 (담당: 김원규. 영상 재생·음성은 서진수)
-// 흐름: (알림으로 들어오면 큰 시작 버튼) → 동작 ROUTINE_MOVE_COUNT개(5초 카운트, "다음" 버튼)
+// 흐름: (알림으로 들어오면 큰 시작 버튼) → 동작 ROUTINE_MOVE_COUNT개(영상이 한 바퀴 돌고 음성이 끝나면 5초 카운트, "다음" 버튼)
 //       → (하루 마지막 루틴이면) 호흡 BREATH_COUNT회 → 완료 화면
 // 알림으로 들어오면 주소가 #/stretch?from=notification 이 된다. (useRoute().query.from)
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -19,8 +19,9 @@ import { planRoutine, saveShownIds } from '../lib/pickMoves'
 import { recordRoutine } from '../lib/records'
 import { navigate, ROUTES, useRoute } from '../lib/router'
 import { isLastRoutine } from '../lib/schedule'
+import { useSettings } from '../lib/settings'
 import StretchVideo from '../components/StretchVideo'
-import { useStretchVoice } from '../lib/voice'
+import { isSpeechSupported, useStretchVoice } from '../lib/voice'
 import { useStretchBgm } from '../lib/bgm'
 import { nowLocalISO } from '../lib/time'
 import './Stretch.css'
@@ -37,6 +38,11 @@ const BREATH_OUT_TEXT = '편안하게 내쉬세요'
 // 카운트가 끝나기 전에도 "다음"을 눌러 동작을 넘길 수 있다. (확정)
 // 카운트 중에 누른 동작은 skippedMoves에 센다.
 const ALLOW_EARLY_NEXT = true
+
+// 동작마다 영상이 한 바퀴 돌고(onLoop) 안내 음성이 끝나면(onEnd) 그때 5초 카운트를 시작한다. (진수 님과 합의)
+// 영상은 무한 반복이라 먼저 한 바퀴를 보여 주고 나서 카운트해야 따라 하기 쉽다.
+// 신호가 오지 않아도 멈춰 있지 않도록, 이 시간(초)이 지나면 카운트를 시작한다. (영상 최대 길이 23.5초보다 길게)
+const MAX_WAIT_SECONDS = 30
 
 // "하루의 마지막 루틴"인지 알아낸다. 판정은 민지 님의 isLastRoutine()이 한다.
 // (마지막 알림 시각 이후에 시작한 루틴이고, 오늘 아직 호흡을 하지 않았으면 true)
@@ -62,14 +68,28 @@ export default function Stretch() {
   const startedAtRef = useRef(null)
   const skippedRef = useRef(0)
   const doneRef = useRef(false)
-  // 영상·음성 (서진수): 동작이 바뀌면 안내 문장, 카운트마다 숫자를 읽는다    
+  // 영상·음성 (서진수): 동작이 바뀌면 안내 문장을 한 번 읽는다
   const currentMove = moves[index]
+  const moveId = currentMove?.id
+
+  // 카운트 시작 조건: 음성이 끝났고(소리가 꺼졌거나 못 읽으면 바로 끝난 것), 영상이 한 바퀴 돌았을 때(영상이 없으면 바로)
+  // "어느 동작의 신호인지"를 id로 기억해서, 동작이 바뀐 뒤 늦게 오는 이전 동작의 신호는 무시한다.
+  const [settings] = useSettings()
+  const voiceExpected = settings.soundOn && isSpeechSupported()
+  const [voiceDoneId, setVoiceDoneId] = useState(null)
+  const [loopDoneId, setLoopDoneId] = useState(null)
+  const [expiredId, setExpiredId] = useState(null)
+  const voiceDone = !voiceExpected || voiceDoneId === moveId
+  const loopDone = !currentMove?.videoFile || loopDoneId === moveId
+  const ready = (voiceDone && loopDone) || expiredId === moveId
+  const waiting = stage === 'move' && !ready
+
   useStretchVoice({
-    id: currentMove?.id,
+    id: moveId,
     narration: currentMove?.narration,
-    remaining,
     active: stage === 'move',
-  })                  
+    onEnd: () => setVoiceDoneId(moveId),
+  })
 useStretchBgm(stage === 'move' || stage === 'breath')
   const finish = useCallback(
     (breathed) => {
@@ -101,9 +121,10 @@ useStretchBgm(stage === 'move' || stage === 'breath')
     }
   }, [stage, index, plan])
 
-  // 동작 화면 또는 호흡 화면에서 1초씩 줄어드는 카운트
+  // 동작 화면 또는 호흡 화면에서 1초씩 줄어드는 카운트. 동작은 영상 한 바퀴와 음성이 끝난 뒤(ready)에 시작한다.
   useEffect(() => {
     if (stage !== 'move' && stage !== 'breath') return undefined
+    if (stage === 'move' && !ready) return undefined
     const timer = setInterval(() => {
       setRemaining((prev) => {
         if (prev <= 1) {
@@ -114,7 +135,14 @@ useStretchBgm(stage === 'move' || stage === 'breath')
       })
     }, 1000)
     return () => clearInterval(timer)
-  }, [stage, index])
+  }, [stage, index, ready])
+
+  // 신호가 끝내 오지 않는 경우를 위한 안전장치
+  useEffect(() => {
+    if (stage !== 'move' || ready) return undefined
+    const timer = setTimeout(() => setExpiredId(moveId), MAX_WAIT_SECONDS * 1000)
+    return () => clearTimeout(timer)
+  }, [stage, ready, moveId])
 
   // 호흡은 정해진 횟수가 끝나면 저절로 마친다. (동작은 버튼을 눌러야 넘어간다.)
   useEffect(() => {
@@ -187,7 +215,12 @@ useStretchBgm(stage === 'move' || stage === 'breath')
         </p>
         <h2 className="stretch-name">{move.name}</h2>
 
-        <StretchVideo key={move.id} file={move.videoFile} name={move.name} />
+        <StretchVideo
+          key={move.id}
+          file={move.videoFile}
+          name={move.name}
+          onLoop={() => setLoopDoneId(move.id)}
+        />
 
         <ol className="stretch-steps">
           {move.steps.map((step) => (
@@ -195,8 +228,8 @@ useStretchBgm(stage === 'move' || stage === 'breath')
           ))}
         </ol>
 
-        <p className="stretch-count" aria-live="polite">
-          {countDone ? '완료' : remaining}
+        <p className={`stretch-count${waiting ? ' stretch-count--wait' : ''}`} aria-live="polite">
+          {waiting ? '영상을 보고 따라 해 보세요' : countDone ? '완료' : remaining}
         </p>
 
         <ul className="stretch-cautions">

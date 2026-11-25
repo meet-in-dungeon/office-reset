@@ -53,6 +53,12 @@
   color: var(--color-primary);
 }
 
+/* 영상이 한 바퀴 도는 동안(카운트 시작 전) 숫자 대신 보이는 안내 */
+.stretch-count--wait {
+  font-size: var(--text-body);
+  font-weight: 500;
+}
+
 .stretch-cautions {
   margin: 0;
   padding-left: 1.2rem;
