@@ -10,6 +10,7 @@ import { BREATH_EXHALE_SECONDS, BREATH_INHALE_SECONDS } from '../lib/config'
 import { recordCalm } from '../lib/records'
 import { navigate, ROUTES } from '../lib/router'
 import { nowLocalISO } from '../lib/time'
+import { useCalmBgm } from '../lib/bgm'
 import './Calm.css'
 
 // 호흡 횟수와 한 번의 길이(초). 호흡 속도는 팀 공통 설정(config.js)을 그대로 쓴다. (이주연 결정, 11/24)
@@ -103,7 +104,8 @@ export default function Calm() {
   const [session, setSession] = useState(() => ({ id: `c_${Date.now()}`, startedAt: nowLocalISO() }))
   const [step, setStep] = useState(0)
   const [result, setResult] = useState(null)
-
+useCalmBgm()
+  
   const totalSteps = CALM_BREATH_COUNT * 2
   const done = step >= totalSteps
 
