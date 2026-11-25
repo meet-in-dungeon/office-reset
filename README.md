@@ -1,5 +1,7 @@
 # office-reset
 
+**배포 주소: https://office-reset-seven.vercel.app** (`main`에 병합되면 자동으로 다시 배포된다)
+
 사무실 직장인을 위한 스트레칭·호흡 루틴 웹 서비스다. 던만 해커톤 팀 프로젝트이며, 모바일 화면을 먼저 만들고 PC에서도 쓸 수 있게 한다.
 
 - 기술: React + Vite (JavaScript)
