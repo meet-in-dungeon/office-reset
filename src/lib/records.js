@@ -365,3 +365,71 @@ export function getWeeklyStats(today = todayLocal()) {
     streak: { current: currentWeekdayStreak(allDays, today), best: bestWeekdayStreak(allDays) },
   }
 }
+
+// ---------------------------------------------------------------------------
+// 발표용 시연 모드 (통계 화면 주소 뒤에 ?demo=1 → #/stats?demo=1)
+//   fillDemoRecords()  지난 3주 평일 기록과 빡침 명상 9번을 넣는다. (오늘·해커톤 기간은 비워 둔다)
+//                      → 배지함이 여러 등급으로 채워지고, 발표 중 루틴 1번에 "히든 배지 발견!"(해커톤),
+//                        빡침 명상 1번에 "실버로 올랐어요!"(10번째)를 보여줄 수 있다.
+//                      몸관리 끝판왕·불금은 숨긴 채로 남겨 둔다.
+//   resetRecords()     기록·배지·명상 기록과 동작 순환 기록(shownMoveIds)을 지운다. 설정(settings)은 남긴다.
+//                      (docs/ARCHITECTURE.md: 시연 모드의 기록 초기화는 shownMoveIds도 지운다)
+// 실제 사용자 기록과 같은 저장소를 쓰므로, 시연이 끝나면 "기록 초기화"를 누른다.
+// ---------------------------------------------------------------------------
+
+const DEMO_MOVES = [
+  'neck-01', 'shoulder-01', 'wrist-01', 'waist-01', 'neck-02', 'shoulder-02',
+  'wrist-02', 'waist-02', 'neck-03', 'shoulder-03', 'wrist-03', // waist-03은 일부러 빼서 도감 "골드까지 1개"
+]
+// 요일별 루틴 시각. 마지막 시각은 호흡까지 한 마지막 루틴이다. 금요일은 17시 전에 끝내 불금 배지를 숨겨 둔다.
+const DEMO_DAY_TIMES = [
+  ['08:40', '10:00', '13:30', '15:00', '17:05'], // 월
+  ['10:00', '14:10', '17:10'], // 화
+  ['09:30', '11:00', '13:40', '17:00'], // 수
+  ['10:00', '13:20', '15:00', '16:00', '17:20'], // 목
+  ['10:00', '13:50', '16:30'], // 금
+]
+
+export function resetRecords() {
+  ;[STORAGE_KEYS.routineLogs, STORAGE_KEYS.badges, STORAGE_KEYS.calmLogs, 'shownMoveIds'].forEach((key) => {
+    try {
+      window.localStorage.removeItem(key)
+    } catch {
+      // 저장소를 쓸 수 없으면 무시한다
+    }
+  })
+  clearLastResult()
+}
+
+export function fillDemoRecords(today = todayLocal()) {
+  resetRecords()
+  let moveIndex = 0
+  const nextMoves = () => [0, 1, 2].map(() => DEMO_MOVES[moveIndex++ % DEMO_MOVES.length])
+
+  for (let back = 21; back >= 1; back -= 1) {
+    const day = addDays(today, -back)
+    if (!isWeekday(day)) continue
+    if (day >= HACKATHON_DAYS.from && day <= HACKATHON_DAYS.to) continue
+    const times = DEMO_DAY_TIMES[weekdayOf(day) - 1]
+    times.forEach((time, i) => {
+      const last = i === times.length - 1
+      recordRoutine({
+        id: `demo_${day}_${time}`,
+        moves: nextMoves(),
+        breathCount: last ? 5 : 0,
+        startedAt: `${day}T${time}:00`,
+        completedAt: `${day}T${time}:40`,
+        completed: true,
+        skippedMoves: i === 1 && weekdayOf(day) === 2 ? 1 : 0,
+        fromNotification: true,
+      })
+    })
+  }
+
+  for (let n = 0; n < 9; n += 1) {
+    const day = addDays(today, -(n * 2 + 1))
+    recordCalm({ id: `demo_calm_${n}`, startedAt: `${day}T15:30:00`, completedAt: `${day}T15:30:30`, breathCount: 3 })
+  }
+
+  clearLastResult() // 완료 화면에 시연용 결과가 남지 않게 한다
+}
