@@ -78,7 +78,7 @@ function BadgeCard({ badge, label }) {
         <p className="calm-badge__label">{label}</p>
         <p className="calm-badge__name">
           {badge.name}
-          {badge.tierName ? <span className="calm-badge__tier">{badge.tierName}</span> : null}
+          {badge.tierName ? <span className={`calm-badge__tier tier-chip tier-chip--${badge.tier ?? 0}`}>{badge.tierName}</span> : null}
         </p>
         <p className="muted">
           {badge.count ? `빡침 명상 ${badge.count}회 · ` : ''}

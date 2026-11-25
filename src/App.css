@@ -501,3 +501,25 @@
   color: #a67c00;
   background: #fff0c2;
 }
+
+/* 배지 등급 라벨 (브론즈·실버·골드): 완료·통계·명상 화면 공통. 색만으로 구분하지 않게 글자도 같이 쓴다 */
+.tier-chip {
+  padding: 0 var(--space-2);
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-round);
+  vertical-align: middle;
+}
+
+.tier-chip.tier-chip--0 {
+  color: var(--color-tier-bronze-text);
+}
+
+.tier-chip.tier-chip--1 {
+  color: var(--color-tier-silver-text);
+}
+
+.tier-chip.tier-chip--2 {
+  color: var(--color-tier-gold-text);
+}

@@ -85,7 +85,13 @@
   margin-top: var(--space-5);
   padding: var(--space-3);
   font-size: var(--text-small);
+  font-weight: 400; /* 첫 문장만 굵게(strong), 나머지는 일반 굵기 */
   line-height: 1.45;
+  text-wrap: balance;
+}
+
+.home-hero__bubble strong {
+  font-weight: 800;
 }
 
 .home-timer {

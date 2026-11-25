@@ -39,7 +39,7 @@ function BadgeCard({ badge, index }) {
       <BadgeImage badge={badge} tier={badge.tier} className="complete-badge__icon" />
       <p className="complete-badge__name">
         {badge.name}
-        {badge.tierName ? <span className="complete-badge__tier">{badge.tierName}</span> : null}
+        {badge.tierName ? <span className={`complete-badge__tier tier-chip tier-chip--${badge.tier ?? 0}`}>{badge.tierName}</span> : null}
       </p>
       <p className="complete-badge__message">{badge.message}</p>
     </li>

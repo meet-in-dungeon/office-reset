@@ -23,6 +23,13 @@
   position: relative;
 }
 
+/* 제목이 배경 나뭇잎과 겹쳐 읽히지 않아서 제목 뒤에만 반투명 흰색(85%) 바탕을 둔다. 배경 이미지는 그대로 */
+.calm-screen .screen__title {
+  padding: 2px var(--space-3);
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-sm);
+}
+
 .calm {
   flex: 1;
   display: flex;
@@ -169,16 +176,8 @@
   font-weight: 700;
 }
 
-/* 등급 글자 (브론즈·실버·골드). 색만으로 구분하지 않게 글자로 보여준다 */
 .calm-badge__tier {
-  margin-left: var(--space-2);
-  padding: 0 var(--space-2);
-  font-size: var(--text-small);
-  font-weight: 600;
-  color: var(--color-calm);
-  border: 1px solid var(--color-calm);
-  border-radius: var(--radius-round);
-  vertical-align: middle;
+  margin-left: var(--space-2); /* 모양·색은 공통 .tier-chip (App.css) */
 }
 
 .calm-actions {

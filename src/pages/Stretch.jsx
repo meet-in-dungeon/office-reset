@@ -269,9 +269,12 @@ export default function Stretch() {
           </div>
         </div>
 
-        <Button size="large" block onClick={handleNext} disabled={!countDone && !ALLOW_EARLY_NEXT}>
-          {isLastMove && !isLastRoutine ? '마치기' : '다음'} <ChevronIcon className="icon" width="18" height="18" />
-        </Button>
+        {/* 다음 버튼은 화면 아래에 붙어 있어서 스크롤 없이 누를 수 있다. 버튼 위 내용은 가려지지 않는다 */}
+        <div className="stretch-next">
+          <Button size="large" block onClick={handleNext} disabled={!countDone && !ALLOW_EARLY_NEXT}>
+            {isLastMove && !isLastRoutine ? '마치기' : '다음'} <ChevronIcon className="icon" width="18" height="18" />
+          </Button>
+        </div>
       </div>
     </Screen>
   )

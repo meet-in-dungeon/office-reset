@@ -80,7 +80,7 @@ function SummaryTab({ stats }) {
         <div>
           <p className="stats-today__title">{stats.todayDone ? '오늘 스트레칭 완료!' : '오늘은 아직이에요'}</p>
           <p className="muted">
-            {stats.todayDone ? '오늘도 나를 챙겼어요.' : '알림이 오면 15초만 같이 움직여요.'}
+            {stats.todayDone ? '오늘도 나를 챙겼어요.' : '알림이 오면 잠깐 몸을 풀어 봐요.'}
           </p>
         </div>
       </section>

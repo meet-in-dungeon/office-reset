@@ -45,7 +45,7 @@ export default function Main() {
   if (settings.alertsEnabled && next) {
     timerLabel = `다음 알림 ${formatClock(next)}까지`
     timerValue = formatRemaining(next.getTime() - now.getTime())
-    bubbleLines = ['잠깐만요!', '지금이 딱 몸 풀기 좋은 타이밍이에요!']
+    bubbleLines = ['잠깐만요!', '지금 딱 몸 풀기 좋은 시간이에요.']
   } else if (settings.alertsEnabled && !isAlertDay(now)) {
     timerLabel = '주말에는 알림이 없어요'
     bubbleLines = ['주말이에요!', '푹 쉬어도 좋고, 가볍게 풀어도 좋아요']
@@ -84,7 +84,7 @@ export default function Main() {
           <Asset file="character-main.webp" size="권장 560×660" alt="안내 캐릭터" />
         </div>
         <p className="bubble home-hero__bubble">
-          {bubbleLines[0]}
+          <strong>{bubbleLines[0]}</strong>
           <br />
           {bubbleLines[1]}
         </p>
