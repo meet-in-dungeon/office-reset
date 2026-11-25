@@ -21,7 +21,7 @@
 // 배지는 저장된 기록 전체로 매번 다시 계산한다. 기록만 맞으면 배지가 저절로 맞춰진다.
 // 한 번 받은 배지와 등급은 기록이 줄어도 사라지지 않는다.
 
-import { BADGE_IDS, BADGES, badgeMessage, getBadge, HACKATHON_DAYS, TIER_NAMES, tierIndex } from './badges'
+import { BADGE_IDS, BADGES, badgeMessage, BODY_BOSS_ROUTINES, getBadge, HACKATHON_DAYS, TIER_NAMES, tierIndex } from './badges'
 import { STORAGE_KEYS } from './config'
 import { readJSON, writeJSON } from './storage'
 import { nowLocalISO, todayLocal } from './time'
@@ -121,7 +121,15 @@ function computeMetrics(routineLogs, calmLogs) {
   const days = [...new Set(routineLogs.map((log) => dateOf(log.completedAt)))]
   const fullDays = [...new Set(routineLogs.filter((log) => Number(log.breathCount) > 0).map((log) => dateOf(log.completedAt)))]
   const moves = new Set(routineLogs.flatMap(movesOf))
+  const perDay = {}
+  routineLogs.forEach((log) => {
+    const day = dateOf(log.completedAt)
+    perDay[day] = (perDay[day] ?? 0) + 1
+  })
+  const maxRoutinesInDay = Math.max(0, ...Object.values(perDay))
   return {
+    maxRoutinesInDay,
+    bodyBoss: maxRoutinesInDay >= BODY_BOSS_ROUTINES ? 1 : 0,
     firstRoutine: routineLogs.length,
     activeDays: days.length,
     totalRoutines: routineLogs.length,
